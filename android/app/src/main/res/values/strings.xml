@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">HAN</string>
+    <string name="title_activity_main">HAN</string>
+    <string name="package_name">app.han.mobile</string>
+    <string name="custom_url_scheme">app.han.mobile</string>
+</resources>

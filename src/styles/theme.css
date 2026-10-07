@@ -1,0 +1,469 @@
+
+:root {
+  /* Color Palette - Strict Monochrome */
+  --han-black: #000000;
+  --han-dark-surface: #0A0A0A;
+  --han-dark-card: #121212;
+  --han-dark-border: #242424;
+  --han-dark-text-muted: #8E8E93;
+  --han-dark-text: #FFFFFF;
+
+  --han-white: #FFFFFF;
+  --han-light-bg: #FAFAFA;
+  --han-light-surface: #F5F5F5;
+  --han-light-card: #FFFFFF;
+  --han-light-border: #E8E8E8;
+  --han-light-text-muted: #737373;
+  --han-light-text: #0F0F0F;
+
+  --han-gray-100: #F4F4F5;
+  --han-gray-200: #E4E4E7;
+  --han-gray-300: #D4D4D8;
+  --han-gray-400: #A1A1AA;
+  --han-gray-500: #71717A;
+  --han-gray-600: #52525B;
+  --han-gray-700: #3F3F46;
+  --han-gray-800: #27272A;
+  --han-gray-900: #18181B;
+
+  /* Fonts */
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* Shadows */
+  --shadow-subtle: 0 2px 10px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.12);
+
+  /* Touch Target */
+  --min-touch-target: 44px;
+
+  /* Safe Area Defaults */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+}
+
+/* Global Reset & Base Typography */
+@layer base {
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: #0A0A0A;
+  font-family: var(--font-sans);
+  color: var(--han-light-text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Typography Helpers */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.editorial-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.han-tagline {
+  font-family: var(--font-sans);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+/* Device Simulator Wrapper */
+.app-simulator-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #050505;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 70%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  overflow: hidden;
+  position: relative;
+}
+
+.simulator-toolbar {
+  position: absolute;
+  top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.simulator-title {
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.simulator-title span {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.device-btn {
+  background: transparent;
+  border: none;
+  color: #A1A1AA;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.device-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.device-btn.active {
+  background: #FFFFFF;
+  color: #000000;
+  font-weight: 600;
+}
+
+.screen-switcher-pills {
+  display: flex;
+  gap: 4px;
+  max-width: 400px;
+  overflow-x: auto;
+}
+
+/* Mobile Phone Frame */
+.phone-viewport-container {
+  position: relative;
+  background: #FAFAFA;
+  box-shadow: 
+    0 0 0 12px #1c1c1e,
+    0 0 0 13px #2c2c2e,
+    0 25px 60px rgba(0, 0, 0, 0.8),
+    0 10px 30px rgba(0, 0, 0, 0.5);
+  border-radius: 48px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease, height 0.3s ease;
+  margin-top: 36px;
+}
+
+.phone-viewport-container.fullscreen-mode {
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin-top: 0 !important;
+}
+
+/* Mobile Status Bar */
+.mobile-status-bar {
+  height: 44px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 24px 8px 24px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 900;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.mobile-status-bar.dark-status {
+  color: #FFFFFF;
+}
+
+.mobile-status-bar.light-status {
+  color: #000000;
+}
+
+/* Dynamic Island / Notch */
+.dynamic-island {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 115px;
+  height: 28px;
+  background-color: #000000;
+  border-radius: 20px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.camera-lens {
+  width: 10px;
+  height: 10px;
+  background: #111;
+  border-radius: 50%;
+  border: 1px solid #222;
+}
+
+/* Mobile Screen Viewport */
+.mobile-screen-body {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: #FAFAFA;
+}
+
+.mobile-screen-body.black-bg {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+/* Home Indicator Bar */
+.home-indicator {
+  width: 134px;
+  height: 5px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  margin: 6px auto 4px auto;
+  flex-shrink: 0;
+}
+
+.home-indicator.white-indicator {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Bottom Navigation Bar */
+.bottom-nav-bar {
+  height: 64px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid #E8E8E8;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  z-index: 800;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  color: #8E8E93;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  min-height: var(--min-touch-target);
+  min-width: 48px;
+}
+
+.bottom-nav-item.active {
+  color: #000000;
+  font-weight: 700;
+}
+
+.bottom-nav-item.active .nav-icon {
+  stroke-width: 2.4px;
+}
+
+/* Common UI Card Styles */
+.han-card {
+  background-color: #FFFFFF;
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid #ECECEC;
+  box-shadow: var(--shadow-subtle);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.han-card.dark {
+  background-color: #000000;
+  border-color: #222222;
+  color: #FFFFFF;
+}
+
+.han-card-clickable {
+  cursor: pointer;
+}
+
+.han-card-clickable:active {
+  transform: scale(0.985);
+}
+
+/* Pill Filter Chips */
+.filter-chip {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  background: #F4F4F5;
+  color: #52525B;
+  border: 1px solid #E4E4E7;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.filter-chip.active {
+  background: #000000;
+  color: #FFFFFF;
+  border-color: #000000;
+  font-weight: 600;
+}
+
+/* Form Controls */
+.han-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #F5F5F5;
+  border: 1px solid #E5E5E5;
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  color: #0F0F0F;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.han-input:focus {
+  border-color: #000000;
+  background: #FFFFFF;
+}
+
+.han-btn-primary {
+  width: 100%;
+  padding: 16px;
+  border-radius: 9999px;
+  background: #000000;
+  color: #FFFFFF;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--min-touch-target);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.han-btn-primary:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.han-btn-secondary {
+  width: 100%;
+  padding: 16px;
+  border-radius: 9999px;
+  background: #F5F5F5;
+  color: #0F0F0F;
+  border: 1px solid #E5E5E5;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--min-touch-target);
+}
+
+/* Toast alert */
+.toast-notification {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000000;
+  color: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  border: 1px solid #333333;
+}

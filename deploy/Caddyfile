@@ -1,0 +1,48 @@
+{$HAN_DOMAIN} {
+    encode zstd gzip
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+        -Server
+    }
+
+    # API routes — no buffering for SSE streams, 30s timeout
+    @api path /api/*
+    handle @api {
+        reverse_proxy han:3001 {
+            flush_interval -1
+            transport http {
+                read_timeout 35s
+                write_timeout 35s
+            }
+        }
+    }
+
+    # Static assets — long cache
+    @static path /assets/*
+    handle @static {
+        header Cache-Control "public, max-age=31536000, immutable"
+        reverse_proxy han:3001
+    }
+
+    # Everything else
+    handle {
+        reverse_proxy han:3001
+    }
+
+    # Request body limit 1MB
+    request_body {
+        max_size 1MB
+    }
+
+    log {
+        output stderr
+        format json
+        level WARN
+    }
+}

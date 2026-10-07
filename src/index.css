@@ -1,0 +1,35 @@
+@import 'tailwindcss';
+@import './styles/theme.css';
+@theme { --font-serif: Georgia, 'Times New Roman', serif; --font-sans: Inter, system-ui, sans-serif; --color-gray-50:#fafafa; --color-gray-100:#f5f5f5; --color-gray-200:#e5e5e5; --color-gray-300:#d4d4d4; --color-gray-400:#a3a3a3; --color-gray-500:#737373; --color-gray-600:#525252; --color-gray-700:#404040; --color-gray-800:#262626; --color-gray-900:#171717; }
+html,body,#root{width:100%;height:100%;background:#f5f5f5;overflow:hidden;}
+#root{display:block;}
+.han-app{position:relative;width:100%;max-width:480px;height:100dvh;margin:auto;background:#fafafa;overflow:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);}
+.han-app>div.h-full,.han-app>div.w-full{min-height:0;}
+.han-app .flex-1{min-height:0;}
+.login-screen{min-height:100%;padding:40px 24px 28px;display:flex;flex-direction:column;justify-content:space-between;gap:32px;overflow-y:auto;height:100%;}
+.identity{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px;border:1px solid #e5e5e5;border-radius:16px;background:#fff;color:#000;text-align:left;min-height:72px;}
+.identity.selected{background:#000;color:#fff;border-color:#000;}
+.action{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 10px;font-size:12px;font-weight:600;}
+.check-button{width:44px;height:44px;border:1px solid #a3a3a3;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.check-button.selected{background:#000;color:#fff;border-color:#000;}
+button,a,input,select{touch-action:manipulation;}
+button{cursor:pointer;}
+button:disabled{opacity:.5;cursor:wait;}
+input,textarea{user-select:text;}
+input,select,textarea{font-size:16px!important;}
+button:focus-visible,a:focus-visible{outline:2px solid #000;outline-offset:3px;}
+button,select,input[type=checkbox],input[type=radio]{min-height:44px;}
+[role=radio]:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #000;outline-offset:3px;}
+.bottom-nav-bar{padding-bottom:4px;height:70px;}
+.connection-banner{position:absolute;bottom:74px;left:10px;right:10px;background:#000;color:#fff;padding:12px;border-radius:10px;font-size:12px;z-index:10000;}
+.connection-banner button{margin-left:12px;text-decoration:underline;}
+.toast-notification{max-width:calc(100% - 24px);width:max-content;border-radius:12px;top:16px;}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
+/* Shared sync status and foreground alerts stay separate from page actions. */
+.workspace-status { display:flex; align-items:center; gap:8px; padding:8px 20px; background:#f0f5f2; color:#335346; font-size:11px; border-bottom:1px solid #e1e9e3; }
+.workspace-status button { min-height:32px; }
+.status-dot { width:6px; height:6px; border-radius:50%; background:#278052; flex-shrink:0; }
+.status-dot.offline { background:#b86a12; }
+.demo-banner { background:#fff3cf; color:#76561a; padding:7px 20px; font-size:12px; }
+.notification-alert { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); width:min(90vw,430px); background:#fff; color:#111; border:1px solid #d8e4da; border-left:4px solid #278052; padding:14px; border-radius:16px; box-shadow:0 10px 30px #0002; z-index:45; display:flex; justify-content:space-between; gap:10px; }
+.savings-card { background:#eff8f2; border-color:#cde3d3; }
