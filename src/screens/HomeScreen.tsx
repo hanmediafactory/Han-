@@ -1,5 +1,16 @@
 import React from "react";
-import { ArrowRight, Bell, Flame, AlertTriangle, CheckCircle2, Plus } from "lucide-react";
+import {
+  ArrowRight,
+  Bell,
+  Flame,
+  AlertTriangle,
+  CheckCircle2,
+  Plus,
+  Sparkles,
+  Briefcase,
+  Wallet,
+  Target,
+} from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { today, dateLabel } from "../context/dates";
 import { ProgressRing } from "../components/ui/ProgressRing";
@@ -65,8 +76,8 @@ export const HomeScreen: React.FC = () => {
         {/* Top Header */}
         <div className="flex items-center justify-between">
           <div>
-            <span className="font-serif text-xs font-semibold tracking-widest text-neutral-400 uppercase">
-              HAN COMMAND CENTER
+            <span className="font-serif text-xs font-semibold tracking-widest text-neutral-400 uppercase flex items-center gap-1">
+              <Sparkles size={11} className="text-amber-500" /> HAN EXECUTIVE CENTER
             </span>
             <h1 className="font-serif text-2xl font-bold text-black tracking-tight leading-snug mt-0.5">
               {userProfile.greeting} {userProfile.name}.
@@ -77,24 +88,52 @@ export const HomeScreen: React.FC = () => {
             {/* Notification Bell */}
             <button
               onClick={() => navigateTo("notifications")}
-              className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center relative shadow-sm active:scale-95 transition-transform"
+              className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center relative shadow-sm active:scale-95 transition-transform cursor-pointer"
               aria-label="Notifications"
             >
               <Bell size={19} className="text-black" />
               {unreadNotificationCount > 0 && (
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-black border border-white" />
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500 border border-white animate-ping" />
               )}
             </button>
 
             {/* Profile Avatar */}
             <button
               onClick={() => navigateTo("profile")}
-              className="w-10 h-10 rounded-full overflow-hidden border-2 border-black bg-black text-white flex items-center justify-center shadow-sm active:scale-95 transition-transform font-bold text-sm"
+              className="w-10 h-10 rounded-full overflow-hidden border-2 border-black bg-black text-white flex items-center justify-center shadow-sm active:scale-95 transition-transform font-bold text-sm cursor-pointer"
               aria-label="Profile"
             >
               {userProfile.name.charAt(0)}
             </button>
           </div>
+        </div>
+
+        {/* LUXURY EXECUTIVE ACTION STRIP */}
+        <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
+          <button
+            onClick={() => navigateTo("tasks", "All", true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black text-white text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer"
+          >
+            <Plus size={14} className="text-amber-400" /> + Task
+          </button>
+          <button
+            onClick={() => navigateTo("projects", "Active", true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-200 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
+          >
+            <Briefcase size={14} className="text-emerald-600" /> + Project
+          </button>
+          <button
+            onClick={() => navigateTo("money", "All", true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-200 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
+          >
+            <Wallet size={14} className="text-sky-600" /> Log Money
+          </button>
+          <button
+            onClick={() => navigateTo("leads", "All", true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-200 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
+          >
+            <Target size={14} className="text-purple-600" /> Add Lead
+          </button>
         </div>
 
         {/* URGENT OVERDUE ALERT BANNER */}

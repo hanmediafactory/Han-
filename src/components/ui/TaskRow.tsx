@@ -31,7 +31,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({ task, onToggle, className = ''
       onClick={() => onToggle(task.id)}
       onKeyDown={handleKeyDown}
       aria-label={`Task: ${task.title}, Status: ${statusLabel}`}
-      className={`w-full flex items-center justify-between p-3.5 rounded-2xl bg-white border border-gray-100 shadow-sm cursor-pointer select-none active:scale-[0.99] transition-all duration-150 ${className}`}
+      className={`w-full flex items-center justify-between p-3.5 rounded-2xl bg-white border border-gray-100 shadow-sm cursor-pointer select-none hover:border-neutral-300 hover:shadow-md active:scale-[0.99] transition-all duration-200 group ${className}`}
     >
       <div className="flex items-center gap-3.5 flex-1 min-w-0">
         <button
@@ -40,10 +40,10 @@ export const TaskRow: React.FC<TaskRowProps> = ({ task, onToggle, className = ''
             e.stopPropagation();
             onToggle(task.id);
           }}
-          className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center transition-all duration-200 ${
+          className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center transition-all duration-200 cursor-pointer ${
             task.completed
-              ? 'bg-black text-white border-none scale-105'
-              : 'bg-transparent border-2 border-gray-300 hover:border-gray-500'
+              ? 'bg-black text-white border-none scale-105 shadow-sm'
+              : 'bg-transparent border-2 border-gray-300 hover:border-black hover:scale-110'
           }`}
           aria-label={task.completed ? 'Mark task incomplete' : 'Mark task completed'}
         >
@@ -53,14 +53,16 @@ export const TaskRow: React.FC<TaskRowProps> = ({ task, onToggle, className = ''
         <div className="flex-1 min-w-0">
           <h4
             className={`font-sans font-medium text-sm transition-all duration-200 ${
-              task.completed ? 'line-through text-gray-400 font-normal' : 'text-black font-semibold'
+              task.completed ? 'line-through text-gray-400 font-normal' : 'text-black font-bold group-hover:text-amber-600'
             }`}
           >
             {task.title}
           </h4>
           <p className="text-xs text-gray-500 mt-0.5 font-sans flex items-center gap-1.5">
-            <span className="font-medium text-neutral-700">{statusLabel}</span>
-            {task.timeSlot && <span>· {task.timeSlot}</span>}
+            <span className={`text-[10px] uppercase font-mono px-2 py-0.5 rounded-md font-bold ${
+              task.completed ? 'bg-neutral-100 text-neutral-500' : task.status === 'IN_PROGRESS' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-700'
+            }`}>{statusLabel}</span>
+            {task.timeSlot && <span className="font-mono">· {task.timeSlot}</span>}
             {task.projectName && <span className="text-gray-400">· {task.projectName}</span>}
           </p>
         </div>

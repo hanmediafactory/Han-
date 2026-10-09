@@ -7,6 +7,7 @@ import { Toast } from "./components/ui/Toast";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { WorkspaceStatus } from "./components/ui/WorkspaceStatus";
 import { WelcomeSplash } from "./components/ui/WelcomeSplash";
+import { QuickActionHub } from "./components/ui/QuickActionHub";
 import { Bell, X, ArrowRight } from "lucide-react";
 
 function Shell() {
@@ -34,6 +35,7 @@ function Shell() {
     <div className="han-app min-h-screen bg-[#FAFAFA] text-[#0F0F0F] flex flex-col justify-between">
       {showWelcome && app.user && <WelcomeSplash onComplete={handleWelcomeComplete} />}
       {app.user && !app.loading && <WorkspaceStatus />}
+      {app.user && !app.loading && <QuickActionHub />}
       {app.state.demo && app.user && <div className="demo-banner">Demo workspace · separate test data</div>}
       {app.loading ? (
         <div className="login-screen flex flex-col items-center justify-center min-h-screen">
