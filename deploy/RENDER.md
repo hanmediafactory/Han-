@@ -73,7 +73,7 @@ If creating the Web Service manually via Render UI:
 | **Region** | Singapore (`ap-southeast-1`) or closest to users |
 | **Branch** | `main` |
 | **Root Directory** | `.` (Repository root) |
-| **Build Command** | `npm install && npm run build` |
+| **Build Command** | `npm install --include=dev && npm run build` |
 | **Start Command** | `node server/provision.mjs && npm start` |
 | **Instance Type** | **Starter** or higher (Required for Persistent Disk support) |
 | **Health Check Path** | `/api/health` |

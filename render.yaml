@@ -3,7 +3,7 @@ services:
     name: han-workspace
     runtime: node
     plan: starter # Starter (or higher) instance type required for Render Persistent Disks
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: node server/provision.mjs && npm start
     healthCheckPath: /api/health
     autoDeploy: true
