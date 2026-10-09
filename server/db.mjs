@@ -86,3 +86,24 @@ db.prepare(
   "INSERT OR IGNORE INTO users(id,name,role,active,created_at,updated_at) VALUES ('user-4','Abhilash','MEMBER',1,?,?)"
 ).run(now, now);
 
+const names = ["HARSHA", "NIHAAL", "LALITHA", "ABHILASH"];
+const envPasswords = names.map((name) => process.env[`HAN_${name}_PASSWORD`]);
+if (
+  envPasswords.every((p) => p && p.length >= 12 && p.length <= 200) &&
+  new Set(envPasswords).size === 4
+) {
+  try {
+    transaction(() => {
+      envPasswords.forEach((password, i) =>
+        db
+          .prepare("UPDATE users SET password_hash=?,updated_at=? WHERE id=?")
+          .run(hashPassword(password), new Date().toISOString(), `user-${i + 1}`),
+      );
+      db.prepare("DELETE FROM sessions").run();
+    });
+    console.log("[DB] Provisioned account password hashes from environment variables.");
+  } catch (err) {
+    console.error("[DB] Auto-provisioning error:", err.message);
+  }
+}
+
