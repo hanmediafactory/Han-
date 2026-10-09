@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { useApp } from "../context/AppContext";
 
 type Identity = { id: string; name: string; role: string; ready: boolean; demo?: boolean };
@@ -9,6 +10,7 @@ export function LoginScreen() {
   const [identities, setIdentities] = useState<Identity[]>([]);
   const [selected, setSelected] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -122,17 +124,27 @@ export function LoginScreen() {
             <label htmlFor="login-password-input" className="block text-xs font-semibold uppercase tracking-wider text-neutral-600">
               Account Password {selectedIdentity ? `for ${selectedIdentity.name}` : ""}
             </label>
-            <input
-              id="login-password-input"
-              type="password"
-              required
-              maxLength={200}
-              placeholder="Enter password..."
-              autoComplete="current-password"
-              className="han-input w-full"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative flex items-center">
+              <input
+                id="login-password-input"
+                type={showPassword ? "text" : "password"}
+                required
+                maxLength={200}
+                placeholder="Enter password..."
+                autoComplete="current-password"
+                className="han-input w-full pr-12"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-3 p-2 text-neutral-400 hover:text-neutral-900 transition-colors focus:outline-none cursor-pointer"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {error && (

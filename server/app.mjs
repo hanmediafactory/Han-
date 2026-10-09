@@ -264,9 +264,38 @@ function notify(user, table, id) {
     .all()) {
     const item = rows(table).find((r) => r.id === id);
     if (!item || !permitted(recipient, table, item)) continue;
+
+    let title = "Workspace updated";
+    let subtitle = item.title || item.name || id;
+
+    if (table === "savings_entries") {
+      title = "Savings protected 🛡️";
+    } else if (table === "salary_payments") {
+      title = "Salary recorded 💵";
+    } else if (table === "tasks") {
+      if (item.status === "COMPLETED") {
+        title = "Task completed ✅";
+        subtitle = `"${item.title}" completed`;
+      } else if (item.assignedUserId === recipient.id && user.id !== recipient.id) {
+        title = "Work assigned to you! 📋";
+        subtitle = `"${item.title}" assigned by ${user.name || "Admin"}`;
+      } else {
+        title = "Task updated 📝";
+      }
+    } else if (table === "projects") {
+      if (Array.isArray(item.memberIds) && item.memberIds.includes(recipient.id) && user.id !== recipient.id) {
+        title = "Assigned to project 🚀";
+        subtitle = `You were assigned to "${item.name}"`;
+      } else {
+        title = "Project updated 📁";
+      }
+    } else {
+      title = { expenses: "Expense updated 💳", income: "Income updated 💰", leads: "Lead updated 🎯", funnels: "Funnel updated 📊", calendar_events: "Calendar updated 📅", team_members: "Team profile updated 👥" }[table] || "Workspace updated";
+    }
+
     const data = {
-      title: table === "savings_entries" ? "Savings protected" : table === "salary_payments" ? "Salary recorded from funds" : table === "tasks" ? (item.status === "COMPLETED" ? "Task completed" : "Task updated") : ({ expenses: "Expense updated", income: "Income updated", projects: "Project updated", leads: "Lead updated", funnels: "Funnel updated", calendar_events: "Calendar updated", team_members: "Team profile updated" }[table] || "Workspace updated"),
-      subtitle: item.title || item.name || id,
+      title,
+      subtitle,
       timestamp: new Date().toISOString(),
       category,
       read: false,
@@ -284,7 +313,7 @@ function notify(user, table, id) {
     };
     const notificationId = randomUUID();
     store("notifications", notificationId, data, user);
-    if (pushEnabled) db.prepare("INSERT INTO push_outbox (id,user_id,payload,next_attempt,created_at) VALUES (?,?,?,?,?)").run(notificationId, recipient.id, JSON.stringify({ id: notificationId, title: "HAN workspace update", body: "Open HAN to view your update.", deepLink: `/#${data.targetScreen}` }), Date.now(), Date.now());
+    if (pushEnabled) db.prepare("INSERT INTO push_outbox (id,user_id,payload,next_attempt,created_at) VALUES (?,?,?,?,?)").run(notificationId, recipient.id, JSON.stringify({ id: notificationId, title: data.title, body: data.subtitle, deepLink: `/#${data.targetScreen}` }), Date.now(), Date.now());
   }
 }
 function healthResponse(res, detailed = false) {
