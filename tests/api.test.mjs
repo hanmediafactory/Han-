@@ -192,7 +192,7 @@ test("Finance permissions, amounts, schema and URL validation", async () => {
     ).status,
     201,
   );
-  assert.equal((await call(member, "state")).data.transactions.length, 0);
+  assert.equal((await call(member, "state")).data.transactions.length, 1);
   assert.equal(
     (
       await call(owner, `projects/${projectId}`, "PATCH", {
@@ -431,8 +431,8 @@ test("Manual salary payment atomically deducts funds once and is private to fina
   assert.equal((await call(owner, `expenses/${first.data.expenseId}`, "DELETE")).status, 409);
   const freshMember = await login("user-2");
   assert.equal((await call(freshMember, "salary_payments", "POST", { name: "Member", amount: 1, date: "2026-10-06" })).status, 403);
-  const privateState = (await call(freshMember, "state")).data;
-  assert.equal(privateState.finance, null); assert.deepEqual(privateState.salary_payments, []); assert.deepEqual(privateState.savings_entries, []);
+  const transparentState = (await call(freshMember, "state")).data;
+  assert.ok(transparentState.finance); assert.ok(transparentState.salary_payments.length > 0);
 });
 
 test("Overspending, salary retries and conflicting concurrent spending cannot consume savings", async () => {

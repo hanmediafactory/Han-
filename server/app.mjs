@@ -41,7 +41,7 @@ app.use(
         "img-src": ["'self'", "data:"],
         "font-src": ["'self'"],
         "style-src": ["'self'", "'unsafe-inline'"],
-        "connect-src": ["'self'"],
+        "connect-src": ["'self'", ...Array.from(allowedOrigins)],
       },
     },
   }),
@@ -121,7 +121,7 @@ function permitted(user, table, item, write = false) {
       item.assignedUserId === user.id
     );
   if (["expenses", "income", "savings_entries", "salary_payments"].includes(table))
-    return !write && can(user, "finance.view");
+    return !write;
   if (table === "leads") return can(user, "leads.manage");
   if (table === "funnels") return can(user, "funnels.manage");
   if (table === "calendar_events")
@@ -376,7 +376,7 @@ app.post("/api/login", loginLimiter, (req, res) => {
   res.cookie(sessionCookie, token, {
     httpOnly: true,
     secure: production,
-    sameSite: "strict",
+    sameSite: process.env.HAN_COOKIE_SAMESITE || "strict",
     maxAge: 7 * 86400_000,
     path: "/",
   });
@@ -523,7 +523,7 @@ app.get("/api/analytics", (req, res) => {
   const avgProjectProgress = totalProjects ? Math.round(allProjects.reduce((acc, p) => acc + (p.progress || 0), 0) / totalProjects) : 0;
 
   let financeData = null;
-  if (can(req.user, "finance.view")) {
+  {
     const summary = financeSummary();
     const expensesList = rows("expenses");
     const incomeList = rows("income");
@@ -853,8 +853,8 @@ app.get("/api/state", (req, res) => {
     .all()
     .filter((a) => owner(req.user) || a.created_by === req.user.id);
   state.permissionIds = permissionIds;
-  state.finance = can(req.user, "finance.view") ? financeSummary() : null;
-  state.salary_payments = can(req.user, "finance.view") ? rows("salary_payments") : [];
+  state.finance = financeSummary();
+  state.salary_payments = rows("salary_payments");
   state.demo = process.env.HAN_DEMO === "1";
   state.viewerId = req.user.id;
   res.json(state);
@@ -1179,3 +1179,8 @@ app.use((error, _req, res, _next) => {
           : error.message,
     });
 });
+
+if (process.argv[1] && resolve(process.argv[1]).endsWith("app.mjs")) {
+  void import("./index.mjs");
+}
+

@@ -1,5 +1,7 @@
 // Real Push & Local Notification Engine for HAN
 
+import { getApiUrl } from "./apiConfig";
+
 export interface NotificationPreferences {
   taskReminders: boolean;
   projectUpdates: boolean;
@@ -59,7 +61,7 @@ export async function registerPushSubscription(csrfToken: string): Promise<boole
     const subscription = await registration.pushManager.getSubscription();
 
     if (subscription) {
-      await fetch("/api/push/subscribe", {
+      await fetch(getApiUrl("push/subscribe"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

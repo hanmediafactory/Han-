@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: han-workspace
+    runtime: node
+    plan: starter # Starter (or higher) instance type required for Render Persistent Disks
+    buildCommand: npm install && npm run build
+    startCommand: node server/provision.mjs && npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    disk:
+      name: han-sqlite-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "24.18.0"
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "1"
+      - key: HAN_DB_PATH
+        value: /var/data/han.sqlite
+      - key: HAN_DOMAIN
+        sync: false
+      - key: HAN_ALLOWED_ORIGINS
+        sync: false
+      - key: HAN_HARSHA_PASSWORD
+        sync: false
+      - key: HAN_NIHAAL_PASSWORD
+        sync: false
+      - key: HAN_LALITHA_PASSWORD
+        sync: false
+      - key: HAN_ABHILASH_PASSWORD
+        sync: false

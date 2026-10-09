@@ -67,6 +67,7 @@ export interface TeamMember {
   name: string;
   role: string;
   avatarUrl?: string;
+  salary?: number;
   sharePercentage?: string;
   initials: string;
 }

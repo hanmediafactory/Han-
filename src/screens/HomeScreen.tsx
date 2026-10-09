@@ -28,7 +28,6 @@ export const HomeScreen: React.FC = () => {
     unreadNotificationCount,
     state,
     user,
-    can,
     showToast,
   } = useApp();
 
@@ -127,7 +126,7 @@ export const HomeScreen: React.FC = () => {
         )}
 
         {/* DIRECT NEXT ACTION FOCUS CARD */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-3 animate-fade-in-up stagger-1">
           <div className="flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-wider">
             <span>Primary Focus Action</span>
             <span className="text-black font-mono">{dateLabel(today())}</span>
@@ -253,7 +252,7 @@ export const HomeScreen: React.FC = () => {
 
         }
         {/* MONEY CARD */}
-        {totalTasksTodayCount > 0 && can("finance.view") && (
+        {totalTasksTodayCount > 0 && (
           <MoneyCard amount={totalFunds} onClick={() => navigateTo("money")} />
         )}
 

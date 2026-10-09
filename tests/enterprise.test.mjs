@@ -170,7 +170,7 @@ test("Member search, analytics, exports and integrations preserve workspace priv
   const search = await call(member, "search?q=Enterprise");
   assert.equal(search.data.total, 0);
   const analytics = await call(member, "analytics");
-  assert.equal(analytics.data.finance, null);
+  assert.ok(analytics.data.finance);
   assert.equal((await call(member, "reports/csv?table=income")).data, "No matching records found");
   assert.equal((await call(member, "health/details")).status, 403);
   assert.equal((await call(member, "webhooks")).status, 403);

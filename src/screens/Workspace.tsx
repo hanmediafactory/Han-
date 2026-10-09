@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { useApp } from "../context/AppContext";
 import { today, dateLabel } from "../context/dates";
+import { getApiUrl } from "../utils/apiConfig";
 import type { RecordData, Account, State } from "../context/AppContext";
 import { ScreenHeader } from "../components/ui/ScreenHeader";
 import { BottomNavigation } from "../components/ui/BottomNavigation";
@@ -22,6 +23,7 @@ import {
   Check,
   ArrowRight,
   Download,
+  Wallet,
 } from "lucide-react";
 
 type Field = {
@@ -110,9 +112,11 @@ const fields: Record<string, Field[]> = {
   team_members: [
     { key: "name", label: "Name", required: true },
     { key: "role", label: "Role", required: true },
+    { key: "salary", label: "Assigned Monthly Salary (₹)", type: "number" },
     { key: "sharePercentage", label: "Share / commission" },
     { key: "initials", label: "Initials", required: true },
   ],
+
   calendar_events: [
     { key: "title", label: "Event title", required: true },
     { key: "date", label: "Date", type: "date", required: true },
@@ -225,16 +229,19 @@ function defaults(table: string, userId: string) {
 function Editor({
   table,
   item,
+  initialValues,
   onClose,
 }: {
   table: string;
   item?: RecordData;
+  initialValues?: Record<string, unknown>;
   onClose: () => void;
 }) {
   const app = useApp();
   const [value, setValue] = useState<Record<string, unknown>>({
     ...defaults(table, app.user!.id),
     ...(table === "tasks" && app.activeProjectId ? { projectId: app.activeProjectId } : {}),
+    ...initialValues,
     ...item,
   });
   const set = (key: string, next: unknown) =>
@@ -524,6 +531,7 @@ export function Workspace() {
   const [editing, setEditing] = useState<{
       table: string;
       item?: RecordData;
+      initialValues?: Record<string, unknown>;
     } | null>(app.createOnOpen ? { table: app.currentScreen === "tasks" ? "tasks" : "projects" } : null),
     [deleting, setDeleting] = useState<{
       table: string;
@@ -580,7 +588,7 @@ export function Workspace() {
               className="han-btn-secondary flex items-center justify-center gap-2"
               onClick={async () => {
                 try {
-                  const res = await fetch("/api/backup", { credentials: "include" });
+                  const res = await fetch(getApiUrl("backup"), { credentials: "include" });
                   if (!res.ok) throw new Error("Export failed");
                   const blob = await res.blob();
                   const url = window.URL.createObjectURL(blob);
@@ -674,14 +682,7 @@ export function Workspace() {
     (table === "leads" && app.can("leads.manage")) ||
     (table === "funnels" && app.can("funnels.manage")) ||
     (table === "calendar_events" && app.can("calendar.manage")));
-  if (table === "expenses" && !app.can("finance.view"))
-    return (
-      <Page title="Money">
-        <div className="han-card">
-          Financial access is restricted to permitted accounts.
-        </div>
-      </Page>
-    );
+
   if (table === "funnels" && !write)
     return (
       <Page title="Growth">
@@ -972,10 +973,25 @@ export function Workspace() {
                   </p>
                 ) : null}
                 {table === "team_members" && (
-                  <p className="text-sm mt-2">
-                    {String(item.role)}{" "}
-                    {item.sharePercentage ? `· ${item.sharePercentage}` : ""}
-                  </p>
+                  <div className="space-y-2 mt-2 text-sm">
+                    <p className="text-neutral-700">
+                      Role: <span className="font-semibold">{String(item.role)}</span>
+                      {item.sharePercentage ? ` · Share: ${item.sharePercentage}` : ""}
+                    </p>
+                    <p className="text-xs text-emerald-800 font-semibold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg inline-block">
+                      Assigned Monthly Salary: {item.salary ? `₹${Number(item.salary).toLocaleString("en-IN")}` : "Not assigned"}
+                    </p>
+                    {isOwner && (
+                      <div className="pt-1">
+                        <button
+                          className="action text-xs font-semibold text-black hover:underline flex items-center gap-1.5"
+                          onClick={() => setEditing({ table: "salary_payments", initialValues: { name: String(item.name), amount: item.salary || "", date: today() } })}
+                        >
+                          <Wallet size={14} /> Allot / Record Salary Payment
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
                 {table === "notifications" && (
                   <>

@@ -4,8 +4,9 @@ import { processWebhookOutbox } from "./webhooks.mjs";
 import { db } from "./db.mjs";
 import "./seed.mjs";
 const port = Number(process.env.PORT || 3001);
-const server = app.listen(port, process.env.HOST || "127.0.0.1", () =>
-  console.log(`HAN listening on port ${port}`),
+const host = process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1");
+const server = app.listen(port, host, () =>
+  console.log(`HAN listening on port ${port} on ${host}`),
 );
 const worker = setInterval(() => { try { scheduleReminders(); void processPushOutbox().catch(() => console.error(JSON.stringify({ event: "push_worker_failed" }))); void processWebhookOutbox().catch(() => console.error(JSON.stringify({ event: "webhook_worker_failed" }))); } catch { console.error(JSON.stringify({ event: "reminder_worker_failed" })); } }, 30_000);
 worker.unref();

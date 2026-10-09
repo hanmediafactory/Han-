@@ -31,6 +31,7 @@ import {
 } from "../utils/offlineStore";
 import { analytics } from "../utils/analytics";
 import { today } from "./dates";
+import { getApiUrl } from "../utils/apiConfig";
 import { Capacitor } from "@capacitor/core";
 import { App as NativeApp } from "@capacitor/app";
 import { PushNotifications } from "@capacitor/push-notifications";
@@ -125,7 +126,7 @@ function useController() {
   const request = useCallback(
     async (path: string, method = "GET", body?: unknown, mutationId?: string, version?: string) => {
       try {
-        const response = await fetch(`/api/${path}`, {
+        const response = await fetch(getApiUrl(path), {
           method,
           credentials: "include",
           headers: {
@@ -314,7 +315,7 @@ function useController() {
 
   useEffect(() => {
     if (!user || isOffline) return;
-    const events = new EventSource("/api/events");
+    const events = new EventSource(getApiUrl("events"));
     let debounce: ReturnType<typeof setTimeout>;
     events.onopen = () => setLiveConnected(true);
     events.onerror = () => setLiveConnected(false);
