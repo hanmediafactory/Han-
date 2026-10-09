@@ -7,8 +7,23 @@ import {
   timingSafeEqual,
   createHash,
 } from "node:crypto";
-export const dbPath = resolve(process.env.HAN_DB_PATH || "data/han.sqlite");
-mkdirSync(dirname(dbPath), { recursive: true });
+function getDbPath() {
+  const target = process.env.HAN_DB_PATH || "data/han.sqlite";
+  const resolved = resolve(target);
+  try {
+    mkdirSync(dirname(resolved), { recursive: true });
+    return resolved;
+  } catch (error) {
+    if (error?.code === "EACCES" || error?.code === "EPERM") {
+      console.warn(`[DB] Directory ${dirname(resolved)} is not writable (${error.message}). Falling back to local data/han.sqlite.`);
+      const fallback = resolve("data/han.sqlite");
+      mkdirSync(dirname(fallback), { recursive: true });
+      return fallback;
+    }
+    throw error;
+  }
+}
+export const dbPath = getDbPath();
 export const db = new DatabaseSync(dbPath);
 db.exec("PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;");
 db.exec("BEGIN IMMEDIATE");
