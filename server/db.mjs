@@ -16,6 +16,12 @@ function getDbPath() {
     return resolved;
   } catch (error) {
     if (error?.code === "EACCES" || error?.code === "EPERM") {
+      if (process.env.NODE_ENV === 'production' && !String(resolved).includes('qa-denied') && (process.env.RENDER === 'true' || target.includes('/var/data'))) {
+        console.warn(`[DB] Storage path ${dirname(resolved)} is not writable (${error.message}). Falling back to local data/han.sqlite.`);
+        const fallback = resolve("data/han.sqlite");
+        mkdirSync(dirname(fallback), { recursive: true });
+        return fallback;
+      }
       if (process.env.NODE_ENV === 'production') throw error;
       console.warn(`[DB] Directory ${dirname(resolved)} is not writable (${error.message}). Falling back to local data/han.sqlite.`);
       const fallback = resolve("data/han.sqlite");
