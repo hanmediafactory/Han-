@@ -840,10 +840,15 @@ export function Workspace() {
   if (app.currentScreen === "profile")
     return (
       <Page title="You">
-        <div className="han-card dark">
-          <p className="han-tagline">Signed in</p>
-          <h1 className="font-serif text-4xl mt-3">{app.user?.name}</h1>
-          <p className="text-xs mt-2 tracking-widest">{["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "") ? "FOUNDER" : app.user?.role}</p>
+        <div className="han-card dark flex items-center justify-between">
+          <div>
+            <p className="han-tagline">Signed in</p>
+            <h1 className="font-serif text-3xl mt-2">{app.user?.name}</h1>
+            <p className="text-xs mt-1.5 tracking-widest">{["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "") ? "FOUNDER" : app.user?.role}</p>
+          </div>
+          <div className="w-16 h-16 bg-black p-2 rounded-2xl border border-neutral-700 shadow-xl flex items-center justify-center shrink-0">
+            <img src="/logo.png" alt="HAN Media Factory" className="w-full h-full object-contain" />
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="han-card">{app.projects.length} projects</div>
@@ -863,6 +868,12 @@ export function Workspace() {
           onClick={() => app.navigateTo("calendar")}
         >
           Calendar <ArrowRight size={16} />
+        </button>
+        <button
+          className="han-btn-secondary"
+          onClick={() => window.dispatchEvent(new CustomEvent("han:play-intro"))}
+        >
+          Watch HAN Entry Film <ArrowRight size={16} />
         </button>
         {(isOwner || app.can("finance.view") || app.can("projects.manage") || app.can("tasks.manage")) && (
           <AuditLogStream logs={app.state.activity_logs as any[]} />

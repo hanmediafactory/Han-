@@ -29,9 +29,15 @@ export function LoginScreen() {
 
   return (
     <main className="login-screen max-w-md mx-auto min-h-screen px-6 py-12 flex flex-col justify-between">
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-3 flex flex-col items-center">
+        <div className="bg-black p-3.5 rounded-3xl border border-neutral-800 shadow-2xl inline-flex items-center justify-center">
+          <img
+            src="/logo.png"
+            alt="HAN Media Factory"
+            className="h-16 w-auto object-contain select-none"
+          />
+        </div>
         <p className="han-tagline text-neutral-400">Your execution command center</p>
-        <h1 className="font-serif text-6xl tracking-wider text-black">HAN</h1>
       </div>
 
       <div className="space-y-6 my-auto">

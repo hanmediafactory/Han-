@@ -10,7 +10,6 @@ import {
   Target,
   Search,
   X,
-  Sparkles,
   ChevronUp,
 } from "lucide-react";
 
@@ -49,7 +48,8 @@ export const QuickActionHub: React.FC = () => {
         <div ref={menu} role="dialog" aria-modal="true" aria-label="Quick actions" className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-sm z-[9000] bg-[#000000] border border-neutral-800 text-white p-4 rounded-3xl shadow-2xl space-y-3 animate-slide-up">
           <div className="flex items-center justify-between pb-2 border-b border-neutral-800">
             <span className="text-xs font-mono font-bold tracking-widest uppercase text-neutral-300 flex items-center gap-1.5">
-              <Sparkles size={13} className="text-white" /> Quick Execution Hub
+              <img src="/logo.png" alt="HAN" className="h-4 w-auto object-contain" />
+              Quick Execution Hub
             </span>
             <button
               aria-label="Close quick actions"

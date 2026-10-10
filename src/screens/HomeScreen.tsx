@@ -74,13 +74,22 @@ export const HomeScreen: React.FC = () => {
       <div className="flex-1 overflow-y-auto px-5 pt-5 pb-6 space-y-4 no-scrollbar">
         {/* Top Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <span className="font-serif text-xs font-semibold tracking-widest text-neutral-400 uppercase flex items-center gap-1">
-              <Sparkles size={11} className="text-black" /> HAN EXECUTIVE CENTER
-            </span>
-            <h1 className="font-serif text-2xl font-bold text-black tracking-tight leading-snug mt-0.5">
-              {userProfile.greeting} {userProfile.name}.
-            </h1>
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 bg-black p-1.5 rounded-2xl border border-neutral-800 shadow-md flex items-center justify-center shrink-0">
+              <img
+                src="/logo.png"
+                alt="HAN Media Factory"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div>
+              <span className="font-serif text-[11px] font-semibold tracking-widest text-neutral-400 uppercase flex items-center gap-1">
+                <Sparkles size={11} className="text-black" /> HAN EXECUTIVE CENTER
+              </span>
+              <h1 className="font-serif text-2xl font-bold text-black tracking-tight leading-snug mt-0.5">
+                {userProfile.greeting} {userProfile.name}.
+              </h1>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">

@@ -40,10 +40,12 @@ export function WelcomeSplash({ onComplete }: { onComplete?: () => void }) {
       <div className="relative w-full max-w-sm mx-auto text-center space-y-6">
         {/* Glowing Brand Icon */}
         <div className="relative inline-flex items-center justify-center">
-          <div className="w-20 h-20 rounded-3xl bg-neutral-900 border border-neutral-700 shadow-2xl flex items-center justify-center transform transition-all duration-500 hover:scale-105">
-            <span className="font-serif text-4xl font-bold tracking-widest text-white drop-shadow-md">
-              HAN
-            </span>
+          <div className="w-24 h-24 rounded-3xl bg-black border border-neutral-700 shadow-2xl flex items-center justify-center p-2.5 transform transition-all duration-500 hover:scale-105 overflow-hidden">
+            <img
+              src="/logo.png"
+              alt="HAN Media Factory"
+              className="w-full h-full object-contain drop-shadow-lg"
+            />
           </div>
           <div className="absolute -top-1 -right-1 p-1.5 bg-white text-black rounded-full shadow-lg animate-bounce">
             <Sparkles size={14} className="fill-black" />

@@ -7,23 +7,41 @@ import { Toast } from "./components/ui/Toast";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { WorkspaceStatus } from "./components/ui/WorkspaceStatus";
 import { WelcomeSplash } from "./components/ui/WelcomeSplash";
+import { IntroVideoSplash } from "./components/ui/IntroVideoSplash";
 import { QuickActionHub } from "./components/ui/QuickActionHub";
 import { Bell, X, ArrowRight } from "lucide-react";
 
 function Shell() {
   const app = useApp();
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof navigator !== "undefined" && navigator.webdriver) return false;
+    if (
+      typeof window !== "undefined" &&
+      (window.location.search.includes("skip-intro") ||
+        window.location.search.includes("e2e"))
+    ) {
+      return false;
+    }
+    return true;
+  });
   const [showWelcome, setShowWelcome] = useState(false);
   const welcomeUserId = app.user?.id;
 
   useEffect(() => {
-    if (app.user && !app.loading) {
+    const replayHandler = () => setShowIntro(true);
+    window.addEventListener("han:play-intro", replayHandler);
+    return () => window.removeEventListener("han:play-intro", replayHandler);
+  }, []);
+
+  useEffect(() => {
+    if (app.user && !app.loading && !showIntro) {
       const shownKey = `han_welcome_${app.user.id}`;
       if (!sessionStorage.getItem(shownKey)) {
         const id = setTimeout(() => setShowWelcome(true), 0);
         return () => clearTimeout(id);
       }
     }
-  }, [app.user, app.loading]);
+  }, [app.user, app.loading, showIntro]);
 
   const handleWelcomeComplete = useCallback(() => {
     if (welcomeUserId) {
@@ -34,13 +52,20 @@ function Shell() {
 
   return (
     <div className="han-app min-h-screen bg-[#FAFAFA] text-[#0F0F0F] flex flex-col justify-between">
+      {showIntro && <IntroVideoSplash onComplete={() => setShowIntro(false)} />}
       {showWelcome && app.user && <WelcomeSplash onComplete={handleWelcomeComplete} />}
       {app.user && !app.loading && <WorkspaceStatus />}
       {app.user && !app.loading && <QuickActionHub />}
       {app.state.demo && app.user && <div className="demo-banner">Demo workspace · separate test data</div>}
       {app.loading ? (
         <div className="login-screen flex flex-col items-center justify-center min-h-screen">
-          <h1 className="font-serif text-5xl tracking-widest mb-3">HAN</h1>
+          <div className="bg-black p-4 rounded-3xl border border-neutral-800 shadow-2xl mb-4">
+            <img
+              src="/logo.png"
+              alt="HAN Media Factory"
+              className="h-20 w-auto object-contain animate-pulse"
+            />
+          </div>
           <p role="status" className="text-sm text-neutral-400 font-mono animate-pulse">
             Opening your workspace…
           </p>

@@ -43,7 +43,8 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({ children }) => {
     <div className="app-simulator-container select-none">
       {/* Top Toolbar for Testing Devices & Jumping Screens */}
       <div className="simulator-toolbar">
-        <div className="simulator-title">
+        <div className="simulator-title flex items-center gap-1.5">
+          <img src="/logo.png" alt="HAN" className="h-4 w-auto object-contain" />
           <span>HAN</span> MOBILE OS
         </div>
 

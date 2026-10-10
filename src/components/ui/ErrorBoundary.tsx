@@ -34,8 +34,14 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="login-screen p-6 text-center">
-          <div className="max-w-md mx-auto space-y-6">
-            <h1 className="font-serif text-4xl text-black">HAN</h1>
+          <div className="max-w-md mx-auto space-y-6 flex flex-col items-center">
+            <div className="bg-black p-3 rounded-2xl border border-neutral-800 shadow-xl inline-flex items-center justify-center">
+              <img
+                src="/logo.png"
+                alt="HAN Media Factory"
+                className="h-12 w-auto object-contain"
+              />
+            </div>
             <div className="bg-neutral-100 border border-neutral-300 rounded-xl p-6 text-left">
               <h2 className="font-medium text-lg text-black mb-2">Something went wrong</h2>
               <p className="text-sm text-neutral-600 mb-4">

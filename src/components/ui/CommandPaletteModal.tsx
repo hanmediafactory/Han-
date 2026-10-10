@@ -369,7 +369,10 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
 
         {/* Modal Footer */}
         <div className="p-3 bg-[#0A0A0A] border-t border-neutral-800 text-[11px] font-mono text-neutral-400 flex items-center justify-between">
-          <span>HAN Command Hub v2.0</span>
+          <span className="flex items-center gap-1.5">
+            <img src="/logo.png" alt="HAN" className="h-3.5 w-auto object-contain" />
+            HAN Command Hub v2.0
+          </span>
           <button
             aria-label="Close command search"
             onClick={onClose}

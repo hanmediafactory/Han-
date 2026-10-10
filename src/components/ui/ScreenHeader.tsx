@@ -56,18 +56,23 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           </button>
         )}
         {title && (
-          <div>
-            <h2 className="font-serif text-2xl font-semibold tracking-tight leading-none">
-              {title}
-            </h2>
-            {subtitle && (
-              <p
-                className="text-xs mt-1 font-sans font-medium"
-                style={{ color: dark ? '#A3A3A3' : '#737373' }}
-              >
-                {subtitle}
-              </p>
-            )}
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-black p-1 rounded-lg border border-neutral-800 shadow-sm flex items-center justify-center shrink-0">
+              <img src="/logo.png" alt="" aria-hidden="true" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h2 className="font-serif text-2xl font-semibold tracking-tight leading-none">
+                {title}
+              </h2>
+              {subtitle && (
+                <p
+                  className="text-xs mt-1 font-sans font-medium"
+                  style={{ color: dark ? '#A3A3A3' : '#737373' }}
+                >
+                  {subtitle}
+                </p>
+              )}
+            </div>
           </div>
         )}
       </div>

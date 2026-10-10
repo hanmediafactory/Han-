@@ -5,6 +5,7 @@ interface HANLogoProps {
   showTagline?: boolean;
   light?: boolean;
   className?: string;
+  withContainer?: boolean;
 }
 
 export const HANLogo: React.FC<HANLogoProps> = ({
@@ -12,33 +13,33 @@ export const HANLogo: React.FC<HANLogoProps> = ({
   showTagline = false,
   light = false,
   className = '',
+  withContainer = false,
 }) => {
-  const fontSizes = {
-    sm: '1.25rem',
-    md: '1.75rem',
-    lg: '2.5rem',
-    xl: '4.5rem',
+  const heightClasses = {
+    sm: 'h-7',
+    md: 'h-11',
+    lg: 'h-16',
+    xl: 'h-24',
   };
 
-  const letterSpacing = {
-    sm: '0.12em',
-    md: '0.15em',
-    lg: '0.18em',
-    xl: '0.25em',
-  };
+  const imgElement = (
+    <img
+      src="/logo.png"
+      alt="HAN Media Factory"
+      className={`${heightClasses[size]} w-auto object-contain select-none`}
+      loading="eager"
+    />
+  );
 
   return (
     <div className={`flex flex-col items-center justify-center text-center ${className}`}>
-      <h1
-        className="font-serif font-semibold leading-none tracking-widest"
-        style={{
-          fontSize: fontSizes[size],
-          letterSpacing: letterSpacing[size],
-          color: light ? '#FFFFFF' : '#000000',
-        }}
-      >
-        HAN
-      </h1>
+      {withContainer ? (
+        <div className="bg-black p-2.5 rounded-2xl border border-neutral-800 shadow-xl inline-flex items-center justify-center">
+          {imgElement}
+        </div>
+      ) : (
+        imgElement
+      )}
       {showTagline && (
         <p
           className="han-tagline mt-2 text-xs font-semibold tracking-widest uppercase opacity-80"
@@ -53,3 +54,4 @@ export const HANLogo: React.FC<HANLogoProps> = ({
     </div>
   );
 };
+
