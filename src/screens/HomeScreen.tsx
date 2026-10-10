@@ -69,34 +69,34 @@ export const HomeScreen: React.FC = () => {
   const overdueCount = overdueProjects.length > 0 ? overdueProjects.length : overdueTasks.length;
 
   return (
-    <div className="w-full h-full bg-[#000000] flex flex-col justify-between select-none">
+    <div className="home-page w-full h-full bg-page flex flex-col justify-between select-none">
       {/* Scrollable Main Area */}
-      <div className="flex-1 overflow-y-auto px-5 pt-12 pb-6 space-y-5 no-scrollbar">
+      <div className="home-content flex-1 overflow-y-auto px-5 pt-12 pb-6 space-y-5 no-scrollbar">
         {/* Top Header */}
-        <div className="pb-1">
+        <div className="home-introduction pb-1">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 bg-[#111113] p-1.5 rounded-lg border border-neutral-800 shadow-md flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 bg-surface-elevated p-1.5 rounded-lg border border-border-subtle shadow-md flex items-center justify-center shrink-0">
                 <img
                   src="/logo-clean.png"
                   alt="HAN"
                   className="w-full h-auto object-contain"
                 />
               </div>
-              <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-neutral-400 uppercase">
-                HAN EXECUTIVE CENTER
+              <span className="home-brand text-[10px] font-mono font-bold tracking-[0.2em] text-text-secondary uppercase">
+                HAN MEDIA FACTORY
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => navigateTo("notifications")}
-                className="w-9 h-9 rounded-full bg-[#111113] border border-neutral-800 flex items-center justify-center relative active:scale-95 transition-transform cursor-pointer"
+                className="w-9 h-9 rounded-full bg-surface-elevated border border-border-subtle flex items-center justify-center relative active:scale-95 transition-transform cursor-pointer"
                 aria-label="Notifications"
               >
-                <Bell size={17} className="text-neutral-400" />
+                <Bell size={17} className="text-text-secondary" />
                 {unreadNotificationCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-white ring-2 ring-black" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-page ring-2 ring-black" />
                 )}
               </button>
             </div>
@@ -105,24 +105,24 @@ export const HomeScreen: React.FC = () => {
           {/* Greeting Row */}
           <div className="flex items-start justify-between mt-2">
             <div>
-              <p className="text-sm font-sans text-neutral-400">{greeting}</p>
+              <p className="text-sm font-sans text-text-secondary">{greeting}</p>
               <div className="flex items-center gap-2.5 mt-0.5">
-                <h1 className="font-serif text-3xl font-bold text-white tracking-tight leading-tight">
+                <h1 className="home-title font-serif text-3xl font-bold text-text-primary tracking-tight leading-tight">
                   <span className="sr-only">Welcome back, {userProfile.name}.</span>
                   <span aria-hidden="true">{userProfile.name}.</span>
                 </h1>
-                <span className="text-[10px] font-mono font-semibold tracking-wider text-neutral-300 uppercase px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800">
+                <span className="text-[10px] font-mono font-semibold tracking-wider text-text-primary uppercase px-2 py-0.5 rounded bg-surface border border-border-subtle">
                   {["user-1", "user-2", "user-3", "user-4"].includes(user?.id || "") ? "FOUNDER" : user?.role || "MEMBER"}
                 </span>
               </div>
             </div>
 
             {/* Date Box */}
-            <div className="px-3 py-2 rounded-xl bg-[#111113] border border-neutral-800 text-right shrink-0">
-              <p className="text-[11px] font-mono font-bold tracking-wider text-neutral-400 uppercase leading-none">
+            <div className="home-date px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-right shrink-0">
+              <p className="text-[11px] font-mono font-bold tracking-wider text-text-secondary uppercase leading-none">
                 {dayName}
               </p>
-              <p className="text-[10px] font-mono text-neutral-500 mt-1 leading-none">
+              <p className="text-[10px] font-mono text-text-muted mt-1 leading-none">
                 {dateNum} {monthName} {year}
               </p>
             </div>
@@ -131,11 +131,11 @@ export const HomeScreen: React.FC = () => {
 
         {/* Creation Shortcuts Row */}
         {(can("tasks.manage") || can("projects.manage") || can("finance.manage") || can("leads.manage")) && (
-          <div className="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
+          <div className="home-shortcuts flex gap-2 overflow-x-auto no-scrollbar py-0.5">
             {can("tasks.manage") && (
               <button
                 onClick={() => navigateTo("tasks", "All", true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181C] border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-overlay border border-border-subtle hover:border-border-strong text-text-primary hover:text-text-primary text-xs font-semibold shrink-0 cursor-pointer transition-colors"
               >
                 <Plus size={13} /> + Task
               </button>
@@ -143,7 +143,7 @@ export const HomeScreen: React.FC = () => {
             {can("projects.manage") && (
               <button
                 onClick={() => navigateTo("projects", "Active", true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181C] border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-overlay border border-border-subtle hover:border-border-strong text-text-primary hover:text-text-primary text-xs font-semibold shrink-0 cursor-pointer transition-colors"
               >
                 <Plus size={13} /> + Project
               </button>
@@ -151,7 +151,7 @@ export const HomeScreen: React.FC = () => {
             {can("finance.manage") && (
               <button
                 onClick={() => navigateTo("money", "All", true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181C] border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-overlay border border-border-subtle hover:border-border-strong text-text-primary hover:text-text-primary text-xs font-semibold shrink-0 cursor-pointer transition-colors"
               >
                 <Plus size={13} /> Log Money
               </button>
@@ -159,7 +159,7 @@ export const HomeScreen: React.FC = () => {
             {can("leads.manage") && (
               <button
                 onClick={() => navigateTo("leads", "All", true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181C] border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-overlay border border-border-subtle hover:border-border-strong text-text-primary hover:text-text-primary text-xs font-semibold shrink-0 cursor-pointer transition-colors"
               >
                 <Plus size={13} /> Add Lead
               </button>
@@ -167,25 +167,28 @@ export const HomeScreen: React.FC = () => {
           </div>
         )}
 
+        <section className="workspace-summary" aria-label="Workspace at a glance">
+          <div><span>Active projects</span><strong>{activeProjects.length}</strong><small>In motion</small></div>
+          <div><span>Open tasks</span><strong>{tasks.filter(task => !task.completed && task.status !== "CANCELLED").length}</strong><small>To move forward</small></div>
+          <div><span>Done today</span><strong>{todayTasks.filter(task => task.completed).length}</strong><small>Of {todayTasks.length} scheduled</small></div>
+        </section>
+
         {/* Overdue Banner */}
         {overdueCount > 0 && (
           <div
-            className="w-full relative overflow-hidden bg-gradient-to-r from-[#121215] to-[#18181D] text-white p-5 rounded-2xl border border-neutral-800/80 flex items-center justify-between shadow-xl"
-            style={{
-              backgroundImage: "radial-gradient(ellipse at 80% 50%, rgba(255,255,255,0.04) 0%, transparent 60%)",
-            }}
+            className="overdue-summary w-full relative overflow-hidden bg-surface-elevated text-text-primary p-5 rounded-2xl border border-border-subtle flex items-center justify-between shadow-sm"
           >
             <div>
-              <p className="font-serif text-3xl font-bold text-white tracking-tight">
+              <p className="font-serif text-3xl font-bold text-text-primary tracking-tight">
                 {overdueCount}
               </p>
-              <p className="text-xs text-neutral-400 mt-1 font-sans">
+              <p className="text-xs text-text-secondary mt-1 font-sans">
                 {overdueProjects.length > 0 ? "Overdue Projects" : "Overdue Tasks"}
               </p>
             </div>
             <button
               onClick={() => navigateTo(overdueProjects.length > 0 ? "projects" : "tasks", "Overdue")}
-              className="px-3.5 py-2 rounded-xl bg-[#1C1C21] hover:bg-[#25252B] border border-neutral-700/80 text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer transition-all shrink-0 active:scale-98 group"
+              className="px-3.5 py-2 rounded-xl bg-surface hover:bg-surface-overlay border border-border-strong/80 text-xs font-semibold text-text-primary flex items-center gap-1.5 cursor-pointer transition-all shrink-0 active:scale-98 group"
             >
               <span>Review</span>
               <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
@@ -194,12 +197,12 @@ export const HomeScreen: React.FC = () => {
         )}
 
         {/* Today's Focus */}
-        <div>
+        <div className="home-focus">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-white tracking-tight">Today's Focus</h3>
+            <h3 className="text-sm font-bold text-text-primary tracking-tight">Today's Focus</h3>
             <button
               onClick={() => navigateTo("tasks")}
-              className="text-[11px] font-sans font-medium text-neutral-500 hover:text-white transition-colors cursor-pointer"
+              className="text-[11px] font-sans font-medium text-text-muted hover:text-text-primary transition-colors cursor-pointer"
             >
               View all
             </button>
@@ -212,21 +215,21 @@ export const HomeScreen: React.FC = () => {
               return (
                 <div
                   key={task.id}
-                  className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-[#111113] border border-neutral-800/60 transition-colors"
+                  className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-surface-elevated border border-border-subtle/60 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <button
                       onClick={() => permittedToggle(task.id)}
-                      className="shrink-0 cursor-pointer text-neutral-600 hover:text-white transition-colors"
+                      className="shrink-0 cursor-pointer text-text-secondary hover:text-text-primary transition-colors"
                       aria-label={`Toggle ${task.title}`}
                     >
                       {task.completed ? (
-                        <CheckCircle2 size={19} className="text-white" />
+                        <CheckCircle2 size={19} className="text-text-primary" />
                       ) : (
-                        <Circle size={19} className="text-neutral-500" />
+                        <Circle size={19} className="text-text-muted" />
                       )}
                     </button>
-                    <p className={`text-xs font-medium truncate ${task.completed ? "line-through text-neutral-500" : "text-neutral-200"}`}>
+                    <p className={`text-xs font-medium truncate ${task.completed ? "line-through text-text-muted" : "text-text-primary"}`}>
                       {task.title}
                     </p>
                   </div>
@@ -239,14 +242,14 @@ export const HomeScreen: React.FC = () => {
                 </div>
               );
             }) : (
-              <p className="text-xs text-neutral-500 py-3 text-center">No tasks scheduled for today.</p>
+              <div className="focus-empty"><CheckCircle2 size={24} strokeWidth={1.4} /><p>Your day has room.</p><span>No tasks scheduled for today.</span></div>
             )}
           </div>
 
           {can("tasks.manage") && (
             <button
               onClick={() => navigateTo("tasks", "All", true)}
-              className="w-full mt-2.5 py-2.5 px-4 rounded-xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 text-xs font-medium text-neutral-300 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full mt-2.5 py-2.5 px-4 rounded-xl bg-surface-elevated border border-border-subtle hover:border-border-strong text-xs font-medium text-text-primary hover:text-text-primary transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Plus size={15} /> Add Task
             </button>
@@ -254,12 +257,12 @@ export const HomeScreen: React.FC = () => {
         </div>
 
         {/* Active Projects */}
-        <div className="px-5 mb-5">
+        <div className="home-projects mb-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-white tracking-tight">Active Projects</h3>
+            <h3 className="text-sm font-bold text-text-primary tracking-tight">Active Projects</h3>
             <button
               onClick={() => navigateTo("projects")}
-              className="text-[11px] font-sans font-medium text-neutral-500 hover:text-white transition-colors cursor-pointer"
+              className="text-[11px] font-sans font-medium text-text-muted hover:text-text-primary transition-colors cursor-pointer"
             >
               View all
             </button>
@@ -281,39 +284,39 @@ export const HomeScreen: React.FC = () => {
                       selectProject(project.id);
                     }
                   }}
-                  className="w-full p-3.5 rounded-2xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 transition-all cursor-pointer flex items-center justify-between gap-3 group text-left"
+                  className="w-full p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong transition-all cursor-pointer flex items-center justify-between gap-3 group text-left"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-[#19191D] border border-neutral-800 flex items-center justify-center shrink-0">
-                    <Folder size={18} className="text-neutral-400 group-hover:text-white transition-colors" />
+                  <div className="w-10 h-10 rounded-xl bg-surface border border-border-subtle flex items-center justify-center shrink-0">
+                    <Folder size={18} className="text-text-secondary group-hover:text-text-primary transition-colors" />
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <h4 className="font-bold text-xs text-white truncate">{project.name}</h4>
+                      <h4 className="font-bold text-xs text-text-primary truncate">{project.name}</h4>
                       {isOverdue && (
                         <span className="badge-overdue shrink-0">Overdue</span>
                       )}
                     </div>
-                    <p className="text-[11px] text-neutral-500 truncate mt-0.5">{project.subtitle || "Creative project"}</p>
+                    <p className="text-[11px] text-text-muted truncate mt-0.5">{project.subtitle || "Creative project"}</p>
 
                     <div className="mt-2.5 flex items-center gap-2.5">
-                      <div className="flex-1 h-1 bg-[#1F1F24] rounded-full overflow-hidden">
+                      <div className="flex-1 h-1 bg-surface-overlay rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-white rounded-full transition-all duration-300"
+                          className="h-full bg-text-primary rounded-full transition-all duration-300"
                           style={{ width: `${project.progress}%` }}
                         />
                       </div>
-                      <span className="text-[10px] font-mono text-neutral-400 shrink-0">{project.progress}%</span>
+                      <span className="text-[10px] font-mono text-text-secondary shrink-0">{project.progress}%</span>
                     </div>
                   </div>
 
-                  <div className="text-neutral-600 group-hover:text-neutral-400 transition-colors shrink-0">
+                  <div className="text-text-secondary group-hover:text-text-secondary transition-colors shrink-0">
                     <ArrowRight size={16} />
                   </div>
                 </div>
               );
             }) : (
-              <div className="py-6 text-center text-xs text-neutral-500 bg-[#111113] rounded-2xl border border-neutral-800">
+              <div className="py-6 text-center text-xs text-text-muted bg-surface-elevated rounded-2xl border border-border-subtle">
                 No active projects.
               </div>
             )}

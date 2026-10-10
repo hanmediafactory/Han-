@@ -1,0 +1,33 @@
+/* Phone layouts reserve room for both navigation and floating actions. */
+@media (max-width:539px) {
+  .han-app.is-authenticated { padding-bottom:0; }
+  .han-app .bottom-nav-bar { height:calc(72px + env(safe-area-inset-bottom,0px)); padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px)); }
+  .han-app .bottom-nav-item { min-height:56px; font-size:11px; }
+  .han-app .home-content,.han-app .workspace-content { overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; padding-inline:16px; padding-bottom:88px; }
+  .han-app>div.home-page>.home-content,.han-app>div.workspace-page>main { margin-bottom:calc(72px + env(safe-area-inset-bottom,0px)); }
+  .han-app .quick-action-anchor { bottom:calc(84px + env(safe-area-inset-bottom,0px)); }
+  .han-app .quick-action-trigger { min-height:48px; font-size:13px; }
+  .han-app .notification-alert { bottom:calc(144px + env(safe-area-inset-bottom,0px)); max-height:35dvh; overflow-y:auto; }
+  .han-app .quick-action-menu { bottom:calc(84px + env(safe-area-inset-bottom,0px)); max-height:calc(100dvh - 108px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); overflow-y:auto; overscroll-behavior:contain; padding:16px; }
+  .han-app .mobile-sheet { max-height:calc(100dvh - 16px - env(safe-area-inset-top,0px))!important; padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px)); overscroll-behavior:contain; }
+  .han-app .home-introduction>div:first-child { margin-bottom:18px; }
+  .han-app .home-title { font-size:38px; overflow-wrap:anywhere; }
+  .han-app .home-brand { font-size:10px; letter-spacing:.09em; }
+  .han-app .home-shortcuts button { min-height:48px; font-size:13px; }
+  .han-app .workspace-summary { padding-block:18px; }
+  .han-app .workspace-summary>div { padding-inline:10px; gap:8px; }
+  .han-app .workspace-summary>div:first-child { padding-left:0; }
+  .han-app .workspace-summary>div:last-child { padding-right:0; }
+  .han-app .workspace-summary span { font-size:12px; line-height:1.35; }
+  .han-app .workspace-summary small { font-size:11px; line-height:1.4; }
+  .han-app .home-focus h3,.han-app .home-projects h3 { font-size:16px; }
+  .han-app .home-projects h4 { font-size:14px; }
+  .han-app .screen-header { padding-inline:16px; }
+  .han-app .login-screen { padding-inline:20px; }
+  .han-app input,.han-app select,.han-app textarea { scroll-margin-block:24px; }
+}
+@media (max-width:359px) {
+  .han-app .home-date { padding-left:8px; }
+  .han-app .home-title { font-size:34px; }
+  .han-app .workspace-summary strong { font-size:28px; }
+}

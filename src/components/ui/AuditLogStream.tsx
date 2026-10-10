@@ -27,7 +27,7 @@ export const AuditLogStream: React.FC<AuditLogStreamProps> = ({ logs }) => {
   const displayLogs = expanded ? logs.slice(0, 30) : logs.slice(0, 4);
 
   return (
-    <div className="han-card border border-neutral-200 bg-neutral-50/50 space-y-3">
+    <div className="han-card border border-border-subtle bg-surface/50 space-y-3">
       <button
         className="flex items-center justify-between cursor-pointer select-none"
         onClick={() => setExpanded(!expanded)}
@@ -35,9 +35,9 @@ export const AuditLogStream: React.FC<AuditLogStreamProps> = ({ logs }) => {
         aria-label="Toggle activity history"
       >
         <div className="flex items-center gap-2">
-          <Shield size={16} className="text-black" />
+          <Shield size={16} className="text-text-primary" />
           <span className="font-semibold text-sm">Activity history</span>
-          <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-full font-mono">
+          <span className="text-[10px] bg-page text-text-primary px-2 py-0.5 rounded-full font-mono">
             {logs.length}
           </span>
         </div>
@@ -52,17 +52,17 @@ export const AuditLogStream: React.FC<AuditLogStreamProps> = ({ logs }) => {
         {displayLogs.map((log, idx) => (
           <div
             key={log.id || idx}
-            className="flex items-center justify-between text-xs p-2 bg-white rounded-lg border border-neutral-100 shadow-2xs"
+            className="flex items-center justify-between text-xs p-2 bg-page rounded-lg border border-neutral-100 shadow-2xs"
           >
             <div className="flex items-center gap-2 overflow-hidden">
-              <span className="font-semibold capitalize text-black">
+              <span className="font-semibold capitalize text-text-primary">
                 {app.state.users.find(user => user.id === log.created_by)?.name || "HAN"}
               </span>
-              <span className="text-neutral-500 font-mono text-[11px] truncate">
+              <span className="text-text-muted font-mono text-[11px] truncate">
                 {entityLabel(log.entity || log.table_name || "")} {log.action}
               </span>
             </div>
-            <div className="flex items-center gap-1 text-[10px] text-neutral-400 whitespace-nowrap">
+            <div className="flex items-center gap-1 text-[10px] text-text-secondary whitespace-nowrap">
               <Clock size={11} />
               {new Date(log.created_at || log.timestamp).toLocaleTimeString([], {
                 hour: "2-digit",
@@ -76,7 +76,7 @@ export const AuditLogStream: React.FC<AuditLogStreamProps> = ({ logs }) => {
       {logs.length > 4 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full text-center text-xs font-semibold text-neutral-600 hover:text-black pt-1"
+          className="w-full text-center text-xs font-semibold text-text-secondary hover:text-text-primary pt-1"
         >
           {expanded ? "Show less" : `View all ${logs.length} activities`}
         </button>

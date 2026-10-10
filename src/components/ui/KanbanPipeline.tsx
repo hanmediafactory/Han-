@@ -11,16 +11,16 @@ interface KanbanPipelineProps {
 }
 
 const STAGES = [
-  { key: "New", label: "New Leads", color: "bg-white text-black border-neutral-300" },
-  { key: "Contacted", label: "Contacted", color: "bg-neutral-100 text-neutral-800 border-neutral-300" },
-  { key: "Interested", label: "Interested", color: "bg-neutral-200 text-neutral-900 border-neutral-400" },
-  { key: "Follow Up", label: "Follow Up", color: "bg-neutral-800 text-neutral-100 border-neutral-700" },
-  { key: "Won", label: "Won (Closed)", color: "bg-black text-white border-black" },
-  { key: "Lost", label: "Lost", color: "bg-neutral-100 text-neutral-500 border-neutral-300" },
+  { key: "New", label: "New Leads", color: "bg-page text-text-primary border-neutral-300" },
+  { key: "Contacted", label: "Contacted", color: "bg-surface text-text-primary border-border-strong" },
+  { key: "Interested", label: "Interested", color: "bg-surface-overlay text-text-primary border-border-strong" },
+  { key: "Follow Up", label: "Follow Up", color: "bg-surface text-text-primary border-border-subtle" },
+  { key: "Won", label: "Won (Closed)", color: "bg-emerald-950 text-emerald-400 border-emerald-900" },
+  { key: "Lost", label: "Lost", color: "bg-surface text-text-muted border-border-subtle" },
 ];
 
 export const KanbanPipeline: React.FC<KanbanPipelineProps> = ({
-  leads,
+  leads = [],
   onStatusChange,
   onEdit,
   canManage,
@@ -28,8 +28,8 @@ export const KanbanPipeline: React.FC<KanbanPipelineProps> = ({
 }) => {
 
   return (
-    <div className="w-full space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+    <div className="w-full">
+      <div className="flex gap-4 overflow-x-auto pb-4 snap-x no-scrollbar">
         {STAGES.map((stage) => {
           const stageLeads = leads.filter((l) => l.status === stage.key);
           const totalValue = stageLeads.reduce((acc, l) => acc + (Number((l as any).dealValue) || 0), 0);
@@ -37,57 +37,57 @@ export const KanbanPipeline: React.FC<KanbanPipelineProps> = ({
           return (
             <div
               key={stage.key}
-              className="bg-neutral-50/80 border border-neutral-200/80 rounded-2xl p-3 flex flex-col space-y-2"
+              className="w-[85vw] sm:w-72 shrink-0 snap-start bg-surface-elevated border border-border-subtle rounded-2xl p-3 flex flex-col space-y-2"
             >
-              <div className="flex items-center justify-between pb-1 border-b border-neutral-200/60">
+              <div className="flex items-center justify-between pb-2 border-b border-border-subtle/60">
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${stage.color}`}>
                   {stage.label}
                 </span>
-                <span className="text-xs font-mono font-bold text-neutral-500">
+                <span className="text-xs font-mono font-bold text-text-muted">
                   {stageLeads.length}
                 </span>
               </div>
               {totalValue > 0 && (
-                <div className="text-[10px] font-mono text-neutral-600 font-semibold">
+                <div className="text-[10px] font-mono text-text-secondary font-semibold pb-1">
                   Total: ₹{totalValue.toLocaleString("en-IN")}
                 </div>
               )}
 
-              <div className="space-y-2 min-h-24 max-h-96 overflow-y-auto pr-0.5 no-scrollbar">
+              <div className="space-y-2 max-h-[65vh] overflow-y-auto pr-1 custom-scrollbar">
                 {stageLeads.length === 0 ? (
-                  <p className="text-[11px] text-neutral-400 italic text-center py-4">
+                  <p className="text-[11px] text-text-secondary italic text-center py-2">
                     No leads
                   </p>
                 ) : (
                   stageLeads.map((lead) => (
                     <div
                       key={lead.id}
-                      className="bg-white border border-neutral-200 p-3 rounded-xl shadow-2xs space-y-2 group hover:border-black transition-colors"
+                      className="bg-surface-overlay border border-border-subtle p-3 rounded-xl shadow-sm space-y-2 group hover:border-neutral-600 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-1">
-                        <h4 className="font-semibold text-xs leading-tight text-neutral-900">
+                        <h4 className="font-semibold text-xs leading-tight text-text-primary">
                           {lead.name}
                         </h4>
-                        <span className="text-[10px] text-neutral-500 bg-neutral-100 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] text-text-secondary bg-page border border-border-subtle px-1.5 py-0.5 rounded">
                           {lead.category}
                         </span>
                       </div>
 
                       {(lead as any).dealValue > 0 && (
-                        <div className="flex items-center gap-1 text-[11px] font-mono font-bold text-black">
+                        <div className="flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-400">
                           <DollarSign size={11} /> ₹{Number((lead as any).dealValue).toLocaleString("en-IN")}
                         </div>
                       )}
 
                       {((lead as any).email || (lead as any).phone) && (
-                        <div className="space-y-0.5 text-[10px] text-neutral-500">
+                        <div className="space-y-1 text-[10px] text-text-secondary">
                           {(lead as any).email && (
-                            <div className="flex items-center gap-1 truncate">
+                            <div className="flex items-center gap-1.5 truncate">
                               <Mail size={10} /> {(lead as any).email}
                             </div>
                           )}
                           {(lead as any).phone && (
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                               <Phone size={10} /> {(lead as any).phone}
                             </div>
                           )}
@@ -95,30 +95,30 @@ export const KanbanPipeline: React.FC<KanbanPipelineProps> = ({
                       )}
 
                       {lead.nextAction && (
-                        <p className="text-[11px] text-neutral-600 line-clamp-2 leading-relaxed">
+                        <p className="text-[11px] text-text-secondary line-clamp-2 leading-relaxed bg-page/40 p-2 rounded-lg border border-border-subtle/50">
                           {lead.nextAction}
                         </p>
                       )}
 
                       {(lead as any).followUpDate && (
-                        <div className="flex items-center gap-1 text-[10px] text-neutral-400 font-mono">
+                        <div className="flex items-center gap-1.5 text-[10px] text-text-muted font-mono">
                           <Calendar size={10} /> Next: {(lead as any).followUpDate}
                         </div>
                       )}
 
                       {canManage && (
-                        <div className="flex items-center justify-between pt-1 border-t border-neutral-100">
+                        <div className="flex items-center justify-between pt-2 mt-1 border-t border-border-subtle gap-2">
                           <button
                             onClick={() => onEdit(lead)}
-                            className="text-[10px] font-semibold text-neutral-500 hover:text-black"
+                            className="text-[10px] font-semibold text-text-secondary hover:text-text-primary transition-colors"
                           >
                             Edit
                           </button>
 
-                          <select aria-label={`Status for ${lead.name}`} value={lead.status} onChange={event => onStatusChange(lead.id, event.target.value)} className="min-w-0 max-w-full text-xs bg-white border rounded-lg">
+                          <select aria-label={`Status for ${lead.name}`} value={lead.status} onChange={event => onStatusChange(lead.id, event.target.value)} className="min-w-0 flex-1 text-[10px] bg-page text-text-primary border border-border-subtle rounded px-1 py-0.5">
                             {STAGES.map(option => <option key={option.key} value={option.key}>{option.label}</option>)}
                           </select>
-                          <button className="action" onClick={() => onRemove(lead)}>Delete</button>
+                          <button className="text-[10px] font-semibold text-red-500 hover:text-red-400 transition-colors" onClick={() => onRemove(lead)}>Delete</button>
                         </div>
                       )}
                     </div>

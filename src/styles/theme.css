@@ -1,64 +1,93 @@
 
+
 :root {
-  /* Color Palette - Premium Dark Monochrome */
-  --han-black: #000000;
-  --han-dark-surface: #0A0A0A;
-  --han-dark-card: #111111;
-  --han-dark-card-elevated: #161616;
-  --han-dark-border: #1E1E1E;
-  --han-dark-border-subtle: #2A2A2A;
-  --han-dark-text-muted: #8E8E93;
-  --han-dark-text: #FFFFFF;
-  --han-silver: #A8A8AD;
-  --han-titanium: #C5C5C8;
+  /* DARK MODE (Default) - Obsidian and Titanium */
+  color-scheme: dark;
+  --bg-page: #09090B;
+  --bg-surface: #111113;
+  --bg-surface-elevated: #1C1C1F;
+  --bg-surface-overlay: #1A1A1A;
 
-  --han-white: #FFFFFF;
-  --han-light-bg: #FAFAFA;
-  --han-light-surface: #F5F5F5;
-  --han-light-card: #FFFFFF;
-  --han-light-border: #E8E8E8;
-  --han-light-text-muted: #737373;
-  --han-light-text: #0F0F0F;
+  --text-primary: #FAFAFA;
+  --text-secondary: #C4C4CC;
+  --text-muted: #A1A1AA;
 
-  --han-gray-100: #F4F4F5;
-  --han-gray-200: #E4E4E7;
-  --han-gray-300: #D4D4D8;
-  --han-gray-400: #A1A1AA;
-  --han-gray-500: #71717A;
-  --han-gray-600: #52525B;
-  --han-gray-700: #3F3F46;
-  --han-gray-800: #27272A;
-  --han-gray-900: #18181B;
+  --border-subtle: #303036;
+  --border-strong: #52525B;
 
-  /* Badge colors — restrained */
-  --han-badge-overdue: #C53030;
-  --han-badge-today: #0A0A0A;
-  --han-badge-active: #0A0A0A;
+  --input-bg: var(--bg-surface-elevated);
+  --input-border: var(--border-strong);
+
+  --btn-primary-bg: var(--text-primary);
+  --btn-primary-text: var(--bg-page);
+
+  --btn-secondary-bg: var(--bg-surface-elevated);
+  --btn-secondary-text: var(--text-primary);
+
+  --nav-bg: #111113;
+  --nav-text: var(--text-muted);
+  --nav-text-active: var(--text-primary);
+
+  --status-success: #278052;
+  --status-warning: #b86a12;
+  --status-danger: #C53030;
+
+  --shadow-subtle: 0 2px 10px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+  --focus-ring: rgba(255, 255, 255, 0.8);
 
   /* Fonts */
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 
-  /* Shadows */
-  --shadow-subtle: 0 2px 10px rgba(0, 0, 0, 0.2);
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
-  --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.5);
-
-  /* Touch Target */
   --min-touch-target: 44px;
-
-  /* Safe Area Defaults */
-  --sat: env(safe-area-inset-top, 0px);
-  --sab: env(safe-area-inset-bottom, 0px);
-
-  /* Radii */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
-  --radius-full: 9999px;
+  --interactive-primary: var(--btn-primary-bg);
+  --interactive-primary-text: var(--btn-primary-text);
+  --han-badge-overdue: #482222;
 }
+
+html.light {
+  color-scheme: light;
+  /* LIGHT MODE - Editorial Precision */
+  --bg-page: #FDFDFD;
+  --bg-surface: #F5F5F5;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-overlay: #FFFFFF;
+
+  --text-primary: #18181B;
+  --text-secondary: #52525B;
+  --text-muted: #666670;
+
+  --border-subtle: #E4E4E7;
+  --border-strong: #D4D4D8;
+
+  --input-bg: #FFFFFF;
+  --input-border: #D4D4D8;
+
+  --btn-primary-bg: #18181B;
+  --btn-primary-text: #FFFFFF;
+
+  --btn-secondary-bg: #F4F4F5;
+  --btn-secondary-text: #18181B;
+
+  --nav-bg: rgba(253, 253, 253, 0.95);
+  --nav-text: var(--text-muted);
+  --nav-text-active: #18181B;
+
+  --status-success: #16a34a;
+  --status-warning: #d97706;
+  --status-danger: #dc2626;
+
+  --shadow-subtle: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.12);
+
+  --focus-ring: rgba(0, 0, 0, 0.8);
+  --han-badge-overdue: #FBE5E5;
+}
+
 
 /* Global Reset & Base Typography */
 @layer base {
@@ -74,9 +103,9 @@
 html, body {
   width: 100%;
   height: 100%;
-  background-color: #000000;
+  background-color: var(--btn-primary-text);
   font-family: var(--font-sans);
-  color: #FFFFFF;
+  color: var(--text-primary);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -134,8 +163,8 @@ html, body {
   justify-content: center;
   width: 100vw;
   height: 100vh;
-  background-color: #050505;
-  background-image: 
+  background-color: var(--btn-primary-text);
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 70%),
     linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
@@ -160,7 +189,7 @@ html, body {
 }
 
 .simulator-title {
-  color: #FFFFFF;
+  color: var(--text-primary);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -181,7 +210,7 @@ html, body {
 .device-btn {
   background: transparent;
   border: none;
-  color: #A1A1AA;
+  color: var(--text-muted);
   font-size: 0.72rem;
   font-weight: 500;
   padding: 4px 10px;
@@ -191,13 +220,13 @@ html, body {
 }
 
 .device-btn:hover {
-  color: #FFFFFF;
+  color: var(--text-primary);
   background: rgba(255, 255, 255, 0.08);
 }
 
 .device-btn.active {
-  background: #FFFFFF;
-  color: #000000;
+  background: var(--text-primary);
+  color: var(--btn-primary-text);
   font-weight: 600;
 }
 
@@ -211,8 +240,8 @@ html, body {
 /* Mobile Phone Frame */
 .phone-viewport-container {
   position: relative;
-  background: #000000;
-  box-shadow: 
+  background: var(--bg-page);
+  box-shadow:
     0 0 0 12px #1c1c1e,
     0 0 0 13px #2c2c2e,
     0 25px 60px rgba(0, 0, 0, 0.8),
@@ -252,11 +281,11 @@ html, body {
 }
 
 .mobile-status-bar.dark-status {
-  color: #FFFFFF;
+  color: var(--text-primary);
 }
 
 .mobile-status-bar.light-status {
-  color: #FFFFFF;
+  color: var(--text-primary);
 }
 
 /* Dynamic Island / Notch */
@@ -267,7 +296,7 @@ html, body {
   transform: translateX(-50%);
   width: 115px;
   height: 28px;
-  background-color: #000000;
+  background-color: var(--btn-primary-text);
   border-radius: 20px;
   z-index: 999;
   display: flex;
@@ -279,7 +308,7 @@ html, body {
 .camera-lens {
   width: 10px;
   height: 10px;
-  background: #111;
+  background: var(--bg-surface-elevated);
   border-radius: 50%;
   border: 1px solid #222;
 }
@@ -293,13 +322,13 @@ html, body {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #000000;
-  color: #FFFFFF;
+  background-color: var(--btn-primary-text);
+  color: var(--text-primary);
 }
 
 .mobile-screen-body.black-bg {
-  background-color: #000000;
-  color: #FFFFFF;
+  background-color: var(--btn-primary-text);
+  color: var(--text-primary);
 }
 
 /* Home Indicator Bar */
@@ -320,9 +349,9 @@ html, body {
 .bottom-nav-bar {
   height: 64px;
   width: 100%;
-  background: rgba(0, 0, 0, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(16px);
-  border-top: 1px solid #1E1E1E;
+  border-top: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -340,7 +369,7 @@ html, body {
   gap: 3px;
   background: transparent;
   border: none;
-  color: #5A5A5E;
+  color: var(--text-muted);
   font-size: 0.62rem;
   font-weight: 500;
   letter-spacing: 0.05em;
@@ -353,7 +382,7 @@ html, body {
 }
 
 .bottom-nav-item.active {
-  color: #FFFFFF;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -363,19 +392,19 @@ html, body {
 
 /* Common UI Card Styles — Dark */
 .han-card {
-  background-color: #111111;
+  background-color: var(--bg-surface-elevated);
   border-radius: 16px;
   padding: 18px;
-  border: 1px solid #1E1E1E;
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-subtle);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  color: #FFFFFF;
+  color: var(--text-primary);
 }
 
 .han-card.dark {
-  background-color: #000000;
-  border-color: #1E1E1E;
-  color: #FFFFFF;
+  background-color: var(--btn-primary-text);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
 }
 
 .han-card-clickable {
@@ -392,34 +421,36 @@ html, body {
   border-radius: 9999px;
   font-size: 0.78rem;
   font-weight: 500;
-  background: #111111;
-  color: #8E8E93;
-  border: 1px solid #2A2A2A;
+  background: var(--bg-surface-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
 }
 
 .filter-chip.active {
-  background: #FFFFFF;
-  color: #000000;
-  border-color: #FFFFFF;
+  background: var(--text-primary);
+  color: var(--btn-primary-text);
+  border-color: var(--text-primary);
   font-weight: 600;
 }
 
 /* Form Controls — Dark */
-.han-input {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: #111111;
-  border: 1px solid #2A2A2A;
-  font-size: 0.95rem;
-  font-family: var(--font-sans);
-  color: #FFFFFF;
-  outline: none;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+@layer components {
+  .han-input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-strong);
+    font-size: 0.95rem;
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
 }
 
 /* Custom Polished Dropdown Select Inputs */
@@ -437,19 +468,19 @@ select.han-input {
 }
 
 select.han-input:hover {
-  background-color: #161616;
-  border-color: #3A3A3A;
+  background-color: var(--bg-surface);
+  border-color: var(--border-strong);
 }
 
 .han-input:focus, select.han-input:focus {
-  border-color: #FFFFFF;
-  background: #0A0A0A;
+  border-color: var(--text-primary);
+  background: var(--bg-surface);
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 select.han-input option {
-  background: #111111;
-  color: #FFFFFF;
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
   padding: 12px 16px;
   font-size: 0.9rem;
   font-weight: 500;
@@ -459,8 +490,8 @@ select.han-input option {
   width: 100%;
   padding: 16px;
   border-radius: 9999px;
-  background: #FFFFFF;
-  color: #000000;
+  background: var(--text-primary);
+  color: var(--btn-primary-text);
   border: none;
   font-size: 0.95rem;
   font-weight: 600;
@@ -489,9 +520,9 @@ select.han-input option {
   width: 100%;
   padding: 16px;
   border-radius: 9999px;
-  background: #111111;
-  color: #FFFFFF;
-  border: 1px solid #2A2A2A;
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -504,8 +535,8 @@ select.han-input option {
 }
 
 .han-btn-secondary:hover {
-  background: #1A1A1A;
-  border-color: #3A3A3A;
+  background: var(--bg-surface);
+  border-color: var(--border-strong);
   transform: translateY(-1px);
 }
 
@@ -519,8 +550,8 @@ select.han-input option {
   top: 60px;
   left: 50%;
   transform: translateX(-50%);
-  background: #FFFFFF;
-  color: #000000;
+  background: var(--text-primary);
+  color: var(--btn-primary-text);
   padding: 10px 18px;
   border-radius: 9999px;
   font-size: 0.78rem;
@@ -658,7 +689,7 @@ select.han-input option {
 
 .glass-input:focus {
   background: rgba(10, 10, 10, 0.95);
-  border-color: #FFFFFF;
+  border-color: var(--text-primary);
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
 }
 
@@ -686,7 +717,7 @@ select.han-input option {
 /* Overdue badge — restrained red */
 .badge-overdue {
   background: var(--han-badge-overdue);
-  color: #FFFFFF;
+  color: var(--text-primary);
   padding: 2px 10px;
   border-radius: 9999px;
   font-size: 10px;
@@ -696,8 +727,8 @@ select.han-input option {
 }
 
 .badge-today {
-  background: #FFFFFF;
-  color: #000000;
+  background: var(--text-primary);
+  color: var(--btn-primary-text);
   padding: 2px 10px;
   border-radius: 9999px;
   font-size: 10px;

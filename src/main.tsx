@@ -3,7 +3,9 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { analytics } from "./utils/analytics";
+import { initializeTheme } from "./utils/theme";
 
+initializeTheme();
 analytics.init();
 
 if ("serviceWorker" in navigator && import.meta.env.PROD) {

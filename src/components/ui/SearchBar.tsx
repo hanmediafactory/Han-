@@ -18,7 +18,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     <div className={`relative flex items-center w-full ${className}`}>
       <Search
         size={16}
-        className="absolute left-3.5 text-neutral-400 pointer-events-none"
+        className="absolute left-3.5 text-text-secondary pointer-events-none"
       />
       <input
         aria-label={placeholder.replace(/…$/, "")}
@@ -26,12 +26,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-9 pr-9 py-2.5 bg-neutral-100/80 border border-neutral-200/80 rounded-xl text-xs font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:bg-white focus:border-black transition-all"
+        className="w-full pl-9 pr-9 py-2.5 bg-surface-elevated/80 border border-border-subtle/80 rounded-xl text-xs font-medium text-text-primary placeholder:text-text-secondary focus:outline-none focus:bg-page focus:border-black transition-all"
       />
       {value && (
         <button
           onClick={() => onChange("")}
-          className="absolute right-3 text-neutral-400 hover:text-black p-0.5 rounded-full"
+          className="absolute right-3 text-text-secondary hover:text-text-primary p-0.5 rounded-full"
           aria-label="Clear search"
         >
           <X size={14} />

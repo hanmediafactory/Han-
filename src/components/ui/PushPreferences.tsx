@@ -66,7 +66,7 @@ export function PushPreferences() {
   };
   return <section className="han-card space-y-3">
     <h2 className="font-semibold">Notifications</h2>
-    <p className="text-sm text-neutral-600">Workspace updates always appear in the app. Background alerts require a supported browser and your permission.</p>
+    <p className="text-sm text-text-secondary">Workspace updates always appear in the app. Background alerts require a supported browser and your permission.</p>
     {!enabled && <p className="text-sm">Background push is unavailable until the deployment is configured.</p>}
     <p role="status" className="text-sm">{message}</p>
     {enabled && <>

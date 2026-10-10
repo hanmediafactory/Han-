@@ -20,14 +20,14 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       className={`w-full overflow-hidden rounded-full ${className}`}
       style={{
         height,
-        backgroundColor: lightBackground ? 'rgba(255, 255, 255, 0.2)' : '#E4E4E7',
+        backgroundColor: lightBackground ? 'rgba(255, 255, 255, 0.2)' : 'var(--border-subtle)',
       }}
     >
       <div
         className="h-full rounded-full transition-all duration-500 ease-out"
         style={{
           width: `${clamped}%`,
-          backgroundColor: lightBackground ? '#FFFFFF' : '#000000',
+          backgroundColor: lightBackground ? '#FFFFFF' : 'var(--text-primary)',
         }}
       />
     </div>

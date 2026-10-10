@@ -48,7 +48,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({ children }) => {
           <span>HAN</span> MOBILE OS
         </div>
 
-        <div className="h-4 w-px bg-white/20" />
+        <div className="h-4 w-px bg-page/20" />
 
         {/* Viewport size buttons */}
         <div className="flex items-center gap-1">
@@ -63,14 +63,14 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({ children }) => {
           ))}
         </div>
 
-        <div className="h-4 w-px bg-white/20" />
+        <div className="h-4 w-px bg-page/20" />
 
         {/* Screen Quick Jump dropdown */}
         <div className="flex items-center gap-1 text-[11px] overflow-x-auto max-w-xs no-scrollbar">
           <select
             value={currentScreen}
             onChange={(e) => navigateTo(e.target.value as ScreenType)}
-            className="bg-black text-white text-xs px-2 py-1 rounded-full border border-white/20 outline-none cursor-pointer"
+            className="bg-page text-text-primary text-xs px-2 py-1 rounded-full border border-white/20 outline-none cursor-pointer"
           >
             {screensList.map((s) => (
               <option key={s.id} value={s.id}>

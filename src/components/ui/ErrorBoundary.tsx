@@ -35,26 +35,26 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="login-screen p-6 text-center">
           <div className="max-w-md mx-auto space-y-6 flex flex-col items-center">
-            <div className="bg-black p-3 rounded-2xl border border-neutral-800 shadow-xl inline-flex items-center justify-center">
+            <div className="bg-page p-3 rounded-2xl border border-border-subtle shadow-xl inline-flex items-center justify-center">
               <img
                 src="/logo.png"
                 alt="HAN Media Factory"
                 className="h-12 w-auto object-contain"
               />
             </div>
-            <div className="bg-neutral-100 border border-neutral-300 rounded-xl p-6 text-left">
-              <h2 className="font-medium text-lg text-black mb-2">Something went wrong</h2>
-              <p className="text-sm text-neutral-600 mb-4">
+            <div className="bg-surface-elevated border border-neutral-300 rounded-xl p-6 text-left">
+              <h2 className="font-medium text-lg text-text-primary mb-2">Something went wrong</h2>
+              <p className="text-sm text-text-secondary mb-4">
                 An unexpected error occurred while loading this view. Your saved data is safe.
               </p>
               {this.state.error?.message && (
-                <div className="text-xs font-mono bg-neutral-200 p-3 rounded text-neutral-800 break-words mb-4">
+                <div className="text-xs font-mono bg-neutral-200 p-3 rounded text-text-primary break-words mb-4">
                   {this.state.error.message}
                 </div>
               )}
               <button
                 onClick={this.handleReset}
-                className="w-full py-3 bg-black text-white font-medium rounded-lg text-sm transition hover:bg-neutral-800"
+                className="w-full py-3 bg-page text-text-primary font-medium rounded-lg text-sm transition hover:bg-neutral-800"
               >
                 Reload Workspace
               </button>

@@ -22,6 +22,7 @@ import { knownDefaults, requireProductionPassword } from "./security.mjs";
 import { financeSummary, protectFunds, computeEqualAllocations } from "./finance.mjs";
 import { EventEmitter } from "node:events";
 import { enqueueWebhooks, webhookDestinationAllowed } from "./webhooks.mjs";
+import { registerGoogleSso } from "./google-sso.mjs";
 const changes = new EventEmitter();
 changes.setMaxListeners(0);
 const streams = new Map();
@@ -33,7 +34,7 @@ const production = process.env.NODE_ENV === "production";
 const sessionCookie = process.env.HAN_DEMO === "1" ? "han_demo_session" : "han_session";
 if (process.env.TRUST_PROXY === "1") app.set("trust proxy", 1);
 app.disable("x-powered-by");
-const allowedOrigins = new Set((process.env.HAN_ALLOWED_ORIGINS || (production ? "" : "http://localhost:5173,http://127.0.0.1:5173")).split(",").map(v => v.trim()).filter(Boolean));
+const allowedOrigins = new Set((process.env.HAN_ALLOWED_ORIGINS || (production ? "" : "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174")).split(",").map(v => v.trim()).filter(Boolean));
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -461,6 +462,20 @@ app.get("/api/ready", (_req, res) => {
     res.status(ready ? 200 : 503).json({ status: ready ? "ready" : "requires_provisioning" });
   } catch { res.status(503).json({ status: "unavailable" }); }
 });
+function createSession(user, res) {
+  const token = randomBytes(32).toString("hex");
+  const csrf = randomBytes(32).toString("hex");
+  const expiresAt = Date.now() + 7 * 86400_000;
+  db.prepare("DELETE FROM sessions WHERE expires_at<?").run(Date.now());
+  db.prepare("INSERT INTO sessions VALUES (?,?,?,?)").run(hashToken(token), user.id, csrf, expiresAt);
+  res.cookie(sessionCookie, token, { httpOnly: true, secure: production, sameSite: process.env.HAN_COOKIE_SAMESITE || "strict", maxAge: 7 * 86400_000, path: "/" });
+  changes.emit("change");
+  return { user: publicUser(user), csrf, expiresAt };
+}
+registerGoogleSso(app, {
+  findUser: id => db.prepare("SELECT * FROM users WHERE id=? AND active=1").get(id),
+  createSession,
+});
 app.post("/api/login", loginLimiter, (req, res) => {
   const { userId, password } = z
     .object({ userId: z.string().max(100), password: z.string().max(200) })
@@ -472,24 +487,7 @@ app.post("/api/login", loginLimiter, (req, res) => {
   if (production && knownDefaults.has(password)) throw fail(401, "This credential must be replaced by the server administrator before production use.");
   if (!user?.password_hash || !valid)
     throw fail(401, "Incorrect identity or password.");
-  const token = randomBytes(32).toString("hex");
-  const csrf = randomBytes(32).toString("hex");
-  db.prepare("DELETE FROM sessions WHERE expires_at<?").run(Date.now());
-  db.prepare("INSERT INTO sessions VALUES (?,?,?,?)").run(
-    hashToken(token),
-    user.id,
-    csrf,
-    Date.now() + 7 * 86400_000,
-  );
-  res.cookie(sessionCookie, token, {
-    httpOnly: true,
-    secure: production,
-    sameSite: process.env.HAN_COOKIE_SAMESITE || "strict",
-    maxAge: 7 * 86400_000,
-    path: "/",
-  });
-  res.json({ user: publicUser(user), csrf, expiresAt: Date.now() + 7 * 86400_000 });
-  changes.emit("change");
+  res.json(createSession(user, res));
 });
 app.use("/api", (req, res, next) => {
   const token = (req.headers.cookie || "")

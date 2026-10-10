@@ -76,7 +76,7 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
     <div
       role="region"
       aria-label="Welcome to HAN Media Factory"
-      className={`fixed inset-0 z-[99999] bg-[#000000] text-white flex flex-col justify-between select-none overflow-hidden transition-opacity duration-500 ease-out ${
+      className={`fixed inset-0 z-[99999] bg-[#000000] text-text-primary flex flex-col justify-between select-none overflow-hidden transition-opacity duration-500 ease-out ${
         fading ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       style={{
@@ -90,8 +90,8 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
     >
       {/* ── Top Bar: Safe-area aligned brand mark & accessible Skip control ── */}
       <header className="w-full flex items-center justify-between z-20 pointer-events-auto">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/80 border border-neutral-800 text-neutral-300">
-          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/80 border border-border-subtle text-text-primary">
+          <div className="w-1.5 h-1.5 rounded-full bg-page animate-pulse" />
           <span className="font-mono text-[11px] font-semibold tracking-[0.22em] uppercase text-neutral-200">
             HAN MEDIA FACTORY
           </span>
@@ -104,7 +104,7 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
             handleFinish();
           }}
           aria-label="Skip intro animation"
-          className="min-h-[44px] min-w-[44px] px-4 py-2 rounded-full bg-neutral-900/90 hover:bg-neutral-800 active:scale-95 text-neutral-300 hover:text-white border border-neutral-700/80 text-xs font-mono font-medium tracking-wider transition-all cursor-pointer shadow-lg flex items-center justify-center"
+          className="min-h-[44px] min-w-[44px] px-4 py-2 rounded-full bg-neutral-900/90 hover:bg-neutral-800 active:scale-95 text-text-primary hover:text-text-primary border border-border-strong/80 text-xs font-mono font-medium tracking-wider transition-all cursor-pointer shadow-lg flex items-center justify-center"
         >
           Skip Intro →
         </button>
@@ -171,13 +171,13 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
 
           {/* Restrained Titanium Typography matching Screen 1 */}
           <div className="text-center space-y-1 mt-8">
-            <p className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-neutral-300">
+            <p className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-text-primary">
               BUILD TRUST.
             </p>
-            <p className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-neutral-300">
+            <p className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-text-primary">
               GROW BRANDS.
             </p>
-            <p className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-neutral-300">
+            <p className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-text-primary">
               CREATE IMPACT.
             </p>
           </div>
@@ -192,7 +192,7 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
             e.stopPropagation();
             handleFinish();
           }}
-          className="text-xs font-mono font-bold tracking-[0.25em] text-neutral-400 hover:text-white uppercase transition-colors flex items-center gap-2 cursor-pointer py-3 px-6 rounded-full hover:bg-neutral-900/60 active:scale-95"
+          className="text-xs font-mono font-bold tracking-[0.25em] text-text-secondary hover:text-text-primary uppercase transition-colors flex items-center gap-2 cursor-pointer py-3 px-6 rounded-full hover:bg-neutral-900/60 active:scale-95"
         >
           <span>TAP TO ENTER</span>
           <ArrowRight size={14} />

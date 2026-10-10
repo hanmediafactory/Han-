@@ -174,38 +174,38 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-start justify-center pt-16 px-4 bg-black/80 backdrop-blur-xl animate-fadeIn">
+    <div className="fixed inset-0 z-[10000] flex items-start justify-center pt-16 px-4 bg-page/80 backdrop-blur-xl animate-fadeIn">
       <div
         ref={panel}
         role="dialog"
         aria-modal="true"
         aria-label="Command search"
-        className="w-full max-w-lg bg-[#000000] text-white border border-neutral-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] animate-scaleUp"
+        className="w-full max-w-lg bg-surface-overlay text-text-primary border border-border-subtle rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] animate-scaleUp"
         style={{
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 255, 255, 0.05)",
         }}
       >
         {/* Search Bar Input */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-neutral-800 bg-[#0A0A0A]">
-          <Search size={20} className="text-white shrink-0" />
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-border-subtle bg-surface">
+          <Search size={20} className="text-text-primary shrink-0" />
           <input
             type="text"
             aria-label="Search workspace"
             placeholder="Search features, tasks, projects, leads..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full bg-transparent text-white placeholder-neutral-500 outline-none text-base font-medium"
+            className="w-full bg-transparent text-text-primary placeholder-neutral-500 outline-none text-base font-medium"
           />
           {query ? (
             <button
               aria-label="Clear search"
               onClick={() => setQuery("")}
-              className="p-1 text-neutral-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+              className="p-1 text-text-secondary hover:text-text-primary rounded-lg transition-colors cursor-pointer"
             >
               <X size={16} />
             </button>
           ) : (
-            <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-1 bg-neutral-900 border border-neutral-800 rounded-md text-neutral-400">
+            <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-1 bg-surface border border-border-subtle rounded-md text-text-secondary">
               <Command size={10} /> K
             </kbd>
           )}
@@ -215,8 +215,8 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
         {!query.trim() && (
           <div className="p-4 overflow-y-auto space-y-4">
             <div>
-              <p className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 px-3 mb-2 flex items-center gap-1.5 font-bold">
-                <Sparkles size={12} className="text-white" /> Instant Actions
+              <p className="text-[11px] font-mono uppercase tracking-widest text-text-secondary px-3 mb-2 flex items-center gap-1.5 font-bold">
+                <Sparkles size={12} className="text-text-primary" /> Instant Actions
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {app.can('tasks.manage') && <button
@@ -224,16 +224,16 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                     onClose();
                     app.navigateTo("tasks", "All", true);
                   }}
-                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-white hover:bg-neutral-800 text-left transition-all group cursor-pointer"
+                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-surface border border-border-subtle hover:border-border-strong hover:bg-surface-elevated text-left transition-all group cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded-xl bg-neutral-800 text-white border border-neutral-700 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-surface-elevated text-text-primary border border-border-strong flex items-center justify-center shrink-0">
                     <Plus size={16} />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-white transition-colors">
+                    <span className="block text-xs font-bold text-text-primary transition-colors">
                       New Task
                     </span>
-                    <span className="text-[10px] text-neutral-400">Create & assign work</span>
+                    <span className="text-[10px] text-text-secondary">Create & assign work</span>
                   </div>
                 </button>}
 
@@ -242,16 +242,16 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                     onClose();
                     app.navigateTo("projects", "Active", true);
                   }}
-                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-white hover:bg-neutral-800 text-left transition-all group cursor-pointer"
+                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-surface border border-border-subtle hover:border-border-strong hover:bg-surface-elevated text-left transition-all group cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded-xl bg-neutral-800 text-white border border-neutral-700 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-surface-elevated text-text-primary border border-border-strong flex items-center justify-center shrink-0">
                     <Briefcase size={16} />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-white transition-colors">
+                    <span className="block text-xs font-bold text-text-primary transition-colors">
                       New Project
                     </span>
-                    <span className="text-[10px] text-neutral-400">Launch roadmap</span>
+                    <span className="text-[10px] text-text-secondary">Launch roadmap</span>
                   </div>
                 </button>}
 
@@ -260,16 +260,16 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                     onClose();
                     app.navigateTo("money", "All", true);
                   }}
-                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-white hover:bg-neutral-800 text-left transition-all group cursor-pointer"
+                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-surface border border-border-subtle hover:border-border-strong hover:bg-surface-elevated text-left transition-all group cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded-xl bg-neutral-800 text-white border border-neutral-700 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-surface-elevated text-text-primary border border-border-strong flex items-center justify-center shrink-0">
                     <Wallet size={16} />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-white transition-colors">
+                    <span className="block text-xs font-bold text-text-primary transition-colors">
                       Log Finance
                     </span>
-                    <span className="text-[10px] text-neutral-400">Income & expenses</span>
+                    <span className="text-[10px] text-text-secondary">Income & expenses</span>
                   </div>
                 </button>}
 
@@ -278,16 +278,16 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                     onClose();
                     app.navigateTo("leads", "All", true);
                   }}
-                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-white hover:bg-neutral-800 text-left transition-all group cursor-pointer"
+                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-surface border border-border-subtle hover:border-border-strong hover:bg-surface-elevated text-left transition-all group cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded-xl bg-neutral-800 text-white border border-neutral-700 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-surface-elevated text-text-primary border border-border-strong flex items-center justify-center shrink-0">
                     <Target size={16} />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-white transition-colors">
+                    <span className="block text-xs font-bold text-text-primary transition-colors">
                       Add Lead
                     </span>
-                    <span className="text-[10px] text-neutral-400">CRM pipeline</span>
+                    <span className="text-[10px] text-text-secondary">CRM pipeline</span>
                   </div>
                 </button>}
               </div>
@@ -295,7 +295,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
 
             {/* Quick Navigation Links */}
             <div>
-              <p className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 px-3 mb-2 font-bold">
+              <p className="text-[11px] font-mono uppercase tracking-widest text-text-secondary px-3 mb-2 font-bold">
                 Quick Jump
               </p>
               <div className="space-y-1">
@@ -313,13 +313,13 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                         onClose();
                         app.navigateTo(nav.screen as any);
                       }}
-                      className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-900 border border-transparent hover:border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white transition-colors cursor-pointer"
+                      className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-surface border border-transparent hover:border-border-subtle text-xs font-medium text-text-primary hover:text-text-primary transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-2.5">
-                        <NavIcon size={15} className="text-neutral-400" />
+                        <NavIcon size={15} className="text-text-secondary" />
                         <span>{nav.label}</span>
                       </div>
-                      <ArrowRight size={13} className="text-neutral-500" />
+                      <ArrowRight size={13} className="text-text-muted" />
                     </button>
                   );
                 })}
@@ -345,22 +345,22 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                       app.navigateTo(item.target as any);
                     }
                   }}
-                  className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-neutral-900 border border-transparent hover:border-neutral-800 text-left transition-colors cursor-pointer group"
+                  className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-surface border border-transparent hover:border-border-subtle text-left transition-colors cursor-pointer group"
                 >
                   <div className="space-y-0.5">
-                    <span className="block text-sm font-semibold text-white group-hover:underline transition-colors">
+                    <span className="block text-sm font-semibold text-text-primary group-hover:underline transition-colors">
                       {item.title}
                     </span>
-                    <span className="block text-xs font-mono text-neutral-400">
+                    <span className="block text-xs font-mono text-text-secondary">
                       {item.subtitle}
                     </span>
                   </div>
-                  <ArrowRight size={14} className="text-neutral-500 group-hover:text-white transition-colors" />
+                  <ArrowRight size={14} className="text-text-muted group-hover:text-text-primary transition-colors" />
                 </button>
               ))
             ) : (
-              <div className="py-12 text-center text-xs text-neutral-500 space-y-1">
-                <p className="font-semibold text-neutral-400">No matching records found</p>
+              <div className="py-12 text-center text-xs text-text-muted space-y-1">
+                <p className="font-semibold text-text-secondary">No matching records found</p>
                 <p>Try searching for tasks, project titles, client leads, or features.</p>
               </div>
             )}
@@ -368,7 +368,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
         )}
 
         {/* Modal Footer */}
-        <div className="p-3 bg-[#0A0A0A] border-t border-neutral-800 text-[11px] font-mono text-neutral-400 flex items-center justify-between">
+        <div className="p-3 bg-surface border-t border-border-subtle text-[11px] font-mono text-text-secondary flex items-center justify-between">
           <span className="flex items-center gap-1.5">
             <img src="/logo.png" alt="HAN" className="h-3.5 w-auto object-contain" />
             HAN Command Hub v2.0
@@ -376,7 +376,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
           <button
             aria-label="Close command search"
             onClick={onClose}
-            className="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+            className="text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
           >
             <span className="hidden sm:inline">Press Esc to close</span>
             <span className="sm:hidden">Close</span>

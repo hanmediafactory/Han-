@@ -80,22 +80,22 @@ export const TeamWorkspaceFeed: React.FC = () => {
   return (
     <div className="w-full space-y-4">
       {/* Glassmorphic Header & Team Presence Strip */}
-      <div className="glass-card-dark p-4 rounded-3xl border border-neutral-800 shadow-2xl space-y-3">
-        <div className="flex items-center justify-between pb-2 border-b border-neutral-800">
+      <div className="glass-card-dark p-4 rounded-3xl border border-border-subtle shadow-2xl space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-neutral-800 text-white flex items-center justify-center border border-neutral-700">
+            <div className="w-8 h-8 rounded-xl bg-neutral-800 text-text-primary flex items-center justify-center border border-border-strong">
               <MessageSquare size={16} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-                #workspace-feed <span className="slack-badge bg-neutral-800 text-white border border-neutral-700 font-mono text-[10px]">Live Stream</span>
+              <h3 className="text-sm font-bold text-text-primary flex items-center gap-1.5">
+                #workspace-feed <span className="slack-badge bg-neutral-800 text-text-primary border border-border-strong font-mono text-[10px]">Live Stream</span>
               </h3>
-              <p className="text-[11px] text-neutral-400">Shared multi-user workspace & notifications</p>
+              <p className="text-[11px] text-text-secondary">Shared multi-user workspace & notifications</p>
             </div>
           </div>
           <button
             onClick={() => void refresh()}
-            className="p-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-neutral-900 border border-border-subtle text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
             title="Sync Live Stream"
           >
             <RefreshCw size={14} />
@@ -111,25 +111,25 @@ export const TeamWorkspaceFeed: React.FC = () => {
                 key={member.id}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold shrink-0 transition-all ${
                   isSelf
-                    ? "bg-white text-black border-white"
-                    : "bg-neutral-900 border-neutral-800 text-neutral-300"
+                    ? "bg-page text-text-primary border-white"
+                    : "bg-neutral-900 border-border-subtle text-text-primary"
                 }`}
               >
                 <div className="relative flex items-center justify-center">
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                    isSelf ? "bg-black text-white" : "bg-neutral-800 text-white"
+                    isSelf ? "bg-page text-text-primary" : "bg-neutral-800 text-text-primary"
                   }`}>
                     {member.name.charAt(0)}
                   </div>
                   <span className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full ${
-                    isSelf ? "bg-black" : "bg-white"
+                    isSelf ? "bg-page" : "bg-page"
                   } animate-pulse`} />
                 </div>
                 <span>{member.name}</span>
                 {(member.role === "OWNER" || ["user-1", "user-2", "user-3", "user-4"].includes(member.id)) && (
-                  <span title="Founder"><Shield size={10} className={isSelf ? "text-black" : "text-white"} /></span>
+                  <span title="Founder"><Shield size={10} className={isSelf ? "text-text-primary" : "text-text-primary"} /></span>
                 )}
-                {isSelf && <span className="text-[9px] font-mono text-black uppercase font-bold">(You)</span>}
+                {isSelf && <span className="text-[9px] font-mono text-text-primary uppercase font-bold">(You)</span>}
               </div>
             );
           })}
@@ -142,12 +142,12 @@ export const TeamWorkspaceFeed: React.FC = () => {
             value={announcement}
             onChange={(e) => setAnnouncement(e.target.value)}
             placeholder={`Broadcast message as ${user?.name || "User"}...`}
-            className="flex-1 bg-neutral-900 border border-neutral-800 text-white placeholder-neutral-500 text-xs rounded-2xl px-3.5 py-2.5 outline-none focus:border-white transition-colors"
+            className="flex-1 bg-neutral-900 border border-border-subtle text-text-primary placeholder-neutral-500 text-xs rounded-2xl px-3.5 py-2.5 outline-none focus:border-white transition-colors"
           />
           <button
             type="submit"
             disabled={posting || !announcement.trim()}
-            className="px-4 py-2.5 bg-white text-black font-bold text-xs rounded-2xl flex items-center gap-1.5 hover:bg-neutral-200 active:scale-95 disabled:opacity-40 transition-all shrink-0 cursor-pointer"
+            className="px-4 py-2.5 bg-page text-text-primary font-bold text-xs rounded-2xl flex items-center gap-1.5 hover:bg-neutral-200 active:scale-95 disabled:opacity-40 transition-all shrink-0 cursor-pointer"
           >
             <Send size={13} /> Send
           </button>
@@ -155,12 +155,12 @@ export const TeamWorkspaceFeed: React.FC = () => {
       </div>
 
       {/* Live Action Activity Feed */}
-      <div className="glass-card p-4 rounded-3xl border border-neutral-200/80 space-y-3">
+      <div className="glass-card p-4 rounded-3xl border border-border-subtle/80 space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="font-serif text-sm font-bold text-neutral-900 flex items-center gap-1.5">
-            <Users size={15} className="text-neutral-500" /> Recent Team Operations
+          <h4 className="font-serif text-sm font-bold text-text-primary flex items-center gap-1.5">
+            <Users size={15} className="text-text-muted" /> Recent Team Operations
           </h4>
-          <span className="text-[10px] font-mono font-bold text-neutral-400 uppercase">
+          <span className="text-[10px] font-mono font-bold text-text-secondary uppercase">
             {logs.length} Live Records
           </span>
         </div>
@@ -178,34 +178,34 @@ export const TeamWorkspaceFeed: React.FC = () => {
             return (
               <div
                 key={String(log.id || `feed-log-${index}`)}
-                className="flex items-start gap-3 p-2.5 rounded-2xl bg-neutral-50/80 border border-neutral-200/60 hover:border-neutral-300 transition-all text-xs"
+                className="flex items-start gap-3 p-2.5 rounded-2xl bg-surface/80 border border-border-subtle/60 hover:border-neutral-300 transition-all text-xs"
               >
-                <div className="w-8 h-8 rounded-xl bg-black text-white font-bold flex items-center justify-center shrink-0 text-xs shadow-sm">
+                <div className="w-8 h-8 rounded-xl bg-page text-text-primary font-bold flex items-center justify-center shrink-0 text-xs shadow-sm">
                   {author.initial}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-neutral-900 flex items-center gap-1">
+                    <span className="font-bold text-text-primary flex items-center gap-1">
                       {author.name}
                       {(author.role === "OWNER" || ["user-1", "user-2", "user-3", "user-4"].includes(author.id)) && (
-                        <span className="text-[9px] bg-black text-white font-mono font-bold px-1.5 py-0.5 rounded-md">
+                        <span className="text-[9px] bg-page text-text-primary font-mono font-bold px-1.5 py-0.5 rounded-md">
                           FOUNDER
                         </span>
                       )}
                     </span>
-                    <span className="text-[10px] font-mono text-neutral-400 flex items-center gap-0.5">
+                    <span className="text-[10px] font-mono text-text-secondary flex items-center gap-0.5">
                       <Clock size={10} /> {dateStr}
                     </span>
                   </div>
 
-                  <p className="text-neutral-600 mt-0.5 flex items-center gap-1.5">
+                  <p className="text-text-secondary mt-0.5 flex items-center gap-1.5">
                     {getEntityIcon(String(log.entity))}
-                    <span className="capitalize font-semibold text-neutral-800">
+                    <span className="capitalize font-semibold text-text-primary">
                       {String(log.action)}
                     </span>
-                    <span className="text-neutral-400">·</span>
-                    <span className="text-neutral-500 truncate">{entityLabel(String(log.entity))}</span>
+                    <span className="text-text-secondary">·</span>
+                    <span className="text-text-muted truncate">{entityLabel(String(log.entity))}</span>
                   </p>
                 </div>
               </div>
@@ -213,7 +213,7 @@ export const TeamWorkspaceFeed: React.FC = () => {
           })}
 
           {logs.length === 0 && (
-            <div className="text-center py-6 text-xs text-neutral-400">
+            <div className="text-center py-6 text-xs text-text-secondary">
               No recent activity recorded yet. Team actions will appear live here!
             </div>
           )}

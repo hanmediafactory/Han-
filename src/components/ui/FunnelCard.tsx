@@ -15,7 +15,7 @@ export const FunnelCard: React.FC<FunnelCardProps> = ({ funnel, onClick, classNa
   return (
     <div
       onClick={onClick}
-      className={`relative w-full rounded-2xl overflow-hidden p-6 text-white cursor-pointer select-none active:scale-[0.985] transition-all shadow-lg ${className}`}
+      className={`relative w-full rounded-2xl overflow-hidden p-6 text-text-primary cursor-pointer select-none active:scale-[0.985] transition-all shadow-lg ${className}`}
       style={{
         background: '#0A0A0A',
         minHeight: '170px',
@@ -34,7 +34,7 @@ export const FunnelCard: React.FC<FunnelCardProps> = ({ funnel, onClick, classNa
 
       <div className="relative z-10 flex flex-col justify-between h-full min-h-[140px]">
         <div>
-          <h3 className="font-serif text-2xl font-bold tracking-tight text-white">
+          <h3 className="font-serif text-2xl font-bold tracking-tight text-text-primary">
             {funnel.title}
           </h3>
           <p className="text-xs text-gray-400 mt-1.5 font-sans font-medium line-clamp-1">
@@ -48,7 +48,7 @@ export const FunnelCard: React.FC<FunnelCardProps> = ({ funnel, onClick, classNa
               {funnel.completedDaysOrSteps}/{funnel.totalDaysOrSteps}{' '}
               {funnel.id === 'funnel-1' ? 'days' : 'steps'}
             </span>
-            <div className="flex items-center gap-1 text-white font-bold">
+            <div className="flex items-center gap-1 text-text-primary font-bold">
               <span>View Details</span>
               <ArrowRight size={14} />
             </div>

@@ -34,7 +34,7 @@ export const HANLogo: React.FC<HANLogoProps> = ({
   return (
     <div className={`flex flex-col items-center justify-center text-center ${className}`}>
       {withContainer ? (
-        <div className="bg-black p-2.5 rounded-2xl border border-neutral-800 shadow-xl inline-flex items-center justify-center">
+        <div className="bg-page p-2.5 rounded-2xl border border-border-subtle shadow-xl inline-flex items-center justify-center">
           {imgElement}
         </div>
       ) : (

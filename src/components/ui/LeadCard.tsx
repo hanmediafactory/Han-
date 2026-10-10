@@ -12,13 +12,13 @@ export const LeadCard: React.FC<LeadCardProps> = ({ lead, className = '' }) => {
   const getBadgeStyle = (status: Lead['status']) => {
     switch (status) {
       case 'New':
-        return 'bg-black text-white';
+        return 'bg-page text-text-primary';
       case 'Contacted':
         return 'bg-gray-200 text-gray-800';
       case 'Interested':
-        return 'bg-gray-100 border border-black text-black font-bold';
+        return 'bg-gray-100 border border-black text-text-primary font-bold';
       case 'Follow Up':
-        return 'bg-gray-900 text-white';
+        return 'bg-gray-900 text-text-primary';
       default:
         return 'bg-gray-100 text-gray-700';
     }
@@ -26,14 +26,14 @@ export const LeadCard: React.FC<LeadCardProps> = ({ lead, className = '' }) => {
 
   return (
     <div
-      className={`w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-gray-100 shadow-sm ${className}`}
+      className={`w-full flex items-center justify-between p-4 rounded-2xl bg-page border border-gray-100 shadow-sm ${className}`}
     >
       <div className="flex items-center gap-3.5 flex-1 min-w-0 pr-2">
-        <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center text-black flex-shrink-0">
+        <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center text-text-primary flex-shrink-0">
           <Building2 size={18} />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-sans font-bold text-sm text-black truncate">{lead.name}</h4>
+          <h4 className="font-sans font-bold text-sm text-text-primary truncate">{lead.name}</h4>
           <p className="text-xs text-gray-500 mt-0.5">{lead.category}</p>
         </div>
       </div>

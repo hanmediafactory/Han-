@@ -3,6 +3,7 @@ import type { FormEvent, ReactNode } from "react";
 import { useApp } from "../context/AppContext";
 import { today, dateLabel } from "../context/dates";
 import { getApiUrl } from "../utils/apiConfig";
+import { getTheme, setTheme as saveTheme, type Theme } from "../utils/theme";
 import type { RecordData, Account, State } from "../context/AppContext";
 import { ScreenHeader } from "../components/ui/ScreenHeader";
 import { BottomNavigation } from "../components/ui/BottomNavigation";
@@ -39,6 +40,9 @@ import {
   CheckCircle2,
   Filter,
   Users,
+  Monitor,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 type Field = {
@@ -450,10 +454,10 @@ function Editor({
     >
       <form onSubmit={submit} className="space-y-4">
         {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-        {["expenses", "savings_entries", "salary_payments"].includes(table) && <p className="text-sm text-neutral-600">Available funds: ₹{app.totalFunds.toLocaleString("en-IN")}. Protected savings cannot be spent.</p>}
-        {table === "salary_payments" && <p className="text-sm text-neutral-600">Record a salary you have paid. It deducts funds and appears once in expenses. HAN does not send money to a bank account.</p>}
+        {["expenses", "savings_entries", "salary_payments"].includes(table) && <p className="text-sm text-text-secondary">Available funds: ₹{app.totalFunds.toLocaleString("en-IN")}. Protected savings cannot be spent.</p>}
+        {table === "salary_payments" && <p className="text-sm text-text-secondary">Record a salary you have paid. It deducts funds and appears once in expenses. HAN does not send money to a bank account.</p>}
         {table === "savings_entries" && <label className="flex items-start gap-3 text-sm"><input type="checkbox" required className="mt-1" />I understand this moves funds into protected savings and cannot be withdrawn or deleted in HAN.</label>}
-        {table === "projects" && <p className="text-sm text-neutral-600">Progress is calculated from completed, non-cancelled tasks. Without tasks, it uses your estimate. Leave the deadline blank if it is not yet agreed.</p>}
+        {table === "projects" && <p className="text-sm text-text-secondary">Progress is calculated from completed, non-cancelled tasks. Without tasks, it uses your estimate. Leave the deadline blank if it is not yet agreed.</p>}
         {fields[table]
           .filter((f) => !memberTask || f.key === "status")
           .map((field) => (
@@ -567,8 +571,8 @@ function Editor({
           ))}
 
         {table === "expenses" && (
-          <div className="space-y-3 p-3 bg-neutral-50 rounded-xl border border-neutral-200">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600">
+          <div className="space-y-3 p-3 bg-surface rounded-xl border border-border-subtle">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary">
               Founder Expense Allocation
             </label>
             <div className="flex gap-2">
@@ -595,7 +599,7 @@ function Editor({
               </button>
             </div>
             {splitType === "custom" && (
-              <div className="space-y-2 pt-2 border-t border-neutral-200">
+              <div className="space-y-2 pt-2 border-t border-border-subtle">
                 {activeFounders.map((u) => (
                   <div key={u.id} className="flex items-center justify-between gap-3 text-xs">
                         <span className="font-semibold">{u.name}</span>
@@ -621,8 +625,8 @@ function Editor({
                 <div
                   className={`p-2 rounded text-xs flex justify-between font-semibold ${
                     discrepancyCents === 0
-                      ? "bg-black text-white"
-                      : "bg-neutral-100 text-black border border-neutral-300"
+                      ? "bg-page text-text-primary"
+                      : "bg-surface-elevated text-text-primary border border-neutral-300"
                   }`}
                 >
                   <span>Allocated Total: ₹{totalCustom.toFixed(2)}</span>
@@ -635,12 +639,12 @@ function Editor({
               </div>
             )}
             {splitType === "equal" && (
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-text-muted">
                 Total ₹{Number(value.amount || 0).toLocaleString("en-IN")} will be split equally across all active founders with deterministic integer-paise remainder.
               </p>
             )}
             {splitType === "individual" && (
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-text-muted">
                 Entire amount belongs exclusively to the payer. No reimbursement debt is generated.
               </p>
             )}
@@ -755,7 +759,7 @@ function Actions({
   return (
     <div className="flex items-center gap-2 mt-3 border-t border-neutral-100 pt-2">
       {isVoid ? (
-        <span className="text-[11px] font-mono font-bold text-neutral-500 bg-neutral-100 px-2 py-0.5 rounded border border-neutral-300 line-through">
+        <span className="text-[11px] font-mono font-bold text-text-muted bg-surface-elevated px-2 py-0.5 rounded border border-neutral-300 line-through">
           Voided {item.voidReason ? `(${String(item.voidReason)})` : ""}
         </span>
       ) : (
@@ -772,7 +776,7 @@ function Actions({
           ) : null}
           {table === "expenses" && (isOwner || app.can("finance.manage")) && (
             <button
-              className="action text-neutral-800 hover:text-black font-medium"
+              className="action text-text-primary hover:text-text-primary font-medium"
               disabled={app.busy}
               onClick={async () => {
                 const reason = window.prompt("Reason for voiding this expense:", "Voided by user");
@@ -823,15 +827,11 @@ export function Workspace() {
       table: string;
       item?: RecordData;
       initialValues?: Record<string, unknown>;
-    } | null>(null);
+    } | null>(() => app.createOnOpen && !["project-details", "funnel-details", "profile", "home"].includes(app.currentScreen) ? { table } : null);
 
   useEffect(() => {
     if (app.createOnOpen) {
       app.setCreateOnOpen(false);
-      if (!["project-details", "funnel-details", "profile", "home"].includes(app.currentScreen)) {
-        const timer = setTimeout(() => setEditing({ table }), 0);
-        return () => clearTimeout(timer);
-      }
     }
   }, [app.createOnOpen, table, app.currentScreen, app]);
 
@@ -852,29 +852,34 @@ export function Workspace() {
 
   const isOwner = app.user?.role === "OWNER";
   const [profileSection, setProfileSection] = useState<string | null>(null);
+  const [theme, setTheme] = useState(getTheme);
+  const updateTheme = (newTheme: string) => {
+    setTheme(newTheme as Theme);
+    saveTheme(newTheme as Theme);
+  };
 
   if (app.currentScreen === "profile")
     return (
       <Page title="You">
         {/* Profile Card matching Screen 11 */}
-        <div className="p-4 rounded-3xl bg-[#111113] border border-neutral-800/80 shadow-xl flex items-center justify-between">
+        <div className="p-4 rounded-3xl bg-surface-elevated border border-border-subtle shadow-xl flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-14 h-14 rounded-full bg-[#18181C] border border-neutral-700 text-white font-bold text-xl flex items-center justify-center shrink-0">
+            <div className="w-14 h-14 rounded-full bg-surface-overlay border border-border-strong text-text-primary font-bold text-xl flex items-center justify-center shrink-0">
               {app.user?.name.charAt(0) || "H"}
             </div>
             <div>
-              <h2 className="font-serif text-2xl font-bold text-white tracking-tight">{app.user?.name}</h2>
-              <p className="text-xs text-neutral-400 mt-0.5">
+              <h2 className="font-serif text-2xl font-bold text-text-primary tracking-tight">{app.user?.name}</h2>
+              <p className="text-xs text-text-secondary mt-0.5">
                 {["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "") ? "Founder" : app.user?.role}
               </p>
-              <p className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase mt-0.5">
+              <p className="text-[10px] font-mono tracking-widest text-text-muted uppercase mt-0.5">
                 HAN MEDIA FACTORY
               </p>
             </div>
           </div>
           <button
             onClick={() => setEditing({ table: "users", item: app.user as unknown as RecordData })}
-            className="px-3.5 py-1.5 rounded-full bg-[#18181C] border border-neutral-700 hover:border-neutral-500 text-xs text-neutral-300 hover:text-white transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 rounded-full bg-surface-overlay border border-border-strong hover:border-border-strong text-xs text-text-primary hover:text-text-primary transition-colors cursor-pointer"
           >
             Edit
           </button>
@@ -882,17 +887,17 @@ export function Workspace() {
 
         {/* 3-Column Stats Row matching Screen 11 */}
         <div className="grid grid-cols-3 gap-2.5">
-          <div className="p-3.5 rounded-2xl bg-[#111113] border border-neutral-800/80 text-center">
-            <p className="font-serif text-2xl font-bold text-white">{app.projects.length}</p>
-            <p className="text-[11px] text-neutral-400 mt-0.5 font-sans">Projects</p>
+          <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle text-center">
+            <p className="font-serif text-2xl font-bold text-text-primary">{app.projects.length}</p>
+            <p className="text-[11px] text-text-secondary mt-0.5 font-sans">Projects</p>
           </div>
-          <div className="p-3.5 rounded-2xl bg-[#111113] border border-neutral-800/80 text-center">
-            <p className="font-serif text-2xl font-bold text-white">{app.tasks.filter((t) => t.completed).length}</p>
-            <p className="text-[11px] text-neutral-400 mt-0.5 font-sans">Completed</p>
+          <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle text-center">
+            <p className="font-serif text-2xl font-bold text-text-primary">{app.tasks.filter((t) => t.completed).length}</p>
+            <p className="text-[11px] text-text-secondary mt-0.5 font-sans">Completed</p>
           </div>
-          <div className="p-3.5 rounded-2xl bg-[#111113] border border-neutral-800/80 text-center">
-            <p className="font-serif text-2xl font-bold text-white">{app.tasks.filter((t) => t.date === today()).length}</p>
-            <p className="text-[11px] text-neutral-400 mt-0.5 font-sans">Tasks Today</p>
+          <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle text-center">
+            <p className="font-serif text-2xl font-bold text-text-primary">{app.tasks.filter((t) => t.date === today()).length}</p>
+            <p className="text-[11px] text-text-secondary mt-0.5 font-sans">Tasks Today</p>
           </div>
         </div>
 
@@ -900,17 +905,17 @@ export function Workspace() {
         <div className="space-y-2 pt-1">
           <button
             onClick={() => setProfileSection(profileSection === "settings" ? null : "settings")}
-            className="w-full p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 flex items-center justify-between text-left transition-colors cursor-pointer group"
+            className="w-full p-4 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong flex items-center justify-between text-left transition-colors cursor-pointer group"
           >
             <div className="flex items-center gap-3">
-              <Settings size={18} className="text-neutral-400 group-hover:text-white" />
-              <span className="text-xs font-semibold text-white">Workspace Settings</span>
+              <Settings size={18} className="text-text-secondary group-hover:text-text-primary" />
+              <span className="text-xs font-semibold text-text-primary">Workspace Settings</span>
             </div>
-            <ChevronRight size={16} className={`text-neutral-500 transition-transform ${profileSection === "settings" ? "rotate-90" : ""}`} />
+            <ChevronRight size={16} className={`text-text-muted transition-transform ${profileSection === "settings" ? "rotate-90" : ""}`} />
           </button>
 
           {profileSection === "settings" && (isOwner || app.can("projects.manage")) && (
-            <div className="p-4 rounded-2xl bg-[#141416] border border-neutral-800 space-y-3 animate-fadeIn">
+            <div className="p-4 rounded-2xl bg-surface-overlay border border-border-subtle space-y-3 animate-fadeIn">
               <div className="flex gap-2">
                 {["settings", "categories"].map((t) => (
                   <button
@@ -930,8 +935,8 @@ export function Workspace() {
               </button>
               {app.state[settingsTab as "settings" | "categories"].map((item) => (
                 <div key={item.id} className="han-card">
-                  <p className="text-sm font-bold text-white">{String(item.name)}</p>
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-sm font-bold text-text-primary">{String(item.name)}</p>
+                  <p className="text-xs text-text-secondary">
                     {String(item.value || item.kind)}
                   </p>
                   <Actions
@@ -946,30 +951,70 @@ export function Workspace() {
           )}
 
           <button
-            onClick={() => app.navigateTo("team")}
-            className="w-full p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 flex items-center justify-between text-left transition-colors cursor-pointer group"
+            onClick={() => setProfileSection(profileSection === "theme" ? null : "theme")}
+            className="w-full p-4 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong flex items-center justify-between text-left transition-colors cursor-pointer group"
           >
             <div className="flex items-center gap-3">
-              <Users size={18} className="text-neutral-400 group-hover:text-white" />
-              <span className="text-xs font-semibold text-white">Team & Accounts</span>
+              <Sun size={18} className="text-text-secondary group-hover:text-text-primary" />
+              <span className="text-xs font-semibold text-text-primary">Appearance & Theme</span>
             </div>
-            <ChevronRight size={16} className="text-neutral-500" />
+            <ChevronRight size={16} className={`text-text-muted transition-transform ${profileSection === "theme" ? "rotate-90" : ""}`} />
+          </button>
+
+          {profileSection === "theme" && (
+            <div className="p-4 rounded-2xl bg-surface-overlay border border-border-subtle space-y-3 animate-fadeIn">
+              <div className="flex gap-2 p-1 bg-surface-elevated border border-border-subtle rounded-xl">
+                {[
+                  { id: "light", icon: <Sun size={14} />, label: "Light" },
+                  { id: "dark", icon: <Moon size={14} />, label: "Dark" },
+                  { id: "system", icon: <Monitor size={14} />, label: "System" },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    aria-pressed={theme === t.id}
+                    onClick={() => updateTheme(t.id)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-semibold rounded-lg transition-colors ${
+                      theme === t.id
+                        ? "bg-page text-text-primary shadow-sm"
+                        : "text-text-muted hover:text-text-primary"
+                    }`}
+                  >
+                    {t.icon}
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] text-text-muted text-center mt-2 px-2">
+                Choose the visual style that works best for you. System matches your device settings.
+              </p>
+            </div>
+          )}
+
+          <button
+            onClick={() => app.navigateTo("team")}
+            className="w-full p-4 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong flex items-center justify-between text-left transition-colors cursor-pointer group"
+          >
+            <div className="flex items-center gap-3">
+              <Users size={18} className="text-text-secondary group-hover:text-text-primary" />
+              <span className="text-xs font-semibold text-text-primary">Team & Accounts</span>
+            </div>
+            <ChevronRight size={16} className="text-text-muted" />
           </button>
 
           <button
             onClick={() => setProfileSection(profileSection === "notifications" ? null : "notifications")}
-            className="w-full p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 flex items-center justify-between text-left transition-colors cursor-pointer group"
+            className="w-full p-4 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong flex items-center justify-between text-left transition-colors cursor-pointer group"
           >
             <div className="flex items-center gap-3">
-              <Bell size={18} className="text-neutral-400 group-hover:text-white" />
-              <span className="text-xs font-semibold text-white">Notification Preferences</span>
+              <Bell size={18} className="text-text-secondary group-hover:text-text-primary" />
+              <span className="text-xs font-semibold text-text-primary">Notification Preferences</span>
             </div>
-            <ChevronRight size={16} className={`text-neutral-500 transition-transform ${profileSection === "notifications" ? "rotate-90" : ""}`} />
+            <ChevronRight size={16} className={`text-text-muted transition-transform ${profileSection === "notifications" ? "rotate-90" : ""}`} />
           </button>
 
           {profileSection === "notifications" && (
-            <div className="p-4 rounded-2xl bg-[#141416] border border-neutral-800 space-y-3 animate-fadeIn">
-              <label className="flex items-center gap-3 text-xs text-neutral-300">
+            <div className="p-4 rounded-2xl bg-surface-overlay border border-border-subtle space-y-3 animate-fadeIn">
+              <label className="flex items-center gap-3 text-xs text-text-primary">
                 <input
                   type="checkbox"
                   checked={alertEnabled}
@@ -978,7 +1023,7 @@ export function Workspace() {
                     localStorage.setItem(`han_alerts_${app.user!.id}`, event.target.checked ? "on" : "off");
                     if (!event.target.checked) app.dismissNotificationAlert();
                   }}
-                  className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 accent-white"
+                  className="w-4 h-4 rounded border-border-strong bg-neutral-900 accent-white"
                 />
                 Show alerts while HAN is open
               </label>
@@ -988,17 +1033,17 @@ export function Workspace() {
 
           <button
             onClick={() => setProfileSection(profileSection === "password" ? null : "password")}
-            className="w-full p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 flex items-center justify-between text-left transition-colors cursor-pointer group"
+            className="w-full p-4 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong flex items-center justify-between text-left transition-colors cursor-pointer group"
           >
             <div className="flex items-center gap-3">
-              <Lock size={18} className="text-neutral-400 group-hover:text-white" />
-              <span className="text-xs font-semibold text-white">Change Password</span>
+              <Lock size={18} className="text-text-secondary group-hover:text-text-primary" />
+              <span className="text-xs font-semibold text-text-primary">Change Password</span>
             </div>
-            <ChevronRight size={16} className={`text-neutral-500 transition-transform ${profileSection === "password" ? "rotate-90" : ""}`} />
+            <ChevronRight size={16} className={`text-text-muted transition-transform ${profileSection === "password" ? "rotate-90" : ""}`} />
           </button>
 
           {profileSection === "password" && (
-            <div className="p-4 rounded-2xl bg-[#141416] border border-neutral-800 animate-fadeIn">
+            <div className="p-4 rounded-2xl bg-surface-overlay border border-border-subtle animate-fadeIn">
               <PasswordForm />
             </div>
           )}
@@ -1022,35 +1067,35 @@ export function Workspace() {
                 app.showToast("Backup export failed.");
               }
             }}
-            className="w-full p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 flex items-center justify-between text-left transition-colors cursor-pointer group"
+            className="w-full p-4 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong flex items-center justify-between text-left transition-colors cursor-pointer group"
           >
             <div className="flex items-center gap-3">
-              <Download size={18} className="text-neutral-400 group-hover:text-white" />
-              <span className="text-xs font-semibold text-white">Download Backup</span>
+              <Download size={18} className="text-text-secondary group-hover:text-text-primary" />
+              <span className="text-xs font-semibold text-text-primary">Download Backup</span>
             </div>
-            <ChevronRight size={16} className="text-neutral-500" />
+            <ChevronRight size={16} className="text-text-muted" />
           </button>
 
           <button
             onClick={() => app.navigateTo("calendar")}
-            className="w-full p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 flex items-center justify-between text-left transition-colors cursor-pointer group"
+            className="w-full p-4 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong flex items-center justify-between text-left transition-colors cursor-pointer group"
           >
             <div className="flex items-center gap-3">
-              <FileText size={18} className="text-neutral-400 group-hover:text-white" />
-              <span className="text-xs font-semibold text-white">Calendar</span>
+              <FileText size={18} className="text-text-secondary group-hover:text-text-primary" />
+              <span className="text-xs font-semibold text-text-primary">Calendar</span>
             </div>
-            <ChevronRight size={16} className="text-neutral-500" />
+            <ChevronRight size={16} className="text-text-muted" />
           </button>
 
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("han:play-intro"))}
-            className="w-full p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 flex items-center justify-between text-left transition-colors cursor-pointer group"
+            className="w-full p-4 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong flex items-center justify-between text-left transition-colors cursor-pointer group"
           >
             <div className="flex items-center gap-3">
-              <Eye size={18} className="text-neutral-400 group-hover:text-white" />
-              <span className="text-xs font-semibold text-white">Watch HAN Entry Film</span>
+              <Eye size={18} className="text-text-secondary group-hover:text-text-primary" />
+              <span className="text-xs font-semibold text-text-primary">Watch HAN Entry Film</span>
             </div>
-            <ChevronRight size={16} className="text-neutral-500" />
+            <ChevronRight size={16} className="text-text-muted" />
           </button>
 
           <button
@@ -1074,16 +1119,16 @@ export function Workspace() {
         )}
 
         {app.pendingMutations.length > 0 && (
-          <section className="p-4 rounded-2xl bg-[#141416] border border-neutral-800 space-y-3" aria-label="Pending changes">
-            <h2 className="font-semibold text-sm text-white">Pending changes ({app.pendingMutations.length})</h2>
-            <p className="text-xs text-neutral-400">Queued changes have not been confirmed. Resolve a rejected change before later changes can sync.</p>
+          <section className="p-4 rounded-2xl bg-surface-overlay border border-border-subtle space-y-3" aria-label="Pending changes">
+            <h2 className="font-semibold text-sm text-text-primary">Pending changes ({app.pendingMutations.length})</h2>
+            <p className="text-xs text-text-secondary">Queued changes have not been confirmed. Resolve a rejected change before later changes can sync.</p>
             {app.pendingMutations.map(change => (
-              <div key={change.id} className="border-t border-neutral-800 pt-2 text-xs">
-                <p className="text-neutral-300">{change.method} · {change.path.split("/")[0]} · {change.timestamp}</p>
-                <p role={change.error ? "alert" : undefined} className={change.error ? "text-red-400" : "text-neutral-400"}>
+              <div key={change.id} className="border-t border-border-subtle pt-2 text-xs">
+                <p className="text-text-primary">{change.method} · {change.path.split("/")[0]} · {change.timestamp}</p>
+                <p role={change.error ? "alert" : undefined} className={change.error ? "text-red-400" : "text-text-secondary"}>
                   {change.error || "Waiting to sync"}
                 </p>
-                <button className="underline text-neutral-400 hover:text-white mt-1 cursor-pointer" onClick={() => { if (window.confirm("Discard this unsynced change?")) app.discardPendingMutation(change.id); }}>
+                <button className="underline text-text-secondary hover:text-text-primary mt-1 cursor-pointer" onClick={() => { if (window.confirm("Discard this unsynced change?")) app.discardPendingMutation(change.id); }}>
                   Discard queued change
                 </button>
               </div>
@@ -1177,14 +1222,14 @@ export function Workspace() {
             <button
               aria-label="Edit project"
               onClick={() => setEditing({ table: "projects", item: list[0] })}
-              className="w-10 h-10 flex items-center justify-center rounded-full active:bg-neutral-800 transition-colors bg-[#111111] text-white border border-neutral-800 cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center rounded-full active:bg-neutral-800 transition-colors bg-surface-elevated text-text-primary border border-border-subtle cursor-pointer"
             >
               <Pencil size={18} />
             </button>
             <button
               aria-label="Project options"
               onClick={() => setDeleting({ table: "projects", item: list[0] })}
-              className="w-10 h-10 flex items-center justify-center rounded-full active:bg-neutral-800 transition-colors bg-[#111111] text-white border border-neutral-800 cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center rounded-full active:bg-neutral-800 transition-colors bg-surface-elevated text-text-primary border border-border-subtle cursor-pointer"
             >
               <MoreVertical size={18} />
             </button>
@@ -1259,7 +1304,7 @@ export function Workspace() {
             </div>
             <button
               aria-label="Filter projects"
-              className="w-10 h-10 rounded-xl bg-[#18181C] border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white transition-colors cursor-pointer shrink-0"
+              className="w-10 h-10 rounded-xl bg-surface-overlay border border-border-subtle flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors cursor-pointer shrink-0"
             >
               <Filter size={18} />
             </button>
@@ -1305,13 +1350,13 @@ export function Workspace() {
           {!app.activeProjectId && <label className="text-xs">Project filter<select className="han-input mt-1" value={taskProject} onChange={event => setTaskProject(event.target.value)}><option value="All">All projects</option><option value="Unassigned">No project</option>{app.projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>}
           <label className="text-xs">Sort tasks<select className="han-input mt-1" value={taskSort} onChange={event => setTaskSort(event.target.value)}>{["Due date", "Priority"].map(value => <option key={value}>{value}</option>)}</select></label>
         </div>
-        <p className="text-xs text-neutral-500">{visible.length} shown · {app.tasks.filter(task => !["COMPLETED", "CANCELLED"].includes(task.status || "TODO")).length} open · {app.tasks.filter(task => task.completed).length} completed</p>
+        <p className="text-xs text-text-muted">{visible.length} shown · {app.tasks.filter(task => !["COMPLETED", "CANCELLED"].includes(task.status || "TODO")).length} open · {app.tasks.filter(task => task.completed).length} completed</p>
         </section>
       )}
       {table === "funnels" && !detail && (
         <div className="space-y-4">
           {/* Growth Sub-tabs matching Screen 10 */}
-          <div className="flex gap-2 border-b border-neutral-800/80 pb-2 overflow-x-auto no-scrollbar">
+          <div className="flex gap-2 border-b border-border-subtle pb-2 overflow-x-auto no-scrollbar">
             {(["Overview", "Leads", "Clients", "Analytics"] as const).map((tabName) => {
               const isActive = growthTab === tabName;
               return (
@@ -1320,8 +1365,8 @@ export function Workspace() {
                   onClick={() => setGrowthTab(tabName)}
                   className={`px-3.5 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0 ${
                     isActive
-                      ? "bg-white text-black font-bold shadow-sm"
-                      : "bg-[#18181C] text-neutral-400 hover:text-white border border-neutral-800"
+                      ? "bg-page text-text-primary font-bold shadow-sm"
+                      : "bg-surface-overlay text-text-secondary hover:text-text-primary border border-border-subtle"
                   }`}
                 >
                   {tabName}
@@ -1335,38 +1380,38 @@ export function Workspace() {
             <div className="space-y-4 animate-fadeIn">
               {/* 2x2 Metric Cards matching Screen 10 */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 space-y-1">
-                  <span className="text-[11px] font-sans text-neutral-400">Total Leads</span>
-                  <p className="font-serif text-2xl font-bold text-white tracking-tight">
-                    {app.state.leads.length || 24}
+                <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle space-y-1">
+                  <span className="text-[11px] font-sans text-text-secondary">Total Leads</span>
+                  <p className="font-serif text-2xl font-bold text-text-primary tracking-tight">
+                    {app.state.leads.length}
                   </p>
-                  <p className="text-[10px] font-mono text-emerald-400">+12% this month</p>
+                  <p className="text-[10px] font-mono text-text-secondary">Workspace leads</p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 space-y-1">
-                  <span className="text-[11px] font-sans text-neutral-400">Active Clients</span>
-                  <p className="font-serif text-2xl font-bold text-white tracking-tight">
-                    {app.state.leads.filter(l => l.status === "Won").length || app.projects.filter(p => p.category === "Active").length || 8}
+                <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle space-y-1">
+                  <span className="text-[11px] font-sans text-text-secondary">Won Leads</span>
+                  <p className="font-serif text-2xl font-bold text-text-primary tracking-tight">
+                    {app.state.leads.filter(l => l.status === "Won").length}
                   </p>
-                  <p className="text-[10px] font-mono text-neutral-400">Active contracts</p>
+                  <p className="text-[10px] font-mono text-text-secondary">Closed deals</p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 space-y-1">
-                  <span className="text-[11px] font-sans text-neutral-400">Conversion Rate</span>
-                  <p className="font-serif text-2xl font-bold text-white tracking-tight">
+                <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle space-y-1">
+                  <span className="text-[11px] font-sans text-text-secondary">Conversion Rate</span>
+                  <p className="font-serif text-2xl font-bold text-text-primary tracking-tight">
                     {app.state.leads.length > 0
                       ? `${Math.round((app.state.leads.filter(l => l.status === "Won").length / app.state.leads.length) * 100)}%`
-                      : "33%"}
+                      : "0%"}
                   </p>
-                  <p className="text-[10px] font-mono text-neutral-400">Lead to client</p>
+                  <p className="text-[10px] font-mono text-text-secondary">Lead to client</p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 space-y-1">
-                  <span className="text-[11px] font-sans text-neutral-400">Revenue MTD</span>
-                  <p className="font-serif text-2xl font-bold text-white tracking-tight">
-                    {app.totalIncome ? `₹${(app.totalIncome / 100000).toFixed(1)}L` : "₹4.2L"}
+                <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle space-y-1">
+                  <span className="text-[11px] font-sans text-text-secondary">Total Income</span>
+                  <p className="font-serif text-2xl font-bold text-text-primary tracking-tight">
+                    {`₹${app.totalIncome.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`}
                   </p>
-                  <p className="text-[10px] font-mono text-neutral-400">Current cycle</p>
+                  <p className="text-[10px] font-mono text-text-secondary">Recorded income</p>
                 </div>
               </div>
 
@@ -1384,15 +1429,15 @@ export function Workspace() {
               {/* Active Funnels List */}
               <div className="space-y-2 pt-1">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-base font-bold text-white">Active Funnels</h3>
-                  <span className="text-xs font-mono text-neutral-400">{app.funnels.length}</span>
+                  <h3 className="font-serif text-base font-bold text-text-primary">Active Funnels</h3>
+                  <span className="text-xs font-mono text-text-secondary">{app.funnels.length}</span>
                 </div>
                 {visible.length === 0 ? (
-                  <div className="p-6 text-center bg-[#111113] border border-neutral-800 rounded-2xl space-y-2">
-                    <p className="text-xs text-neutral-400">No active funnels configured.</p>
+                  <div className="p-6 text-center bg-surface-elevated border border-border-subtle rounded-2xl space-y-2">
+                    <p className="text-xs text-text-secondary">No active funnels configured.</p>
                     {write && (
                       <button
-                        className="text-xs text-white underline cursor-pointer"
+                        className="text-xs text-text-primary underline cursor-pointer"
                         onClick={() => setEditing({ table: "funnels" })}
                       >
                         + Create Funnel
@@ -1423,11 +1468,11 @@ export function Workspace() {
           {growthTab === "Leads" && (
             <div className="space-y-4 animate-fadeIn">
               <div className="flex items-center justify-between">
-                <h3 className="font-serif text-base font-bold text-white">Lead Pipeline</h3>
+                <h3 className="font-serif text-base font-bold text-text-primary">Lead Pipeline</h3>
                 {write && (
                   <button
                     onClick={() => setEditing({ table: "leads" })}
-                    className="px-3 py-1.5 rounded-xl bg-white text-black font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md"
+                    className="px-3 py-1.5 rounded-xl bg-page text-text-primary font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md"
                   >
                     <Plus size={14} />
                     <span>Add Lead</span>
@@ -1450,31 +1495,31 @@ export function Workspace() {
           {growthTab === "Clients" && (
             <div className="space-y-3 animate-fadeIn">
               <div className="flex items-center justify-between">
-                <h3 className="font-serif text-base font-bold text-white">Active Clients</h3>
-                <span className="text-xs font-mono text-neutral-400">
+                <h3 className="font-serif text-base font-bold text-text-primary">Active Clients</h3>
+                <span className="text-xs font-mono text-text-secondary">
                   {app.state.leads.filter(l => l.status === "Won").length}
                 </span>
               </div>
               {app.state.leads.filter(l => l.status === "Won").length === 0 ? (
-                <div className="p-6 text-center bg-[#111113] border border-neutral-800 rounded-2xl space-y-2">
-                  <p className="text-xs text-neutral-400">No converted clients recorded yet.</p>
-                  <p className="text-[11px] text-neutral-500">Won leads from your pipeline will automatically appear here.</p>
+                <div className="p-6 text-center bg-surface-elevated border border-border-subtle rounded-2xl space-y-2">
+                  <p className="text-xs text-text-secondary">No converted clients recorded yet.</p>
+                  <p className="text-[11px] text-text-muted">Won leads from your pipeline will automatically appear here.</p>
                 </div>
               ) : (
                 app.state.leads.filter(l => l.status === "Won").map(client => (
-                  <div key={client.id} className="p-3.5 rounded-2xl bg-[#111113] border border-neutral-800/80 flex items-center justify-between">
+                  <div key={client.id} className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-[#18181C] border border-neutral-800 flex items-center justify-center shrink-0">
-                        <Building size={16} className="text-neutral-400" />
+                      <div className="w-9 h-9 rounded-xl bg-surface-overlay border border-border-subtle flex items-center justify-center shrink-0">
+                        <Building size={16} className="text-text-secondary" />
                       </div>
                       <div>
-                        <h4 className="font-sans font-bold text-sm text-white">{client.name}</h4>
-                        <p className="text-xs text-neutral-400 mt-0.5">{client.source || "Direct Client"} · {client.category || "General"}</p>
+                        <h4 className="font-sans font-bold text-sm text-text-primary">{client.name}</h4>
+                        <p className="text-xs text-text-secondary mt-0.5">{client.source || "Direct Client"} · {client.category || "General"}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <span className="badge-today">Active</span>
-                      {client.dealValue ? <p className="font-mono text-xs font-bold text-white mt-1">₹{Number(client.dealValue).toLocaleString('en-IN')}</p> : null}
+                      {client.dealValue ? <p className="font-mono text-xs font-bold text-text-primary mt-1">₹{Number(client.dealValue).toLocaleString('en-IN')}</p> : null}
                     </div>
                   </div>
                 ))
@@ -1485,25 +1530,25 @@ export function Workspace() {
           {/* ANALYTICS TAB */}
           {growthTab === "Analytics" && (
             <div className="space-y-4 animate-fadeIn">
-              <h3 className="font-serif text-base font-bold text-white">Funnel Conversion Analytics</h3>
-              <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 space-y-3">
+              <h3 className="font-serif text-base font-bold text-text-primary">Funnel Conversion Analytics</h3>
+              <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle space-y-3">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-neutral-400">Total Leads Pipeline</span>
-                  <span className="font-mono font-bold text-white">{app.state.leads.length}</span>
+                  <span className="text-text-secondary">Total Leads Pipeline</span>
+                  <span className="font-mono font-bold text-text-primary">{app.state.leads.length}</span>
                 </div>
-                <div className="space-y-2.5 pt-2 border-t border-neutral-800">
-                  {["New", "Contacted", "Qualified", "Proposal", "Won", "Lost"].map((stage) => {
+                <div className="space-y-2.5 pt-2 border-t border-border-subtle">
+                  {["New", "Contacted", "Interested", "Follow Up", "Won", "Lost"].map((stage) => {
                     const count = app.state.leads.filter(l => l.status === stage).length;
                     const pct = app.state.leads.length ? Math.round((count / app.state.leads.length) * 100) : 0;
                     return (
                       <div key={stage} className="space-y-1">
                         <div className="flex justify-between text-xs">
-                          <span className="text-neutral-300">{stage}</span>
-                          <span className="font-mono text-neutral-400">{count} ({pct}%)</span>
+                          <span className="text-text-primary">{stage}</span>
+                          <span className="font-mono text-text-secondary">{count} ({pct}%)</span>
                         </div>
-                        <div className="w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+                        <div className="w-full h-1.5 bg-surface rounded-full overflow-hidden">
                           <div
-                            className={`h-full rounded-full transition-all duration-300 ${stage === "Won" ? "bg-emerald-400" : stage === "Lost" ? "bg-red-400" : "bg-white"}`}
+                            className={`h-full rounded-full transition-all duration-300 ${stage === "Won" ? "bg-emerald-400" : stage === "Lost" ? "bg-red-400" : "bg-text-secondary"}`}
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -1533,14 +1578,14 @@ export function Workspace() {
             .map((t) => (
               <div className="han-card" key={t.id}>
                 <p className="font-semibold">{t.title}</p>
-                <p className="text-xs text-neutral-500 mt-2">
+                <p className="text-xs text-text-muted mt-2">
                   Task · {readable(t.status || "TODO")}
                 </p>
                 {(isOwner || app.can("tasks.manage") || t.assignedUserId === app.user?.id) && t.status !== "CANCELLED" && <button disabled={app.busy} className="action underline" onClick={() => app.toggleTask(t.id)}>{t.completed ? "Reopen task" : "Complete task"}</button>}
               </div>
             ))}
           {app.tasks.filter((t) => t.date === app.selectedDate).length === 0 && visible.length === 0 && (
-            <div className="p-6 text-center text-xs text-neutral-500 bg-white border rounded-2xl">
+            <div className="p-6 text-center text-xs text-text-muted bg-page border rounded-2xl">
               No tasks or events scheduled for {app.selectedDate}.
             </div>
           )}
@@ -1557,13 +1602,13 @@ export function Workspace() {
       {table === "notifications" && <div className="flex gap-2">{["All", "Unread"].map(value => <button key={value} className={`filter-chip ${filter === value ? "active" : ""}`} onClick={() => setFilter(value)}>{value === "Unread" ? `Unread (${app.unreadNotificationCount})` : "All"}</button>)}</div>}
       {table === "team_members" && <AccountManagement />}
       {visible.length === 0 && table !== "leads" && table !== "calendar_events" && (table !== "funnels" || detail) && (
-        <div className="p-8 text-center bg-white border border-neutral-200 rounded-2xl space-y-3">
-          <p className="text-sm font-semibold text-neutral-800">
+        <div className="p-8 text-center bg-page border border-border-subtle rounded-2xl space-y-3">
+          <p className="text-sm font-semibold text-text-primary">
             {query
               ? `No ${titleFor[table] || "records"} matching "${query}"`
               : table === "notifications" ? "You're all caught up" : `No ${titleFor[table] || "items"} found`}
           </p>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-text-muted">
             {table === "notifications" ? "Task assignments and workspace updates will appear here." : write
               ? `Click the "+" button above to add a new ${singularTitleFor[table] || "record"}.`
               : "No data available."}
@@ -1622,18 +1667,18 @@ export function Workspace() {
                     item[key] ? (
                       <p
                         key={key}
-                        className="text-sm text-neutral-600 mt-2 whitespace-pre-wrap"
+                        className="text-sm text-text-secondary mt-2 whitespace-pre-wrap"
                       >
                         {String(item[key])}
                       </p>
                     ) : null,
                 )}
                 {item.date ? (
-                  <p className="text-xs text-neutral-500 mt-3">
+                  <p className="text-xs text-text-muted mt-3">
                     {dateLabel(String(item.date))}
                   </p>
                 ) : null}
-                {table === "notifications" && <p className="text-xs text-neutral-500 mt-2">{item.category as string} · {new Date(String(item.timestamp)).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })} · {item.read ? "Read" : "Unread"}</p>}
+                {table === "notifications" && <p className="text-xs text-text-muted mt-2">{item.category as string} · {new Date(String(item.timestamp)).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })} · {item.read ? "Read" : "Unread"}</p>}
                 {item.status ? (
                   <p className="text-xs uppercase tracking-wide mt-2">
                     {readable(String(item.status))}
@@ -1655,13 +1700,13 @@ export function Workspace() {
                       Role: <span className="font-semibold">{String(item.role)}</span>
                       {item.sharePercentage ? ` · Share: ${item.sharePercentage}` : ""}
                     </p>
-                    <p className="text-xs text-neutral-900 font-semibold bg-neutral-100 border border-neutral-300 px-2.5 py-1 rounded-lg inline-block">
+                    <p className="text-xs text-text-primary font-semibold bg-surface-elevated border border-neutral-300 px-2.5 py-1 rounded-lg inline-block">
                       Assigned Monthly Salary: {item.salary ? `₹${Number(item.salary).toLocaleString("en-IN")}` : "Not assigned"}
                     </p>
                     {(isOwner || app.can("finance.manage")) && (
                       <div className="pt-1">
                         <button
-                          className="action text-xs font-semibold text-black hover:underline flex items-center gap-1.5"
+                          className="action text-xs font-semibold text-text-primary hover:underline flex items-center gap-1.5"
                           onClick={() => setEditing({ table: "salary_payments", initialValues: { name: String(item.name), amount: item.salary || "", date: today() } })}
                         >
                           <Wallet size={14} /> Allot / Record Salary Payment
@@ -1673,7 +1718,7 @@ export function Workspace() {
                 {table === "notifications" && (
                   <>
                     {item.targetScreen && <button className="action" onClick={() => app.navigateTo(item.targetScreen as Parameters<typeof app.navigateTo>[0])}>View update</button>}
-                    <p className="text-xs text-neutral-500 mt-3">
+                    <p className="text-xs text-text-muted mt-3">
                       {new Date(String(item.timestamp)).toLocaleString("en-IN")}
                     </p>
                     {!item.read && (
@@ -1693,7 +1738,7 @@ export function Workspace() {
                 {table === "projects" && detail && (
                   <div className="space-y-4 animate-fadeIn">
                     {/* Hero Banner with reviewly-hero.jpg matching Screen 5 */}
-                    <div className="w-full aspect-video rounded-3xl overflow-hidden border border-neutral-800/80 bg-[#111113] relative shadow-2xl">
+                    <div className="w-full aspect-video rounded-3xl overflow-hidden border border-border-subtle bg-surface-elevated relative shadow-2xl">
                       <img
                         src="/reviewly-hero.jpg"
                         alt={String(item.name)}
@@ -1706,14 +1751,14 @@ export function Workspace() {
 
                     {/* Project Title & Subtitle */}
                     <div>
-                      <h1 className="font-serif text-3xl font-bold text-white tracking-tight leading-tight">
+                      <h1 className="font-serif text-3xl font-bold text-text-primary tracking-tight leading-tight">
                         {String(item.name)}
                       </h1>
-                      <p className="text-xs text-neutral-400 font-sans mt-0.5">
+                      <p className="text-xs text-text-secondary font-sans mt-0.5">
                         {String(item.subtitle || "AI Review Generator")}
                       </p>
                       {Boolean(item.description) && (
-                        <p className="text-xs text-neutral-300 mt-2 leading-relaxed">
+                        <p className="text-xs text-text-primary mt-2 leading-relaxed">
                           {String(item.description)}
                         </p>
                       )}
@@ -1723,7 +1768,7 @@ export function Workspace() {
                         {!!item.deadline && String(item.deadline) < today() && Number(item.progress) < 100 && (
                           <span className="badge-overdue">Overdue</span>
                         )}
-                        <span className="text-[11px] font-mono text-neutral-400">
+                        <span className="text-[11px] font-mono text-text-secondary">
                           {item.deadline ? `Deadline ${dateLabel(String(item.deadline))}` : "No deadline"}
                         </span>
                       </div>
@@ -1732,18 +1777,18 @@ export function Workspace() {
                       <div className="mt-3.5 flex items-center gap-2.5">
                         <div className="flex-1 h-1 bg-neutral-800 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-white rounded-full transition-all duration-300"
+                            className="h-full bg-page rounded-full transition-all duration-300"
                             style={{ width: `${item.progress}%` }}
                           />
                         </div>
-                        <span className="text-[11px] font-mono text-neutral-400 shrink-0">
+                        <span className="text-[11px] font-mono text-text-secondary shrink-0">
                           {Number(item.progress)}%
                         </span>
                       </div>
                     </div>
 
                     {/* Project Tabs matching Screen 5: Tasks, Files, Notes, Activity */}
-                    <div className="flex gap-2 border-b border-neutral-800 pb-2">
+                    <div className="flex gap-2 border-b border-border-subtle pb-2">
                       {(["Tasks", "Files", "Notes", "Activity"] as const).map((subTab) => {
                         const isActive = projectSubTab === subTab;
                         return (
@@ -1752,8 +1797,8 @@ export function Workspace() {
                             onClick={() => setProjectSubTab(subTab)}
                             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                               isActive
-                                ? "bg-white text-black"
-                                : "bg-[#141416] text-neutral-400 hover:text-white border border-neutral-800"
+                                ? "bg-page text-text-primary"
+                                : "bg-surface-overlay text-text-secondary hover:text-text-primary border border-border-subtle"
                             }`}
                           >
                             {subTab}
@@ -1773,26 +1818,26 @@ export function Workspace() {
                               return (
                                 <div
                                   key={t.id}
-                                  className="flex items-center justify-between p-3.5 rounded-2xl bg-[#111113] border border-neutral-800/80 shadow-sm"
+                                  className="flex items-center justify-between p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle shadow-sm"
                                 >
                                   <div className="flex items-center gap-3 min-w-0">
                                     <button
                                       onClick={() => canToggle && app.toggleTask(t.id)}
                                       disabled={app.busy || !canToggle}
-                                      className="shrink-0 text-neutral-500 hover:text-white transition-colors cursor-pointer"
+                                      className="shrink-0 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                                       aria-label={t.completed ? "Mark pending" : "Mark complete"}
                                     >
                                       {t.completed ? (
-                                        <CheckCircle2 size={19} className="text-white" />
+                                        <CheckCircle2 size={19} className="text-text-primary" />
                                       ) : (
-                                        <Circle size={19} className="text-neutral-500" />
+                                        <Circle size={19} className="text-text-muted" />
                                       )}
                                     </button>
                                     <div className="min-w-0">
-                                      <p className={`text-xs font-semibold truncate ${t.completed ? "line-through text-neutral-500" : "text-white"}`}>
+                                      <p className={`text-xs font-semibold truncate ${t.completed ? "line-through text-text-muted" : "text-text-primary"}`}>
                                         {t.title}
                                       </p>
-                                      <p className="text-[10px] text-neutral-500 mt-0.5">
+                                      <p className="text-[10px] text-text-muted mt-0.5">
                                         {readable(t.status || "TODO")}
                                       </p>
                                     </div>
@@ -1801,7 +1846,7 @@ export function Workspace() {
                                     <button
                                       onClick={() => app.toggleTask(t.id)}
                                       disabled={app.busy}
-                                      className="text-[11px] underline text-neutral-400 hover:text-white cursor-pointer shrink-0"
+                                      className="text-[11px] underline text-text-secondary hover:text-text-primary cursor-pointer shrink-0"
                                     >
                                       {t.completed ? "Reopen" : "Complete"}
                                     </button>
@@ -1821,7 +1866,7 @@ export function Workspace() {
                                 initialValues: { projectId: item.id, date: today() },
                               })
                             }
-                            className="w-full py-3 px-4 rounded-xl bg-[#141416] border border-neutral-800 hover:border-neutral-700 text-xs font-semibold text-white flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-all"
+                            className="w-full py-3 px-4 rounded-xl bg-surface-overlay border border-border-subtle hover:border-border-strong text-xs font-semibold text-text-primary flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-all"
                           >
                             <Plus size={15} /> Add Task
                           </button>
@@ -1845,7 +1890,7 @@ export function Workspace() {
                             .filter((k) => item[k])
                             .map((k) => (
                               <a
-                                className="p-3 rounded-xl bg-[#111113] border border-neutral-800 flex items-center justify-between text-xs text-white hover:border-neutral-700 transition-colors"
+                                className="p-3 rounded-xl bg-surface-elevated border border-border-subtle flex items-center justify-between text-xs text-text-primary hover:border-border-strong transition-colors"
                                 key={k}
                                 href={String(item[k])}
                                 target="_blank"
@@ -1854,28 +1899,28 @@ export function Workspace() {
                                 <span>
                                   {k === "repoUrl" ? "Repository" : k === "previewUrl" ? "Live Preview" : "Documentation"}
                                 </span>
-                                <ArrowRight size={14} className="text-neutral-400" />
+                                <ArrowRight size={14} className="text-text-secondary" />
                               </a>
                             ))
                         ) : (
-                          <p className="text-xs text-neutral-500 py-4 text-center">No links or files configured.</p>
+                          <p className="text-xs text-text-muted py-4 text-center">No links or files configured.</p>
                         )}
                       </div>
                     )}
 
                     {/* Notes Tab Content */}
                     {projectSubTab === "Notes" && (
-                      <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800 text-xs text-neutral-300 whitespace-pre-wrap">
+                      <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle text-xs text-text-primary whitespace-pre-wrap">
                         {String(item.notes || "No notes documented for this project.")}
                       </div>
                     )}
 
                     {/* Activity Tab Content */}
                     {projectSubTab === "Activity" && (
-                      <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800 space-y-2 text-xs">
-                        <p className="text-neutral-300 font-semibold">Team Members</p>
-                        <p className="text-neutral-400">{(item.teamMembers as string[] || []).join(", ")}</p>
-                        <p className="text-neutral-500 pt-2 border-t border-neutral-800">
+                      <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle space-y-2 text-xs">
+                        <p className="text-text-primary font-semibold">Team Members</p>
+                        <p className="text-text-secondary">{(item.teamMembers as string[] || []).join(", ")}</p>
+                        <p className="text-text-muted pt-2 border-t border-border-subtle">
                           Progress source: {item.progressSource === "tasks" ? "Calculated from non-cancelled tasks" : "Manual estimate"}
                         </p>
                       </div>
@@ -1991,7 +2036,7 @@ function Page({
 }) {
   const app = useApp();
   return (
-    <div className="h-full flex flex-col">
+    <div className="workspace-page h-full flex flex-col">
       <ScreenHeader
         title={title}
         onBack={onBack || (() => app.navigateTo("home"))}
@@ -1999,7 +2044,7 @@ function Page({
         onPlusClick={onAdd}
         rightAction={rightAction}
       />
-      <main className="flex-1 min-h-0 overflow-y-auto p-5 pt-2 space-y-4">
+      <main className="workspace-content flex-1 min-h-0 overflow-y-auto p-5 pt-2 space-y-4">
         {children}
       </main>
       <BottomNavigation activeTab={app.activeTab} onSelectTab={app.switchTab} />
@@ -2017,7 +2062,7 @@ function AccountManagement() {
   return (
     <>
       <h2 className="font-serif text-2xl">Application accounts</h2>
-      <p className="text-sm text-neutral-600">Accounts control sign-in and permissions. Team profiles below are descriptive records and do not grant access.</p>
+      <p className="text-sm text-text-secondary">Accounts control sign-in and permissions. Team profiles below are descriptive records and do not grant access.</p>
       {(app.user?.role === "OWNER" || app.can("projects.manage")) && <button className="han-btn-secondary" onClick={() => { setEditing({ id: "", name: "", role: "MEMBER", active: true, permissions: [] }); setName(""); setPermissions([]); setActive(true); setPassword(""); }}>Add member account</button>}
       {app.state.users.map((u) => (
         <div
@@ -2139,13 +2184,13 @@ function AccountManagement() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 p-2 text-neutral-400 hover:text-neutral-900 transition-colors cursor-pointer"
+                className="absolute right-3 p-2 text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </label>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-text-muted">
             Changing an account signs it out on all devices. Disable departed members and create a separate account for replacements to preserve attribution.
           </p>
           <button className="han-btn-primary" disabled={app.busy}>
@@ -2205,7 +2250,7 @@ function PasswordForm() {
                 type="button"
                 onClick={() => setShowCurrent(!showCurrent)}
                 aria-label={showCurrent ? "Hide password" : "Show password"}
-                className="absolute right-3 p-2 text-neutral-400 hover:text-neutral-900 transition-colors cursor-pointer"
+                className="absolute right-3 p-2 text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
               >
                 {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -2228,7 +2273,7 @@ function PasswordForm() {
                 type="button"
                 onClick={() => setShowNew(!showNew)}
                 aria-label={showNew ? "Hide password" : "Show password"}
-                className="absolute right-3 p-2 text-neutral-400 hover:text-neutral-900 transition-colors cursor-pointer"
+                className="absolute right-3 p-2 text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
               >
                 {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>

@@ -57,7 +57,7 @@ export const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 backdrop-blur-sm transition-opacity">
+    <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-page/60 backdrop-blur-sm transition-opacity">
       {/* Backdrop click */}
       <div className="absolute inset-0" onClick={onClose} />
 
@@ -66,24 +66,24 @@ export const Modal: React.FC<ModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative w-full max-w-lg bg-white rounded-t-3xl p-6 shadow-2xl z-10 animate-slide-up"
+        className="mobile-sheet relative w-full max-w-lg bg-page text-text-primary rounded-t-3xl p-6 shadow-2xl z-10 animate-slide-up"
         style={{ maxHeight: "90vh", overflowY: "auto" }}
       >
         {/* Handle indicator bar */}
         <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4" />
 
         {title && (
-          <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
+          <div className="flex items-center justify-between pb-4 mb-4 border-b border-border-subtle">
             <h3
               id={titleId}
-              className="font-serif text-xl font-bold text-black"
+              className="font-serif text-xl font-bold text-text-primary"
             >
               {title}
             </h3>
             <button
               onClick={onClose}
               aria-label="Close dialog"
-              className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-black"
+              className="w-11 h-11 rounded-full bg-surface-elevated flex items-center justify-center text-text-primary"
             >
               <X size={18} />
             </button>

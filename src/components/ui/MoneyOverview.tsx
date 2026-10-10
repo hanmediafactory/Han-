@@ -70,8 +70,8 @@ export function MoneyOverview({
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? "bg-white text-black shadow-md"
-                  : "bg-[#141416] text-neutral-400 hover:text-white border border-neutral-800"
+                  ? "bg-page text-text-primary shadow-md"
+                  : "bg-surface-overlay text-text-secondary hover:text-text-primary border border-border-subtle"
               }`}
             >
               {tab}
@@ -84,18 +84,18 @@ export function MoneyOverview({
       {activeTab === "Overview" && (
         <div className="space-y-4 animate-fadeIn">
           {/* Spendable Funds Card */}
-          <div className="p-5 rounded-3xl bg-[#111113] border border-neutral-800/80 shadow-xl space-y-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#19191D] border border-neutral-800 flex items-center justify-center text-neutral-400">
+          <div className="p-5 rounded-3xl bg-surface-elevated border border-border-subtle shadow-xl space-y-3">
+            <div className="w-10 h-10 rounded-2xl bg-surface border border-border-subtle flex items-center justify-center text-text-secondary">
               <Wallet size={20} />
             </div>
             <div>
-              <p className="text-xs font-mono font-semibold tracking-wider uppercase text-neutral-400">
+              <p className="text-xs font-mono font-semibold tracking-wider uppercase text-text-secondary">
                 Spendable Funds
               </p>
-              <h2 className="font-serif text-3xl font-bold text-white tracking-tight mt-0.5">
+              <h2 className="font-serif text-3xl font-bold text-text-primary tracking-tight mt-0.5">
                 ₹{app.totalFunds.toLocaleString("en-IN")}
               </h2>
-              <p className="text-xs text-neutral-400 mt-1 font-sans">
+              <p className="text-xs text-text-secondary mt-1 font-sans">
                 Available for salaries and expenses (savings excluded)
               </p>
             </div>
@@ -103,51 +103,51 @@ export function MoneyOverview({
 
           {/* 2-Column Metrics */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 shadow-md">
-              <p className="text-xs text-neutral-400 font-sans">Total Income</p>
-              <p className="font-serif text-xl font-bold text-white mt-1">
+            <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle shadow-md">
+              <p className="text-xs text-text-secondary font-sans">Total Income</p>
+              <p className="font-serif text-xl font-bold text-text-primary mt-1">
                 {rupees(app.totalIncome)}
               </p>
-              <p className="text-[11px] font-mono text-emerald-400 mt-1 flex items-center gap-1">
-                <ArrowDownLeft size={13} /> 100% this month
+              <p className="text-[11px] font-mono text-text-secondary mt-1 flex items-center gap-1">
+                <ArrowDownLeft size={13} /> Recorded income
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 shadow-md">
-              <p className="text-xs text-neutral-400 font-sans">Total Outflow</p>
-              <p className="font-serif text-xl font-bold text-white mt-1">
+            <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle shadow-md">
+              <p className="text-xs text-text-secondary font-sans">Total Outflow</p>
+              <p className="font-serif text-xl font-bold text-text-primary mt-1">
                 {rupees(app.totalExpenses)}
               </p>
-              <p className="text-[11px] font-mono text-neutral-400 mt-1 flex items-center gap-1">
-                <ArrowUpRight size={13} /> 0% this month
+              <p className="text-[11px] font-mono text-text-secondary mt-1 flex items-center gap-1">
+                <ArrowUpRight size={13} /> Recorded expenses
               </p>
             </div>
           </div>
 
           {/* Secondary 2-Column Cards */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 shadow-md">
-              <div className="flex items-center gap-1.5 text-neutral-400 text-xs font-semibold">
+            <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle shadow-md">
+              <div className="flex items-center gap-1.5 text-text-secondary text-xs font-semibold">
                 <LockKeyhole size={14} />
                 <span>Protected Savings</span>
               </div>
-              <p className="text-base font-bold font-mono text-white mt-1.5" data-testid="savings-balance">
+              <p className="text-base font-bold font-mono text-text-primary mt-1.5" data-testid="savings-balance">
                 {rupees(app.totalSavings)}
               </p>
-              <p className="text-[10px] text-neutral-500 mt-1 font-sans">
+              <p className="text-[10px] text-text-muted mt-1 font-sans">
                 Not used in operations
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 shadow-md">
-              <div className="flex items-center gap-1.5 text-neutral-400 text-xs font-semibold">
+            <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle shadow-md">
+              <div className="flex items-center gap-1.5 text-text-secondary text-xs font-semibold">
                 <Receipt size={14} />
                 <span>This Month Spend</span>
               </div>
-              <p className="text-base font-bold font-mono text-white mt-1.5">
+              <p className="text-base font-bold font-mono text-text-primary mt-1.5">
                 {rupees(finance?.currentMonthExpenses || 0)}
               </p>
-              <p className="text-[10px] text-neutral-500 mt-1 font-sans">
+              <p className="text-[10px] text-text-muted mt-1 font-sans">
                 Active operational spend
               </p>
             </div>
@@ -156,7 +156,7 @@ export function MoneyOverview({
           {/* Financial Operations Section */}
           {canManageFinance && (
             <div className="space-y-2.5 pt-2">
-              <h3 className="text-xs font-bold text-white tracking-tight">
+              <h3 className="text-xs font-bold text-text-primary tracking-tight">
                 Financial Operations
               </h3>
 
@@ -164,7 +164,7 @@ export function MoneyOverview({
                 <button
                   aria-label="Add income"
                   onClick={() => onAdd("income")}
-                  className="py-3 px-4 rounded-xl bg-[#141416] border border-neutral-800 hover:border-neutral-700 text-xs font-semibold text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
+                  className="py-3 px-4 rounded-xl bg-surface-overlay border border-border-subtle hover:border-border-strong text-xs font-semibold text-text-primary transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
                 >
                   <Plus size={15} /> Add Income
                 </button>
@@ -172,7 +172,7 @@ export function MoneyOverview({
                 <button
                   aria-label="Add expense"
                   onClick={() => onAdd("expenses")}
-                  className="py-3 px-4 rounded-xl bg-[#141416] border border-neutral-800 hover:border-neutral-700 text-xs font-semibold text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
+                  className="py-3 px-4 rounded-xl bg-surface-overlay border border-border-subtle hover:border-border-strong text-xs font-semibold text-text-primary transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
                 >
                   <Plus size={15} /> Record Expense
                 </button>
@@ -186,7 +186,7 @@ export function MoneyOverview({
                       date: today(),
                     })
                   }
-                  className="py-3 px-4 rounded-xl bg-[#141416] border border-neutral-800 hover:border-neutral-700 text-xs font-semibold text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
+                  className="py-3 px-4 rounded-xl bg-surface-overlay border border-border-subtle hover:border-border-strong text-xs font-semibold text-text-primary transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
                 >
                   <ArrowRightLeft size={15} /> Settle Debt
                 </button>
@@ -194,7 +194,7 @@ export function MoneyOverview({
                 <button
                   aria-label="Protect savings"
                   onClick={() => onAdd("savings_entries")}
-                  className="py-3 px-4 rounded-xl bg-[#141416] border border-neutral-800 hover:border-neutral-700 text-xs font-semibold text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
+                  className="py-3 px-4 rounded-xl bg-surface-overlay border border-border-subtle hover:border-border-strong text-xs font-semibold text-text-primary transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
                 >
                   <LockKeyhole size={15} /> Protect Savings
                 </button>
@@ -203,31 +203,31 @@ export function MoneyOverview({
               <button
                 aria-label="Record salary"
                 onClick={() => onAdd("salary_payments")}
-                className="w-full py-3.5 px-4 rounded-xl bg-[#18181C] border border-neutral-700 hover:border-neutral-600 text-xs font-bold text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 mt-2"
+                className="w-full py-3.5 px-4 rounded-xl bg-surface-overlay border border-border-strong hover:border-neutral-600 text-xs font-bold text-text-primary transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98 mt-2"
               >
                 <Wallet size={15} /> + Allot / Pay Salary
               </button>
             </div>
           )}
           {/* Reimbursement Settlements History */}
-          <details className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 text-xs mt-3">
-            <summary className="font-bold text-white cursor-pointer min-h-11 flex items-center justify-between">
+          <details className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle text-xs mt-3">
+            <summary className="font-bold text-text-primary cursor-pointer min-h-11 flex items-center justify-between">
               <span>Reimbursement Settlements History ({settlements.length})</span>
             </summary>
-            <div className="space-y-2 pt-3 border-t border-neutral-800 mt-2">
+            <div className="space-y-2 pt-3 border-t border-border-subtle mt-2">
               {settlements.length === 0 ? (
-                <p className="text-neutral-500 py-2">No reimbursement settlements recorded yet.</p>
+                <p className="text-text-muted py-2">No reimbursement settlements recorded yet.</p>
               ) : (
                 settlements.map((set) => {
                   const payerName = app.state.users.find((u) => u.id === set.payerId)?.name || set.payerId;
                   const recName = app.state.users.find((u) => u.id === set.recipientId)?.name || set.recipientId;
                   return (
-                    <div key={set.id} className="p-2.5 bg-[#18181C] rounded-xl text-xs space-y-1">
-                      <div className="flex justify-between font-semibold text-white">
+                    <div key={set.id} className="p-2.5 bg-surface-overlay rounded-xl text-xs space-y-1">
+                      <div className="flex justify-between font-semibold text-text-primary">
                         <span>{payerName} → {recName}</span>
                         <span className="font-mono text-emerald-400">{rupees(set.amount)}</span>
                       </div>
-                      <div className="flex justify-between text-[11px] text-neutral-400">
+                      <div className="flex justify-between text-[11px] text-text-secondary">
                         <span>{dateLabel(String(set.date))}</span>
                         {set.paymentReference && <span>Ref: {set.paymentReference}</span>}
                       </div>
@@ -239,28 +239,28 @@ export function MoneyOverview({
           </details>
 
           {/* Salary Payment History */}
-          <details className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 text-xs mt-3">
-            <summary className="font-bold text-white cursor-pointer min-h-11 flex items-center justify-between">
+          <details className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle text-xs mt-3">
+            <summary className="font-bold text-text-primary cursor-pointer min-h-11 flex items-center justify-between">
               <span>Salary Payment History ({app.state.salary_payments.length})</span>
             </summary>
             <div className="space-y-2 pt-3 mt-2">
               {app.state.salary_payments.length === 0 ? (
-                <p className="text-neutral-500 py-2">No salary payments recorded.</p>
+                <p className="text-text-muted py-2">No salary payments recorded.</p>
               ) : (
                 app.state.salary_payments.map((item) => (
-                  <div key={item.id} className="border-t border-neutral-800/60 pt-2.5 space-y-1">
-                    <div className="flex justify-between font-semibold text-white">
+                  <div key={item.id} className="border-t border-border-subtle/60 pt-2.5 space-y-1">
+                    <div className="flex justify-between font-semibold text-text-primary">
                       <span>{String(item.name || "Recipient")}</span>
                       <span className="font-mono text-emerald-400">{rupees(Number(item.amount))}</span>
                     </div>
-                    <div className="flex justify-between text-[11px] text-neutral-400">
+                    <div className="flex justify-between text-[11px] text-text-secondary">
                       <span>{dateLabel(String(item.date))}</span>
                       <span>Ref: {String(item.paymentReference || "Direct")}</span>
                     </div>
                     {canManageFinance && (
                       <div className="flex gap-3 pt-1">
                         <button
-                          className="text-[11px] text-white underline cursor-pointer"
+                          className="text-[11px] text-text-primary underline cursor-pointer"
                           onClick={() => onEdit(item)}
                         >
                           Correct record
@@ -294,8 +294,8 @@ export function MoneyOverview({
                   onClick={() => setTransactionFilter(filter)}
                   className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     isActive
-                      ? "bg-white text-black"
-                      : "bg-[#141416] text-neutral-400 hover:text-white border border-neutral-800"
+                      ? "bg-page text-text-primary"
+                      : "bg-surface-overlay text-text-secondary hover:text-text-primary border border-border-subtle"
                   }`}
                 >
                   {filter === "All" ? "All" : filter === "income" ? "Income" : "Expenses"}
@@ -306,15 +306,15 @@ export function MoneyOverview({
 
           {/* Search Bar */}
           <div className="relative flex items-center">
-            <Search size={16} className="absolute left-3.5 text-neutral-500 pointer-events-none" />
+            <Search size={16} className="absolute left-3.5 text-text-muted pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search transactions..."
-              className="han-input w-full pl-10 pr-10 text-xs bg-[#111113] border-neutral-800 text-white"
+              className="han-input w-full pl-10 pr-10 text-xs bg-surface-elevated border-border-subtle text-text-primary"
             />
-            <div className="absolute right-3.5 text-neutral-500">
+            <div className="absolute right-3.5 text-text-muted">
               <Filter size={15} />
             </div>
           </div>
@@ -327,7 +327,7 @@ export function MoneyOverview({
                 return (
                   <div
                     key={tx.id}
-                    className="p-3.5 rounded-2xl bg-[#111113] border border-neutral-800/80 flex items-center justify-between gap-3 shadow-sm hover:border-neutral-700 transition-colors"
+                    className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle flex items-center justify-between gap-3 shadow-sm hover:border-border-strong transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div
@@ -340,8 +340,8 @@ export function MoneyOverview({
                         {isIncome ? <ArrowDownLeft size={18} /> : <Receipt size={18} />}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-xs text-white truncate">{tx.title}</p>
-                        <p className="text-[11px] text-neutral-500 truncate mt-0.5">
+                        <p className="font-bold text-xs text-text-primary truncate">{tx.title}</p>
+                        <p className="text-[11px] text-text-muted truncate mt-0.5">
                           {dateLabel(tx.date)} · {tx.category || (isIncome ? "Income" : "Operating")}
                         </p>
                       </div>
@@ -360,7 +360,7 @@ export function MoneyOverview({
                 );
               })
             ) : (
-              <div className="py-8 text-center text-xs text-neutral-500 bg-[#111113] rounded-2xl border border-neutral-800">
+              <div className="py-8 text-center text-xs text-text-muted bg-surface-elevated rounded-2xl border border-border-subtle">
                 No transactions found.
               </div>
             )}
@@ -372,10 +372,10 @@ export function MoneyOverview({
       {activeTab === "Salaries" && (
         <div className="space-y-4 animate-fadeIn">
           {/* Top Summary Card */}
-          <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 flex items-center justify-between shadow-md">
+          <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle flex items-center justify-between shadow-md">
             <div>
-              <p className="text-xs text-neutral-400 font-sans">Total payouts this month</p>
-              <p className="font-serif text-2xl font-bold text-white mt-0.5">
+              <p className="text-xs text-text-secondary font-sans">Total payouts this month</p>
+              <p className="font-serif text-2xl font-bold text-text-primary mt-0.5">
                 {rupees(finance?.salaries || 0)}
               </p>
             </div>
@@ -383,7 +383,7 @@ export function MoneyOverview({
               <button
                 aria-label="Allot / Pay"
                 onClick={() => onAdd("salary_payments")}
-                className="py-2.5 px-4 rounded-xl bg-white text-black font-bold text-xs hover:bg-neutral-200 transition-colors cursor-pointer shadow-md"
+                className="py-2.5 px-4 rounded-xl bg-page text-text-primary font-bold text-xs hover:bg-neutral-200 transition-colors cursor-pointer shadow-md"
               >
                 Allot / Pay
               </button>
@@ -408,18 +408,18 @@ export function MoneyOverview({
               return (
                 <div
                   key={member.id}
-                  className="p-3.5 rounded-2xl bg-[#111113] border border-neutral-800/80 flex items-center justify-between gap-3 shadow-sm"
+                  className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle flex items-center justify-between gap-3 shadow-sm"
                 >
                   <div className="min-w-0">
-                    <p className="font-bold text-xs text-white truncate">{member.name}</p>
-                    <p className="text-[11px] text-neutral-500 truncate mt-0.5">
+                    <p className="font-bold text-xs text-text-primary truncate">{member.name}</p>
+                    <p className="text-[11px] text-text-muted truncate mt-0.5">
                       Role: {member.role}
                     </p>
-                    <p className="text-[10px] text-neutral-400 font-mono mt-0.5">
+                    <p className="text-[10px] text-text-secondary font-mono mt-0.5">
                       Paid: {rupees(totalPaid)} ({memberPayments.length} payouts)
                     </p>
                   </div>
-                  <span className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-[#18181C] border border-neutral-700/80 text-neutral-300 shrink-0">
+                  <span className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-surface-overlay border border-border-strong/80 text-text-primary shrink-0">
                     {member.salary ? `${rupees(Number(member.salary))}` : "Unassigned"}
                   </span>
                 </div>
@@ -428,27 +428,27 @@ export function MoneyOverview({
           </div>
 
           {/* Salary Payment History Accordion */}
-          <details className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 text-xs">
-            <summary className="font-bold text-white cursor-pointer min-h-11 flex items-center justify-between">
+          <details className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle text-xs">
+            <summary className="font-bold text-text-primary cursor-pointer min-h-11 flex items-center justify-between">
               <span>Salary Payment History ({app.state.salary_payments.length})</span>
             </summary>
             <div className="space-y-2 pt-3 mt-2">
               {app.state.salary_payments.length === 0 ? (
-                <p className="text-neutral-500 py-2">No salary payments recorded.</p>
+                <p className="text-text-muted py-2">No salary payments recorded.</p>
               ) : (
                 app.state.salary_payments.map((item) => (
-                  <div key={item.id} className="border-t border-neutral-800/60 pt-2.5 space-y-1">
-                    <div className="flex justify-between font-semibold text-white">
+                  <div key={item.id} className="border-t border-border-subtle/60 pt-2.5 space-y-1">
+                    <div className="flex justify-between font-semibold text-text-primary">
                       <span>{String(item.name)}</span>
                       <span className="font-mono">{rupees(Number(item.amount))}</span>
                     </div>
-                    <p className="text-[11px] text-neutral-500">
+                    <p className="text-[11px] text-text-muted">
                       {dateLabel(String(item.date))} · From spendable funds
                     </p>
                     {(isOwner || canManageFinance) && (
                       <div className="flex gap-3 pt-1">
                         <button
-                          className="text-[11px] text-white underline cursor-pointer"
+                          className="text-[11px] text-text-primary underline cursor-pointer"
                           onClick={() => onEdit(item)}
                         >
                           Correct record
@@ -473,27 +473,27 @@ export function MoneyOverview({
       {activeTab === "Settlements" && (
         <div className="space-y-4 animate-fadeIn">
           {/* Founder Accountability Matrix */}
-          <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 space-y-3">
+          <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users size={16} className="text-white" />
-                <h3 className="font-bold text-xs text-white">Founder Balances & Positions</h3>
+                <Users size={16} className="text-text-primary" />
+                <h3 className="font-bold text-xs text-text-primary">Founder Balances & Positions</h3>
               </div>
-              <span className="text-[10px] font-mono text-neutral-400 uppercase">4 Founders</span>
+              <span className="text-[10px] font-mono text-text-secondary uppercase">4 Founders</span>
             </div>
 
-            <div className="space-y-2 pt-1 border-t border-neutral-800">
+            <div className="space-y-2 pt-1 border-t border-border-subtle">
               {founderTotals.length === 0 ? (
-                <p className="text-xs text-neutral-500 py-2">No founder transactions recorded yet.</p>
+                <p className="text-xs text-text-muted py-2">No founder transactions recorded yet.</p>
               ) : (
                 founderTotals.map((founder) => (
                   <div
                     key={founder.id}
-                    className="p-3 bg-[#18181C] rounded-xl border border-neutral-700/60 space-y-1.5"
+                    className="p-3 bg-surface-overlay rounded-xl border border-border-strong/60 space-y-1.5"
                   >
                     <div className="flex items-center justify-between text-xs font-semibold">
-                      <span className="text-white">{founder.name}</span>
-                      <span className="font-mono text-neutral-300">
+                      <span className="text-text-primary">{founder.name}</span>
+                      <span className="font-mono text-text-primary">
                         {founder.outstanding > 0
                           ? `+ ${rupees(founder.receivable)} Receivable`
                           : founder.outstanding < 0
@@ -508,29 +508,29 @@ export function MoneyOverview({
           </div>
 
           {/* Pairwise Obligations */}
-          <div className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 space-y-3">
-            <h3 className="font-bold text-xs text-white">🤝 Pairwise Reimbursements</h3>
-            <div className="space-y-2 pt-1 border-t border-neutral-800">
+          <div className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle space-y-3">
+            <h3 className="font-bold text-xs text-text-primary">🤝 Pairwise Reimbursements</h3>
+            <div className="space-y-2 pt-1 border-t border-border-subtle">
               {pairwise.length === 0 ? (
-                <div className="flex items-center gap-2 py-2 text-xs text-neutral-400">
-                  <CheckCircle2 size={15} className="text-white" />
+                <div className="flex items-center gap-2 py-2 text-xs text-text-secondary">
+                  <CheckCircle2 size={15} className="text-text-primary" />
                   <span>All founder reimbursement obligations are reconciled.</span>
                 </div>
               ) : (
                 pairwise.map((pair, index) => (
                   <div
                     key={`${pair.debtorId}-${pair.creditorId}-${index}`}
-                    className="flex items-center justify-between p-3 bg-[#18181C] rounded-xl border border-neutral-700/60 text-xs"
+                    className="flex items-center justify-between p-3 bg-surface-overlay rounded-xl border border-border-strong/60 text-xs"
                   >
                     <div>
-                      <p className="text-neutral-300">
-                        <b className="text-white">{pair.debtorName}</b> owes <b className="text-white">{pair.creditorName}</b>
+                      <p className="text-text-primary">
+                        <b className="text-text-primary">{pair.debtorName}</b> owes <b className="text-text-primary">{pair.creditorName}</b>
                       </p>
-                      <p className="font-mono font-bold text-white mt-0.5">{rupees(pair.amount)}</p>
+                      <p className="font-mono font-bold text-text-primary mt-0.5">{rupees(pair.amount)}</p>
                     </div>
                     {canManageFinance && (
                       <button
-                        className="py-1.5 px-3 rounded-lg bg-white text-black font-bold text-[11px] cursor-pointer"
+                        className="py-1.5 px-3 rounded-lg bg-page text-text-primary font-bold text-[11px] cursor-pointer"
                         onClick={() =>
                           onAdd("settlements", {
                             payerId: pair.debtorId,
@@ -550,24 +550,24 @@ export function MoneyOverview({
           </div>
 
           {/* Reimbursement Settlements History */}
-          <details className="p-4 rounded-2xl bg-[#111113] border border-neutral-800/80 text-xs">
-            <summary className="font-bold text-white cursor-pointer min-h-11 flex items-center justify-between">
+          <details className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle text-xs">
+            <summary className="font-bold text-text-primary cursor-pointer min-h-11 flex items-center justify-between">
               <span>Reimbursement Settlements History ({settlements.length})</span>
             </summary>
-            <div className="space-y-2 pt-3 border-t border-neutral-800 mt-2">
+            <div className="space-y-2 pt-3 border-t border-border-subtle mt-2">
               {settlements.length === 0 ? (
-                <p className="text-neutral-500 py-2">No reimbursement settlements recorded yet.</p>
+                <p className="text-text-muted py-2">No reimbursement settlements recorded yet.</p>
               ) : (
                 settlements.map((set) => {
                   const payerName = app.state.users.find((u) => u.id === set.payerId)?.name || set.payerId;
                   const recName = app.state.users.find((u) => u.id === set.recipientId)?.name || set.recipientId;
                   return (
-                    <div key={set.id} className="p-2.5 bg-[#18181C] rounded-xl text-xs space-y-1">
-                      <div className="flex justify-between font-semibold text-white">
+                    <div key={set.id} className="p-2.5 bg-surface-overlay rounded-xl text-xs space-y-1">
+                      <div className="flex justify-between font-semibold text-text-primary">
                         <span>{payerName} → {recName}</span>
                         <span className="font-mono text-emerald-400">{rupees(set.amount)}</span>
                       </div>
-                      <div className="flex justify-between text-[11px] text-neutral-400">
+                      <div className="flex justify-between text-[11px] text-text-secondary">
                         <span>{dateLabel(String(set.date))}</span>
                         {set.paymentReference && <span>Ref: {set.paymentReference}</span>}
                       </div>

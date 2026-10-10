@@ -313,6 +313,11 @@ test("Notifications are system generated, isolated and immutable except read sta
 });
 
 test("Untrusted origins are rejected and unconfigured push is reported honestly", async () => {
+  for (const developmentOrigin of ["http://localhost:5174", "http://127.0.0.1:5174"]) {
+    const response = await fetch(`${origin}/api/session`, { headers: { Cookie: owner.cookie, Origin: developmentOrigin } });
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("access-control-allow-origin"), developmentOrigin);
+  }
   for (const badOrigin of ["https://attacker.example", "http://localhost.evil.example", "http://127.0.0.1.evil.example"]) {
     const response = await fetch(`${origin}/api/state`, { headers: { Cookie: owner.cookie, Origin: badOrigin } });
     assert.equal(response.status, 403); assert.equal(response.headers.get("access-control-allow-origin"), null);

@@ -21,14 +21,14 @@ export const AvatarStack: React.FC<AvatarStackProps> = ({
         return (
           <div
             key={index}
-            className="w-8 h-8 rounded-full bg-black text-white border-2 border-white flex items-center justify-center font-bold text-xs font-sans shadow-sm"
+            className="w-8 h-8 rounded-full bg-page text-text-primary border-2 border-white flex items-center justify-center font-bold text-xs font-sans shadow-sm"
           >
             {initial}
           </div>
         );
       })}
       {remaining > 0 && (
-        <div className="w-8 h-8 rounded-full bg-gray-100 text-black border-2 border-white flex items-center justify-center font-bold text-xs font-sans shadow-sm">
+        <div className="w-8 h-8 rounded-full bg-gray-100 text-text-primary border-2 border-white flex items-center justify-center font-bold text-xs font-sans shadow-sm">
           +{remaining}
         </div>
       )}

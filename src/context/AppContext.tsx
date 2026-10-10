@@ -123,6 +123,20 @@ const empty: State = {
   demo: false,
 };
 
+const safeState = (s: any): State => {
+  const result = { ...empty } as any;
+  if (!s) return result;
+  for (const k of Object.keys(empty)) {
+    if (Array.isArray(empty[k as keyof State])) {
+      result[k] = Array.isArray(s[k]) ? s[k] : [];
+    } else if (s[k] !== undefined && s[k] !== null) result[k] = s[k];
+  }
+  // Allow finance to be null if missing
+  if (s.finance === undefined) result.finance = null;
+  else if (s.finance !== undefined) result.finance = s.finance;
+  return result as State;
+};
+
 function useController() {
   const [user, setUser] = useState<Account | null>(null),
     [loading, setLoading] = useState(true),
@@ -204,7 +218,8 @@ function useController() {
     if (!userId) return;
     const sequence = ++refreshSequence.current;
     try {
-      const newState = await request("state");
+      const payload = await request("state");
+      const newState = { ...safeState(payload), viewerId: payload?.viewerId };
       if (account.current?.id !== userId || sequence !== refreshSequence.current) return;
       if (newState.viewerId && newState.viewerId !== userId) {
         clearAccountCache(userId);
@@ -223,7 +238,7 @@ function useController() {
         if (incoming && !mutationLock.current && localStorage.getItem(`han_alerts_${userId}`) !== "off") setNotificationAlert(incoming);
       }
       seenNotifications.current = { userId, ids: new Set(newState.notifications.map((item: NotificationItem) => item.id)) };
-      setState(newState);
+      setState(safeState(newState));
       setLastSyncedAt(new Date().toISOString());
       saveCachedState(userId, newState);
       setConnectionError("");
@@ -232,7 +247,7 @@ function useController() {
       if (account.current?.id !== userId || sequence !== refreshSequence.current) return;
       const cached = getCachedState(userId);
       if (cached?.state) {
-        setState(cached.state as State);
+        setState(safeState(cached.state));
         setConnectionError("Connection unavailable — showing your last saved workspace.");
       } else {
         setConnectionError("Cannot reach HAN server. Check your connection.");
@@ -320,7 +335,7 @@ function useController() {
         try {
           const saved = JSON.parse(localStorage.getItem("han_offline_session_v2") || "null");
           const cached = saved?.expiresAt > Date.now() ? getCachedState(saved.user.id) : null;
-          if (cached) { account.current = saved.user; setUser(saved.user); setState(cached.state as State); setIsOffline(true); setConnectionError("Offline — viewing your last saved workspace."); }
+          if (cached) { account.current = saved.user; setUser(saved.user); setState(safeState(cached.state)); setIsOffline(true); setConnectionError("Offline — viewing your last saved workspace."); }
         } catch { /* No valid offline identity. */ }
       }
     } finally {
@@ -484,7 +499,7 @@ function useController() {
         .reduce((a, e) => a + Math.round(e.amount * 100), 0) / 100,
     totalExpenses =
       expenses
-        .filter((e) => e.type === "expense")
+        .filter((e) => e.type === "expense" && e.status !== "void")
         .reduce((a, e) => a + Math.round(e.amount * 100), 0) / 100;
 
   let dayStreak = 0;
@@ -618,8 +633,8 @@ function useController() {
     tasksCompletedTodayCount,
     totalTasksTodayCount,
     dayStreak,
-    totalIncome,
-    totalExpenses,
+    totalIncome: state.finance?.income ?? totalIncome,
+    totalExpenses: state.finance?.expenses ?? totalExpenses,
     totalFunds: state.finance?.funds ?? totalIncome - totalExpenses,
     totalSavings: state.finance?.savings ?? 0,
     netFunds: state.finance?.funds ?? totalIncome - totalExpenses,

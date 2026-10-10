@@ -37,7 +37,7 @@ export const MoneyCard: React.FC<MoneyCardProps> = ({
           <span className="text-xs uppercase tracking-wider font-semibold text-gray-400">
             Spendable funds
           </span>
-          <h2 className="text-2xl font-bold font-sans mt-1 text-white tracking-tight">
+          <h2 className="text-2xl font-bold font-sans mt-1 text-text-primary tracking-tight">
             ₹{amount.toLocaleString('en-IN')}
           </h2>
           <div className="flex items-center gap-1 mt-2 text-xs font-medium text-gray-400">

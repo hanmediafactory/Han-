@@ -8,7 +8,7 @@ interface ToastProps {
 export const Toast: React.FC<ToastProps> = ({ message }) => {
   return (
     <div className="toast-notification animate-bounce-short">
-      <CheckCircle2 size={16} className="text-white" />
+      <CheckCircle2 size={16} className="text-text-primary" />
       <span>{message}</span>
     </div>
   );
