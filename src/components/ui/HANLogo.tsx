@@ -24,7 +24,7 @@ export const HANLogo: React.FC<HANLogoProps> = ({
 
   const imgElement = (
     <img
-      src="/logo.png"
+      src="/logo-clean.png"
       alt="HAN Media Factory"
       className={`${heightClasses[size]} w-auto object-contain select-none`}
       loading="eager"

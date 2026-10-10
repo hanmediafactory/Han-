@@ -846,8 +846,8 @@ export function Workspace() {
             <h1 className="font-serif text-3xl mt-2">{app.user?.name}</h1>
             <p className="text-xs mt-1.5 tracking-widest">{["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "") ? "FOUNDER" : app.user?.role}</p>
           </div>
-          <div className="w-16 h-16 bg-black p-2 rounded-2xl border border-neutral-700 shadow-xl flex items-center justify-center shrink-0">
-            <img src="/logo.png" alt="HAN Media Factory" className="w-full h-full object-contain" />
+          <div className="w-20 h-12 bg-black px-2 py-1 rounded-2xl border border-neutral-700 shadow-xl flex items-center justify-center shrink-0">
+            <img src="/logo-clean.png" alt="HAN Media Factory" className="w-full h-auto object-contain" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">

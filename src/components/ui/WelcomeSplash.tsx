@@ -40,11 +40,11 @@ export function WelcomeSplash({ onComplete }: { onComplete?: () => void }) {
       <div className="relative w-full max-w-sm mx-auto text-center space-y-6">
         {/* Glowing Brand Icon */}
         <div className="relative inline-flex items-center justify-center">
-          <div className="w-24 h-24 rounded-3xl bg-black border border-neutral-700 shadow-2xl flex items-center justify-center p-2.5 transform transition-all duration-500 hover:scale-105 overflow-hidden">
+          <div className="w-24 h-24 rounded-3xl bg-[#09090B] border border-neutral-700 shadow-2xl flex items-center justify-center p-3 transform transition-all duration-500 hover:scale-105 overflow-hidden">
             <img
-              src="/logo.png"
+              src="/logo-clean.png"
               alt="HAN Media Factory"
-              className="w-full h-full object-contain drop-shadow-lg"
+              className="w-full h-auto object-contain drop-shadow-lg"
             />
           </div>
           <div className="absolute -top-1 -right-1 p-1.5 bg-white text-black rounded-full shadow-lg animate-bounce">

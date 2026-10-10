@@ -58,7 +58,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
         {title && (
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-black p-1 rounded-lg border border-neutral-800 shadow-sm flex items-center justify-center shrink-0">
-              <img src="/logo.png" alt="" aria-hidden="true" className="w-full h-full object-contain" />
+              <img src="/logo-clean.png" alt="" aria-hidden="true" className="w-full h-auto object-contain" />
             </div>
             <div>
               <h2 className="font-serif text-2xl font-semibold tracking-tight leading-none">

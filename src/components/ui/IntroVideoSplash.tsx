@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Volume2, VolumeX, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface IntroVideoSplashProps {
   onComplete: () => void;
@@ -7,44 +7,52 @@ interface IntroVideoSplashProps {
 
 export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }) => {
   const [fading, setFading] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [prefersReducedMotion] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  });
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const completedRef = useRef(false);
 
   const handleFinish = useCallback(() => {
+    // Guard against multiple rapid taps triggering duplicate transitions
     if (completedRef.current) return;
     completedRef.current = true;
+
     setFading(true);
     setTimeout(() => {
       onComplete();
-    }, 600);
+    }, 450);
   }, [onComplete]);
 
-  // Automated test environment detection: skip automatically in headless test runners
+  // Headless test runner detection (0 artificial delay in E2E tests)
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     if (
-      typeof window !== "undefined" &&
-      (navigator.webdriver ||
-        window.location.search.includes("skip-intro") ||
-        window.location.search.includes("e2e"))
+      navigator.webdriver ||
+      window.location.search.includes("skip-intro") ||
+      window.location.search.includes("e2e")
     ) {
       onComplete();
     }
   }, [onComplete]);
 
-  // Fallback safety timer: in case autoplay is blocked or stalls, do not trap the user
+  // Safety fallback timer: ensure user is never trapped even if video stalls or fails
   useEffect(() => {
     const safetyTimer = setTimeout(() => {
       handleFinish();
-    }, 8500);
+    }, 6000);
 
     return () => clearTimeout(safetyTimer);
   }, [handleFinish]);
 
-  // Keyboard shortcut: Escape or Space to skip
+  // Keyboard shortcut listener: Escape, Enter, or Spacebar skips immediately
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" || e.key === " " || e.key === "Enter") {
+      if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         handleFinish();
       }
@@ -52,15 +60,6 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleFinish]);
-
-  // Toggle audio
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
-  };
 
   // If in automated test, render nothing
   if (
@@ -75,68 +74,131 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
 
   return (
     <div
-      className={`fixed inset-0 z-[99999] bg-black flex flex-col items-center justify-center select-none overflow-hidden transition-opacity duration-700 ease-out ${
+      role="region"
+      aria-label="Welcome to HAN Media Factory"
+      className={`fixed inset-0 z-[99999] bg-[#000000] text-white flex flex-col justify-between select-none overflow-hidden transition-opacity duration-500 ease-out ${
         fading ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       style={{
-        backgroundColor: "#000000",
+        paddingTop: "max(16px, env(safe-area-inset-top, 16px))",
+        paddingBottom: "max(24px, env(safe-area-inset-bottom, 24px))",
+        paddingLeft: "max(20px, env(safe-area-inset-left, 20px))",
+        paddingRight: "max(20px, env(safe-area-inset-right, 20px))",
+        background: "radial-gradient(ellipse at 50% 45%, #0A0A0A 0%, #000000 100%)",
       }}
       onClick={handleFinish}
     >
-      {/* Top Controls Bar */}
-      <div className="absolute top-0 left-0 right-0 p-5 z-20 flex items-center justify-between pointer-events-auto">
-        {/* Brand indicator & sound toggle */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white text-[11px] font-mono tracking-widest uppercase">
-            <Sparkles size={12} className="text-white animate-pulse" />
-            <span>HAN MEDIA FACTORY</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={toggleMute}
-            className="p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-white transition-all cursor-pointer"
-            aria-label={isMuted ? "Unmute video" : "Mute video"}
-          >
-            {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-          </button>
+      {/* ── Top Bar: Safe-area aligned brand mark & accessible Skip control ── */}
+      <header className="w-full flex items-center justify-between z-20 pointer-events-auto">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/80 border border-neutral-800 text-neutral-300">
+          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          <span className="font-mono text-[11px] font-semibold tracking-[0.22em] uppercase text-neutral-200">
+            HAN MEDIA FACTORY
+          </span>
         </div>
 
-        {/* Skip intro button */}
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             handleFinish();
           }}
-          className="px-4 py-1.5 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 backdrop-blur-md border border-white/20 text-white text-xs font-mono font-medium tracking-wider transition-all cursor-pointer shadow-lg"
+          aria-label="Skip intro animation"
+          className="min-h-[44px] min-w-[44px] px-4 py-2 rounded-full bg-neutral-900/90 hover:bg-neutral-800 active:scale-95 text-neutral-300 hover:text-white border border-neutral-700/80 text-xs font-mono font-medium tracking-wider transition-all cursor-pointer shadow-lg flex items-center justify-center"
         >
-          Skip intro →
+          Skip Intro →
         </button>
-      </div>
+      </header>
 
-      {/* Cinematic Video Element */}
-      <div className="relative w-full h-full flex items-center justify-center p-4">
-        <video
-          ref={videoRef}
-          src="/han-intro.mp4"
-          autoPlay
-          playsInline
-          muted={isMuted}
-          preload="auto"
-          onEnded={handleFinish}
-          onError={handleFinish}
-          className="w-full h-full max-w-4xl max-h-screen object-contain drop-shadow-2xl"
-          style={{
-            filter: "drop-shadow(0 0 40px rgba(255, 255, 255, 0.15))",
+      {/* ── Center Stage: Hero composition with seamless video / titanium logo ── */}
+      <main className="relative flex-1 flex flex-col items-center justify-center w-full px-4 my-auto pointer-events-auto">
+        <div className="relative w-full max-w-md flex flex-col items-center justify-center">
+          {/* Ambient titanium glow behind logo/video */}
+          <div
+            className="absolute -inset-10 opacity-30 pointer-events-none rounded-full"
+            style={{
+              background: "radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%)",
+              filter: "blur(40px)",
+            }}
+          />
+
+          {/* Cinematic MP4 video with crisp titanium logo base */}
+          {!videoFailed && !prefersReducedMotion ? (
+            <div className="relative w-full aspect-video flex items-center justify-center">
+              {/* Sharp titanium logo base for immediate high-contrast clarity */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <img
+                  src="/logo-clean.png"
+                  alt="HAN Media Factory"
+                  className={`w-4/5 max-w-[320px] h-auto object-contain transition-all duration-700 ${
+                    videoEnded
+                      ? "opacity-100 scale-100 drop-shadow-[0_10px_35px_rgba(255,255,255,0.3)]"
+                      : "opacity-50 scale-98"
+                  }`}
+                />
+              </div>
+
+              {/* Dynamic video overlay blending motion smoothly over the logo */}
+              <video
+                ref={videoRef}
+                src="/han-intro.mp4"
+                autoPlay
+                playsInline
+                muted
+                preload="auto"
+                onEnded={() => setVideoEnded(true)}
+                onError={() => {
+                  setVideoFailed(true);
+                  setVideoEnded(true);
+                }}
+                className={`w-full h-full object-contain pointer-events-none transition-opacity duration-700 ${
+                  videoEnded ? "opacity-0" : "opacity-100"
+                }`}
+                style={{
+                  mixBlendMode: "screen",
+                }}
+              />
+            </div>
+          ) : (
+            <div className="w-full flex items-center justify-center py-6 animate-fadeIn">
+              <img
+                src="/logo-clean.png"
+                alt="HAN Media Factory"
+                className="w-4/5 max-w-[340px] h-auto object-contain drop-shadow-[0_10px_35px_rgba(255,255,255,0.3)]"
+              />
+            </div>
+          )}
+
+          {/* Restrained Titanium Typography */}
+          <div className="text-center space-y-1.5 mt-6">
+            <h1 className="text-sm font-mono font-medium tracking-[0.3em] uppercase text-neutral-300">
+              BUILD · EXECUTE · GROW
+            </h1>
+            <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-neutral-400">
+              EXECUTIVE COMMAND CENTER
+            </p>
+          </div>
+        </div>
+      </main>
+
+      {/* ── Bottom Entry Action: Prominent, clear, accessible CTA button ── */}
+      <footer className="w-full max-w-sm mx-auto flex flex-col items-center gap-3 z-20 pointer-events-auto">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleFinish();
           }}
-        />
-      </div>
+          className="w-full py-4 px-6 rounded-2xl bg-white hover:bg-neutral-200 active:scale-98 text-black font-semibold text-sm tracking-wide shadow-2xl transition-all flex items-center justify-center gap-2 cursor-pointer font-sans"
+        >
+          <span>Continue to Workspace</span>
+          <ArrowRight size={16} />
+        </button>
 
-      {/* Bottom hint */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[11px] font-mono tracking-widest uppercase text-neutral-500 pointer-events-none">
-        Tap anywhere to enter
-      </div>
+        <p className="text-[11px] font-mono tracking-widest text-neutral-400 uppercase">
+          Tap button or screen to continue
+        </p>
+      </footer>
     </div>
   );
 };

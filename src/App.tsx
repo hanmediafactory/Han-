@@ -22,10 +22,20 @@ function Shell() {
     ) {
       return false;
     }
+    if (typeof sessionStorage !== "undefined" && sessionStorage.getItem("han_intro_shown")) {
+      return false;
+    }
     return true;
   });
   const [showWelcome, setShowWelcome] = useState(false);
   const welcomeUserId = app.user?.id;
+
+  const handleIntroComplete = useCallback(() => {
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem("han_intro_shown", "true");
+    }
+    setShowIntro(false);
+  }, []);
 
   useEffect(() => {
     const replayHandler = () => setShowIntro(true);
@@ -52,18 +62,18 @@ function Shell() {
 
   return (
     <div className="han-app min-h-screen bg-[#FAFAFA] text-[#0F0F0F] flex flex-col justify-between">
-      {showIntro && <IntroVideoSplash onComplete={() => setShowIntro(false)} />}
+      {showIntro && <IntroVideoSplash onComplete={handleIntroComplete} />}
       {showWelcome && app.user && <WelcomeSplash onComplete={handleWelcomeComplete} />}
       {app.user && !app.loading && <WorkspaceStatus />}
       {app.user && !app.loading && <QuickActionHub />}
       {app.state.demo && app.user && <div className="demo-banner">Demo workspace · separate test data</div>}
       {app.loading ? (
         <div className="login-screen flex flex-col items-center justify-center min-h-screen">
-          <div className="bg-black p-4 rounded-3xl border border-neutral-800 shadow-2xl mb-4">
+          <div className="w-48 py-4 px-6 bg-[#09090B] rounded-2xl border border-neutral-800 shadow-xl mb-4 flex items-center justify-center">
             <img
-              src="/logo.png"
+              src="/logo-clean.png"
               alt="HAN Media Factory"
-              className="h-20 w-auto object-contain animate-pulse"
+              className="h-10 w-auto object-contain animate-pulse"
             />
           </div>
           <p role="status" className="text-sm text-neutral-400 font-mono animate-pulse">

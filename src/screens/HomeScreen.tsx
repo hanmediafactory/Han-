@@ -75,11 +75,11 @@ export const HomeScreen: React.FC = () => {
         {/* Top Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-black p-1.5 rounded-2xl border border-neutral-800 shadow-md flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 bg-black p-2 rounded-2xl border border-neutral-800 shadow-md flex items-center justify-center shrink-0">
               <img
-                src="/logo.png"
+                src="/logo-clean.png"
                 alt="HAN Media Factory"
-                className="w-full h-full object-contain"
+                className="w-full h-auto object-contain"
               />
             </div>
             <div>
