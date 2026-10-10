@@ -6,7 +6,6 @@ import { LoginScreen } from "./screens/LoginScreen";
 import { Toast } from "./components/ui/Toast";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { WorkspaceStatus } from "./components/ui/WorkspaceStatus";
-import { WelcomeSplash } from "./components/ui/WelcomeSplash";
 import { IntroVideoSplash } from "./components/ui/IntroVideoSplash";
 import { QuickActionHub } from "./components/ui/QuickActionHub";
 import { Bell, X, ArrowRight } from "lucide-react";
@@ -27,8 +26,6 @@ function Shell() {
     }
     return true;
   });
-  const [showWelcome, setShowWelcome] = useState(false);
-  const welcomeUserId = app.user?.id;
 
   const handleIntroComplete = useCallback(() => {
     if (typeof sessionStorage !== "undefined") {
@@ -43,27 +40,9 @@ function Shell() {
     return () => window.removeEventListener("han:play-intro", replayHandler);
   }, []);
 
-  useEffect(() => {
-    if (app.user && !app.loading && !showIntro) {
-      const shownKey = `han_welcome_${app.user.id}`;
-      if (!sessionStorage.getItem(shownKey)) {
-        const id = setTimeout(() => setShowWelcome(true), 0);
-        return () => clearTimeout(id);
-      }
-    }
-  }, [app.user, app.loading, showIntro]);
-
-  const handleWelcomeComplete = useCallback(() => {
-    if (welcomeUserId) {
-      sessionStorage.setItem(`han_welcome_${welcomeUserId}`, "true");
-    }
-    setShowWelcome(false);
-  }, [welcomeUserId]);
-
   return (
-    <div className="han-app min-h-screen bg-[#FAFAFA] text-[#0F0F0F] flex flex-col justify-between">
+    <div className="han-app min-h-screen bg-[#000000] text-white flex flex-col justify-between">
       {showIntro && <IntroVideoSplash onComplete={handleIntroComplete} />}
-      {showWelcome && app.user && <WelcomeSplash onComplete={handleWelcomeComplete} />}
       {app.user && !app.loading && <WorkspaceStatus />}
       {app.user && !app.loading && <QuickActionHub />}
       {app.state.demo && app.user && <div className="demo-banner">Demo workspace · separate test data</div>}

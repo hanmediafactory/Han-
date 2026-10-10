@@ -169,35 +169,34 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
             </div>
           )}
 
-          {/* Restrained Titanium Typography */}
-          <div className="text-center space-y-1.5 mt-6">
-            <h1 className="text-sm font-mono font-medium tracking-[0.3em] uppercase text-neutral-300">
-              BUILD · EXECUTE · GROW
-            </h1>
-            <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-neutral-400">
-              EXECUTIVE COMMAND CENTER
+          {/* Restrained Titanium Typography matching Screen 1 */}
+          <div className="text-center space-y-1 mt-8">
+            <p className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-neutral-300">
+              BUILD TRUST.
+            </p>
+            <p className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-neutral-300">
+              GROW BRANDS.
+            </p>
+            <p className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-neutral-300">
+              CREATE IMPACT.
             </p>
           </div>
         </div>
       </main>
 
-      {/* ── Bottom Entry Action: Prominent, clear, accessible CTA button ── */}
-      <footer className="w-full max-w-sm mx-auto flex flex-col items-center gap-3 z-20 pointer-events-auto">
+      {/* ── Bottom Entry Action: TAP TO ENTER → ── */}
+      <footer className="w-full max-w-sm mx-auto flex flex-col items-center gap-3 z-20 pointer-events-auto pb-4">
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             handleFinish();
           }}
-          className="w-full py-4 px-6 rounded-2xl bg-white hover:bg-neutral-200 active:scale-98 text-black font-semibold text-sm tracking-wide shadow-2xl transition-all flex items-center justify-center gap-2 cursor-pointer font-sans"
+          className="text-xs font-mono font-bold tracking-[0.25em] text-neutral-400 hover:text-white uppercase transition-colors flex items-center gap-2 cursor-pointer py-3 px-6 rounded-full hover:bg-neutral-900/60 active:scale-95"
         >
-          <span>Continue to Workspace</span>
-          <ArrowRight size={16} />
+          <span>TAP TO ENTER</span>
+          <ArrowRight size={14} />
         </button>
-
-        <p className="text-[11px] font-mono tracking-widest text-neutral-400 uppercase">
-          Tap button or screen to continue
-        </p>
       </footer>
     </div>
   );

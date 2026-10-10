@@ -375,15 +375,14 @@ function useController() {
     account.current = session.user;
     seenNotifications.current = null;
     setNotificationAlert(null);
-    setState(empty);
-    setUser(session.user);
+    setCurrentScreen("home");
+    setActiveTab("home");
     localStorage.setItem("han_offline_session_v2", JSON.stringify({ user: session.user, expiresAt: session.expiresAt }));
     await refresh();
     analytics.track("login_success", { userId: session.user.id, role: session.user.role });
-    setCurrentScreen("home");
-    setActiveTab("home");
     const target = window.location.hash.slice(1);
     if (["tasks", "projects", "money", "leads", "funnels", "calendar", "notifications"].includes(target)) setCurrentScreen(target as ScreenType);
+    setUser(session.user);
     void processPendingQueue();
   };
 

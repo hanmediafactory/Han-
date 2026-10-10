@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Wallet, Briefcase, TrendingUp, User } from 'lucide-react';
+import { Home, Wallet, Briefcase, TrendingUp, User, Plus } from 'lucide-react';
 import type { MainTabType } from '../../types';
 
 interface BottomNavigationProps {
@@ -24,6 +24,37 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;
+        const isCenter = tab.id === 'work';
+
+        if (isCenter) {
+          return (
+            <button
+              key={tab.id}
+              onClick={() => onSelectTab(tab.id)}
+              className={`bottom-nav-item bottom-nav-center ${isActive ? 'active' : ''}`}
+              aria-label={tab.label}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+                  isActive
+                    ? 'bg-white text-black shadow-lg shadow-white/10 scale-105'
+                    : 'bg-[#18181C] text-white border border-neutral-700/80 hover:border-neutral-500'
+                }`}
+              >
+                {activeTab === 'home' ? (
+                  <Plus size={18} strokeWidth={2.5} />
+                ) : (
+                  <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
+                )}
+              </div>
+              <span style={{ color: isActive ? '#FFFFFF' : '#5A5A5E' }}>
+                {tab.label}
+              </span>
+            </button>
+          );
+        }
+
         return (
           <button
             key={tab.id}
@@ -36,9 +67,9 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
               size={20}
               className="nav-icon"
               strokeWidth={isActive ? 2.4 : 1.7}
-              color={isActive ? '#000000' : '#8E8E93'}
+              color={isActive ? '#FFFFFF' : '#5A5A5E'}
             />
-            <span style={{ color: isActive ? '#000000' : '#8E8E93' }}>
+            <span style={{ color: isActive ? '#FFFFFF' : '#5A5A5E' }}>
               {tab.label}
             </span>
           </button>

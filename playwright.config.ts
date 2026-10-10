@@ -6,7 +6,7 @@ export default defineConfig({
   webServer: {
     command: "node tests/mobile-server.mjs",
     url: "http://127.0.0.1:3101/api/health",
-    reuseExistingServer: false,
+    reuseExistingServer: !process.env.CI,
   },
   reporter: "list",
 });

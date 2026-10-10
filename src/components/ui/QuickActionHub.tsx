@@ -43,14 +43,18 @@ export const QuickActionHub: React.FC = () => {
         />
       )}
 
-      {/* Floating Action Palette Menu */}
+      {/* Floating Action Palette Menu matching Screen 6 */}
       {openMenu && (
-        <div ref={menu} role="dialog" aria-modal="true" aria-label="Quick actions" className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-sm z-[9000] bg-[#000000] border border-neutral-800 text-white p-4 rounded-3xl shadow-2xl space-y-3 animate-slide-up">
-          <div className="flex items-center justify-between pb-2 border-b border-neutral-800">
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-neutral-300 flex items-center gap-1.5">
-              <img src="/logo.png" alt="HAN" className="h-4 w-auto object-contain" />
-              Quick Execution Hub
-            </span>
+        <div ref={menu} role="dialog" aria-modal="true" aria-label="Quick actions" className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-sm z-[9000] bg-[#0E0E10] border border-neutral-800 text-white p-5 rounded-3xl shadow-2xl space-y-4 animate-slide-up">
+          <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-[#18181B] border border-neutral-700 flex items-center justify-center p-1">
+                <img src="/logo-clean.png" alt="HAN" className="w-full h-auto object-contain" />
+              </div>
+              <span className="text-xs font-mono font-bold tracking-widest uppercase text-white">
+                QUICK ACTIONS
+              </span>
+            </div>
             <button
               aria-label="Close quick actions"
               onClick={() => setOpenMenu(false)}

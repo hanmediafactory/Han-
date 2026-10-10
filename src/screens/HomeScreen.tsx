@@ -2,33 +2,18 @@ import React from "react";
 import {
   ArrowRight,
   Bell,
-  Flame,
-  AlertTriangle,
   CheckCircle2,
   Plus,
-  Sparkles,
-  Briefcase,
-  Wallet,
-  Target,
+  Circle,
+  Folder,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
-import { today, dateLabel } from "../context/dates";
-import { ProgressRing } from "../components/ui/ProgressRing";
-import { MoneyCard } from "../components/ui/MoneyCard";
-import { ProjectCard } from "../components/ui/ProjectCard";
-import { Timeline } from "../components/ui/Timeline";
+import { today } from "../context/dates";
 import { BottomNavigation } from "../components/ui/BottomNavigation";
-import { TeamWorkspaceFeed } from "../components/ui/TeamWorkspaceFeed";
 
 export const HomeScreen: React.FC = () => {
   const {
     userProfile,
-    executionPercentage,
-    tasksLeftTodayCount,
-    tasksCompletedTodayCount,
-    totalTasksTodayCount,
-    dayStreak,
-    totalFunds,
     projects,
     tasks,
     activeTab,
@@ -46,18 +31,13 @@ export const HomeScreen: React.FC = () => {
     (t) => t.date === today() && t.status !== "CANCELLED",
   );
 
-  // Overdue projects check (deadline strictly before today, progress < 100)
   const overdueProjects = projects.filter(
     (p) => !p.archived && !!p.deadline && p.deadline < today() && p.category !== "Completed",
   );
 
-  // Overdue tasks check (due before today, not completed)
   const overdueTasks = tasks.filter(
     (t) => t.date < today() && t.status !== "COMPLETED" && t.status !== "CANCELLED",
   );
-
-  // Next actionable task
-  const nextTask = todayTasks.find((t) => !t.completed) || overdueTasks[0];
 
   const permittedToggle = (id: string) => {
     const task = tasks.find((t) => t.id === id);
@@ -68,289 +48,277 @@ export const HomeScreen: React.FC = () => {
     }
   };
 
+  const [todayDate] = React.useState(() => new Date());
+  const hour = todayDate.getHours();
+  const greeting = hour < 12 ? "Good morning," : hour < 17 ? "Good afternoon," : "Good evening,";
+
+  const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const dayName = dayNames[todayDate.getDay()];
+  const dateNum = todayDate.getDate();
+  const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const monthName = monthNames[todayDate.getMonth()];
+  const year = todayDate.getFullYear();
+
+  // Focus tasks — overdue first, then today, max 3
+  const focusTasks = [
+    ...overdueTasks.slice(0, 2),
+    ...todayTasks.filter(t => !t.completed).slice(0, 3 - Math.min(overdueTasks.length, 2)),
+  ].slice(0, 3);
+
+  const activeProjects = projects.filter((p) => !p.archived && p.category === "Active");
+  const overdueCount = overdueProjects.length > 0 ? overdueProjects.length : overdueTasks.length;
+
   return (
-    <div className="w-full h-full bg-[#FAFAFA] flex flex-col justify-between select-none">
+    <div className="w-full h-full bg-[#000000] flex flex-col justify-between select-none">
       {/* Scrollable Main Area */}
-      <div className="flex-1 overflow-y-auto px-5 pt-5 pb-6 space-y-4 no-scrollbar">
+      <div className="flex-1 overflow-y-auto px-5 pt-12 pb-6 space-y-5 no-scrollbar">
         {/* Top Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-black p-2 rounded-2xl border border-neutral-800 shadow-md flex items-center justify-center shrink-0">
-              <img
-                src="/logo-clean.png"
-                alt="HAN Media Factory"
-                className="w-full h-auto object-contain"
-              />
-            </div>
-            <div>
-              <span className="font-serif text-[11px] font-semibold tracking-widest text-neutral-400 uppercase flex items-center gap-1">
-                <Sparkles size={11} className="text-black" /> HAN EXECUTIVE CENTER
+        <div className="pb-1">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 bg-[#111113] p-1.5 rounded-lg border border-neutral-800 shadow-md flex items-center justify-center shrink-0">
+                <img
+                  src="/logo-clean.png"
+                  alt="HAN"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+              <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-neutral-400 uppercase">
+                HAN EXECUTIVE CENTER
               </span>
-              <h1 className="font-serif text-2xl font-bold text-black tracking-tight leading-snug mt-0.5">
-                {userProfile.greeting} {userProfile.name}.
-              </h1>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigateTo("notifications")}
+                className="w-9 h-9 rounded-full bg-[#111113] border border-neutral-800 flex items-center justify-center relative active:scale-95 transition-transform cursor-pointer"
+                aria-label="Notifications"
+              >
+                <Bell size={17} className="text-neutral-400" />
+                {unreadNotificationCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-white ring-2 ring-black" />
+                )}
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Notification Bell */}
-            <button
-              onClick={() => navigateTo("notifications")}
-              className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center relative shadow-sm active:scale-95 transition-transform cursor-pointer"
-              aria-label="Notifications"
-            >
-              <Bell size={19} className="text-black" />
-              {unreadNotificationCount > 0 && (
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-black border border-white animate-ping" />
-              )}
-            </button>
+          {/* Greeting Row */}
+          <div className="flex items-start justify-between mt-2">
+            <div>
+              <p className="text-sm font-sans text-neutral-400">{greeting}</p>
+              <div className="flex items-center gap-2.5 mt-0.5">
+                <h1 className="font-serif text-3xl font-bold text-white tracking-tight leading-tight">
+                  <span className="sr-only">Welcome back, {userProfile.name}.</span>
+                  <span aria-hidden="true">{userProfile.name}.</span>
+                </h1>
+                <span className="text-[10px] font-mono font-semibold tracking-wider text-neutral-300 uppercase px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800">
+                  {["user-1", "user-2", "user-3", "user-4"].includes(user?.id || "") ? "FOUNDER" : user?.role || "MEMBER"}
+                </span>
+              </div>
+            </div>
 
-            {/* Profile Avatar */}
-            <button
-              onClick={() => navigateTo("profile")}
-              className="w-10 h-10 rounded-full overflow-hidden border-2 border-black bg-black text-white flex items-center justify-center shadow-sm active:scale-95 transition-transform font-bold text-sm cursor-pointer"
-              aria-label="Profile"
-            >
-              {userProfile.name.charAt(0)}
-            </button>
+            {/* Date Box */}
+            <div className="px-3 py-2 rounded-xl bg-[#111113] border border-neutral-800 text-right shrink-0">
+              <p className="text-[11px] font-mono font-bold tracking-wider text-neutral-400 uppercase leading-none">
+                {dayName}
+              </p>
+              <p className="text-[10px] font-mono text-neutral-500 mt-1 leading-none">
+                {dateNum} {monthName} {year}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* LUXURY EXECUTIVE ACTION STRIP */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
-          {can('tasks.manage') && <button
-            onClick={() => navigateTo("tasks", "All", true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black text-white text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer"
-          >
-            <Plus size={14} className="text-white" /> + Task
-          </button>}
-          {can('projects.manage') && <button
-            onClick={() => navigateTo("projects", "Active", true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-300 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
-          >
-            <Briefcase size={14} className="text-black" /> + Project
-          </button>}
-          {can('finance.manage') && <button
-            onClick={() => navigateTo("money", "All", true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-300 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
-          >
-            <Wallet size={14} className="text-black" /> Log Money
-          </button>}
-          {can('leads.manage') && <button
-            onClick={() => navigateTo("leads", "All", true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-300 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
-          >
-            <Target size={14} className="text-black" /> Add Lead
-          </button>}
-        </div>
+        {/* Creation Shortcuts Row */}
+        {(can("tasks.manage") || can("projects.manage") || can("finance.manage") || can("leads.manage")) && (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
+            {can("tasks.manage") && (
+              <button
+                onClick={() => navigateTo("tasks", "All", true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181C] border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+              >
+                <Plus size={13} /> + Task
+              </button>
+            )}
+            {can("projects.manage") && (
+              <button
+                onClick={() => navigateTo("projects", "Active", true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181C] border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+              >
+                <Plus size={13} /> + Project
+              </button>
+            )}
+            {can("finance.manage") && (
+              <button
+                onClick={() => navigateTo("money", "All", true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181C] border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+              >
+                <Plus size={13} /> Log Money
+              </button>
+            )}
+            {can("leads.manage") && (
+              <button
+                onClick={() => navigateTo("leads", "All", true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181C] border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+              >
+                <Plus size={13} /> Add Lead
+              </button>
+            )}
+          </div>
+        )}
 
-        {/* URGENT OVERDUE ALERT BANNER */}
-        {(overdueProjects.length > 0 || overdueTasks.length > 0) && (
-          <div className="bg-black text-white p-4 rounded-2xl border border-neutral-800 shadow-md flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-white shrink-0">
-                <AlertTriangle size={20} />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm text-white flex items-center gap-2">
-                  Attention Needed
-                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-white text-black font-bold">
-                    Overdue
-                  </span>
-                </h4>
-                <p className="text-xs text-neutral-400 mt-0.5">
-                  {[overdueProjects.length ? `${overdueProjects.length} overdue project${overdueProjects.length === 1 ? "" : "s"}` : "", overdueTasks.length ? `${overdueTasks.length} overdue task${overdueTasks.length === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · ")}
-                </p>
-              </div>
+        {/* Overdue Banner */}
+        {overdueCount > 0 && (
+          <div
+            className="w-full relative overflow-hidden bg-gradient-to-r from-[#121215] to-[#18181D] text-white p-5 rounded-2xl border border-neutral-800/80 flex items-center justify-between shadow-xl"
+            style={{
+              backgroundImage: "radial-gradient(ellipse at 80% 50%, rgba(255,255,255,0.04) 0%, transparent 60%)",
+            }}
+          >
+            <div>
+              <p className="font-serif text-3xl font-bold text-white tracking-tight">
+                {overdueCount}
+              </p>
+              <p className="text-xs text-neutral-400 mt-1 font-sans">
+                {overdueProjects.length > 0 ? "Overdue Projects" : "Overdue Tasks"}
+              </p>
             </div>
             <button
               onClick={() => navigateTo(overdueProjects.length > 0 ? "projects" : "tasks", "Overdue")}
-              className="text-xs font-semibold px-3 py-2 bg-white text-black rounded-lg hover:bg-neutral-200 shrink-0 cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-[#1C1C21] hover:bg-[#25252B] border border-neutral-700/80 text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer transition-all shrink-0 active:scale-98 group"
             >
-              Review
+              <span>Review</span>
+              <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
         )}
 
-        {/* DIRECT NEXT ACTION FOCUS CARD */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-3 animate-fade-in-up stagger-1">
-          <div className="flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-wider">
-            <span>Primary Focus Action</span>
-            <span className="text-black font-mono">{dateLabel(today())}</span>
+        {/* Today's Focus */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-white tracking-tight">Today's Focus</h3>
+            <button
+              onClick={() => navigateTo("tasks")}
+              className="text-[11px] font-sans font-medium text-neutral-500 hover:text-white transition-colors cursor-pointer"
+            >
+              View all
+            </button>
           </div>
 
-          {nextTask ? (
-            <div className="flex items-center justify-between bg-neutral-50 p-3 rounded-xl border border-neutral-200">
-              <div className="flex items-center gap-3">
-                <button
-                  aria-label={`Complete ${nextTask.title}`}
-                  onClick={() => permittedToggle(nextTask.id)}
-                  className="w-6 h-6 rounded-full border-2 border-black flex items-center justify-center text-white hover:bg-black transition"
+          <div className="space-y-1.5">
+            {focusTasks.length > 0 ? focusTasks.map((task) => {
+              const isOverdue = task.date < today();
+              const isToday = task.date === today();
+              return (
+                <div
+                  key={task.id}
+                  className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-[#111113] border border-neutral-800/60 transition-colors"
                 >
-                  <CheckCircle2 size={16} className="text-black hover:text-white" />
-                </button>
-                <div>
-                  <h4 className="font-bold text-sm text-black">{nextTask.title}</h4>
-                  <p className="text-xs text-neutral-500">
-                    {nextTask.projectName ? `${nextTask.projectName} · ` : ""}Due {nextTask.date === today() ? "Today" : nextTask.date}
-                  </p>
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <button
+                      onClick={() => permittedToggle(task.id)}
+                      className="shrink-0 cursor-pointer text-neutral-600 hover:text-white transition-colors"
+                      aria-label={`Toggle ${task.title}`}
+                    >
+                      {task.completed ? (
+                        <CheckCircle2 size={19} className="text-white" />
+                      ) : (
+                        <Circle size={19} className="text-neutral-500" />
+                      )}
+                    </button>
+                    <p className={`text-xs font-medium truncate ${task.completed ? "line-through text-neutral-500" : "text-neutral-200"}`}>
+                      {task.title}
+                    </p>
+                  </div>
+                  {isOverdue && (
+                    <span className="badge-overdue ml-2 shrink-0">Overdue</span>
+                  )}
+                  {isToday && !isOverdue && (
+                    <span className="badge-today ml-2 shrink-0">Today</span>
+                  )}
                 </div>
-              </div>
-              <button
-                onClick={() => navigateTo("tasks")}
-                className="p-2 text-neutral-600 hover:text-black"
-                aria-label="View task details"
-              >
-                <ArrowRight size={16} />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between bg-neutral-50 p-3 rounded-xl border border-neutral-200">
-              <div>
-                <h4 className="font-bold text-sm text-black">No pending tasks for today</h4>
-                <p className="text-xs text-neutral-500">Schedule your next priority or review projects.</p>
-              </div>
-              <button
-                onClick={() => navigateTo("tasks", "All", can("tasks.manage"))}
-                className="flex items-center gap-1 text-xs font-bold bg-black text-white px-3 py-2 rounded-xl"
-              >
-                <Plus size={14} /> {can("tasks.manage") ? "Add Task" : "View Tasks"}
-              </button>
-            </div>
+              );
+            }) : (
+              <p className="text-xs text-neutral-500 py-3 text-center">No tasks scheduled for today.</p>
+            )}
+          </div>
+
+          {can("tasks.manage") && (
+            <button
+              onClick={() => navigateTo("tasks", "All", true)}
+              className="w-full mt-2.5 py-2.5 px-4 rounded-xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 text-xs font-medium text-neutral-300 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Plus size={15} /> Add Task
+            </button>
           )}
         </div>
 
-        {/* EXECUTION TODAY CARD */}
-        {totalTasksTodayCount > 0 && <div
-          onClick={() => navigateTo("tasks")}
-          className="han-card han-card-clickable p-5 flex items-center justify-between bg-white border border-gray-200 rounded-2xl shadow-sm"
-        >
-          <div>
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Execution Today
-            </span>
-            <h2 className="font-sans text-3xl font-extrabold text-black mt-1">
-              {totalTasksTodayCount > 0 ? `${executionPercentage}%` : "No Tasks"}
-            </h2>
-            <p className="text-xs text-gray-500 mt-1 font-medium">
-              {totalTasksTodayCount > 0
-                ? `${tasksCompletedTodayCount} of ${totalTasksTodayCount} tasks done`
-                : "No tasks scheduled for today"}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {totalTasksTodayCount > 0 ? (
-              <ProgressRing
-                percentage={executionPercentage}
-                size={64}
-                strokeWidth={6}
-              />
-            ) : (
-              <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400 font-bold text-xs">
-                0/0
-              </div>
-            )}
-            <button
-              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-black"
-              aria-label="View Tasks"
-            >
-              <ArrowRight size={18} />
-            </button>
-          </div>
-        </div>}
-
-        {/* QUICK METRICS (3 cards grid) */}
-        {totalTasksTodayCount > 0 && <div className="grid grid-cols-3 gap-3">
-          <div
-            onClick={() => navigateTo("tasks")}
-            className="han-card han-card-clickable p-3.5 flex flex-col items-center justify-center text-center bg-white border border-gray-200 rounded-2xl"
-          >
-            <span className="text-2xl font-bold font-sans text-black">
-              {tasksLeftTodayCount}
-            </span>
-            <span className="text-[11px] text-gray-500 font-semibold mt-1">
-              Tasks left
-            </span>
-          </div>
-
-          <div className="han-card p-3.5 flex flex-col items-center justify-center text-center bg-white border border-gray-200 rounded-2xl">
-            <div className="flex items-center justify-center gap-1 text-black">
-              <span className="text-2xl font-bold font-sans">{dayStreak}</span>
-              <Flame size={16} fill="black" />
-            </div>
-            <span className="text-[11px] text-gray-500 font-semibold mt-1">
-              Day streak
-            </span>
-          </div>
-
-          <div
-            onClick={() => navigateTo("calendar")}
-            className="han-card han-card-clickable p-3.5 flex flex-col items-center justify-center text-center bg-white border border-gray-200 rounded-2xl"
-          >
-            <span className="text-xs font-bold font-sans text-black uppercase">
-              {dateLabel(today()).split(" ").slice(0, 2).join(" ")}
-            </span>
-            <span className="text-[11px] text-gray-500 font-semibold mt-1">
-              Today
-            </span>
-          </div>
-        </div>
-
-        }
-        {/* MONEY CARD */}
-        {totalTasksTodayCount > 0 && (
-          <MoneyCard amount={totalFunds} onClick={() => navigateTo("money")} />
-        )}
-
-        {/* ACTIVE PROJECTS */}
-        <div>
+        {/* Active Projects */}
+        <div className="px-5 mb-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-serif text-xl font-bold text-black">
-              Active Projects
-            </h3>
+            <h3 className="text-sm font-bold text-white tracking-tight">Active Projects</h3>
             <button
               onClick={() => navigateTo("projects")}
-              className="text-xs font-bold text-gray-500 hover:text-black uppercase tracking-wider flex items-center gap-1"
+              className="text-[11px] font-sans font-medium text-neutral-500 hover:text-white transition-colors cursor-pointer"
             >
-              View All <ArrowRight size={12} />
+              View all
             </button>
           </div>
 
-          <div className="flex gap-3 overflow-x-auto no-scrollbar py-1">
-            {projects
-              .filter((p) => !p.archived && p.category === "Active")
-              .map((project) => (
-                <ProjectCard
+          <div className="space-y-2.5">
+            {activeProjects.length > 0 ? activeProjects.slice(0, 3).map((project) => {
+              const isOverdue = !!project.deadline && project.deadline < today() && project.progress < 100;
+              return (
+                <div
                   key={project.id}
-                  project={project}
-                  layout="horizontal"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Project: ${project.name}, Progress: ${project.progress} percent`}
                   onClick={() => selectProject(project.id)}
-                />
-              ))}
-            {projects.filter((p) => !p.archived && p.category === "Active").length === 0 && (
-              <div className="w-full py-6 text-center text-xs text-neutral-500 bg-white rounded-2xl border border-neutral-200">
-                No active projects found.
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      selectProject(project.id);
+                    }
+                  }}
+                  className="w-full p-3.5 rounded-2xl bg-[#111113] border border-neutral-800/80 hover:border-neutral-700 transition-all cursor-pointer flex items-center justify-between gap-3 group text-left"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-[#19191D] border border-neutral-800 flex items-center justify-center shrink-0">
+                    <Folder size={18} className="text-neutral-400 group-hover:text-white transition-colors" />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="font-bold text-xs text-white truncate">{project.name}</h4>
+                      {isOverdue && (
+                        <span className="badge-overdue shrink-0">Overdue</span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-neutral-500 truncate mt-0.5">{project.subtitle || "Creative project"}</p>
+
+                    <div className="mt-2.5 flex items-center gap-2.5">
+                      <div className="flex-1 h-1 bg-[#1F1F24] rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-white rounded-full transition-all duration-300"
+                          style={{ width: `${project.progress}%` }}
+                        />
+                      </div>
+                      <span className="text-[10px] font-mono text-neutral-400 shrink-0">{project.progress}%</span>
+                    </div>
+                  </div>
+
+                  <div className="text-neutral-600 group-hover:text-neutral-400 transition-colors shrink-0">
+                    <ArrowRight size={16} />
+                  </div>
+                </div>
+              );
+            }) : (
+              <div className="py-6 text-center text-xs text-neutral-500 bg-[#111113] rounded-2xl border border-neutral-800">
+                No active projects.
               </div>
             )}
           </div>
         </div>
-
-        {/* TODAY'S TIMELINE */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-serif text-xl font-bold text-black">
-              Today's Timeline
-            </h3>
-            <span className="text-xs font-semibold text-gray-400">
-              {dateLabel(today())}
-            </span>
-          </div>
-          <Timeline tasks={todayTasks} onToggleTask={permittedToggle} />
-        </div>
-
-        {/* TEAM WORKSPACE SLACK FEED */}
-        <TeamWorkspaceFeed />
       </div>
 
       {/* Bottom Navigation */}
