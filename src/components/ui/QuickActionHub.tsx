@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { CommandPaletteModal } from "./CommandPaletteModal";
+import { useDialogFocus } from "./useDialogFocus";
 import {
   Plus,
   CheckCircle2,
@@ -17,6 +18,19 @@ export const QuickActionHub: React.FC = () => {
   const app = useApp();
   const [openMenu, setOpenMenu] = useState(false);
   const [openCommand, setOpenCommand] = useState(false);
+  const menu = useDialogFocus(openMenu, () => setOpenMenu(false));
+  useEffect(() => {
+    if (!app.user) return;
+    const handle = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setOpenMenu(false);
+        setOpenCommand(value => !value);
+      }
+    };
+    window.addEventListener('keydown', handle);
+    return () => window.removeEventListener('keydown', handle);
+  }, [app.user]);
 
   if (!app.user) return null;
 
@@ -32,91 +46,92 @@ export const QuickActionHub: React.FC = () => {
 
       {/* Floating Action Palette Menu */}
       {openMenu && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-sm z-[9000] bg-[#0A0A0A] border border-neutral-800 text-white p-4 rounded-3xl shadow-2xl space-y-3 animate-slide-up">
+        <div ref={menu} role="dialog" aria-modal="true" aria-label="Quick actions" className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-sm z-[9000] bg-[#000000] border border-neutral-800 text-white p-4 rounded-3xl shadow-2xl space-y-3 animate-slide-up">
           <div className="flex items-center justify-between pb-2 border-b border-neutral-800">
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-amber-400 flex items-center gap-1.5">
-              <Sparkles size={13} /> Quick Execution Hub
+            <span className="text-xs font-mono font-bold tracking-widest uppercase text-neutral-300 flex items-center gap-1.5">
+              <Sparkles size={13} className="text-white" /> Quick Execution Hub
             </span>
             <button
+              aria-label="Close quick actions"
               onClick={() => setOpenMenu(false)}
-              className="p-1 text-neutral-400 hover:text-white rounded-lg"
+              className="p-1 text-neutral-400 hover:text-white rounded-lg transition-colors cursor-pointer"
             >
               <X size={16} />
             </button>
           </div>
 
           <div className="grid grid-cols-2 gap-2 pt-1">
-            <button
+            {app.can('tasks.manage') && <button
               onClick={() => {
                 setOpenMenu(false);
                 app.navigateTo("tasks", "All", true);
               }}
-              className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-amber-400 hover:bg-neutral-800 text-left transition-all group"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-white hover:bg-neutral-800 text-left transition-all group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-amber-400/10 text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-neutral-800 text-white border border-neutral-700 flex items-center justify-center shrink-0">
                 <CheckCircle2 size={18} />
               </div>
               <div>
-                <span className="block text-xs font-bold text-white group-hover:text-amber-400 transition-colors">
+                <span className="block text-xs font-bold text-white transition-colors">
                   New Task
                 </span>
                 <span className="text-[10px] text-neutral-400">Assign work</span>
               </div>
-            </button>
+            </button>}
 
-            <button
+            {app.can('projects.manage') && <button
               onClick={() => {
                 setOpenMenu(false);
                 app.navigateTo("projects", "Active", true);
               }}
-              className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-emerald-400 hover:bg-neutral-800 text-left transition-all group"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-white hover:bg-neutral-800 text-left transition-all group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-emerald-400/10 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-neutral-800 text-white border border-neutral-700 flex items-center justify-center shrink-0">
                 <Briefcase size={18} />
               </div>
               <div>
-                <span className="block text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                <span className="block text-xs font-bold text-white transition-colors">
                   New Project
                 </span>
                 <span className="text-[10px] text-neutral-400">Roadmap</span>
               </div>
-            </button>
+            </button>}
 
-            <button
+            {app.can('finance.manage') && <button
               onClick={() => {
                 setOpenMenu(false);
                 app.navigateTo("money", "All", true);
               }}
-              className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-sky-400 hover:bg-neutral-800 text-left transition-all group"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-white hover:bg-neutral-800 text-left transition-all group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-sky-400/10 text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-neutral-800 text-white border border-neutral-700 flex items-center justify-center shrink-0">
                 <Wallet size={18} />
               </div>
               <div>
-                <span className="block text-xs font-bold text-white group-hover:text-sky-400 transition-colors">
+                <span className="block text-xs font-bold text-white transition-colors">
                   Log Expense
                 </span>
                 <span className="text-[10px] text-neutral-400">Finance</span>
               </div>
-            </button>
+            </button>}
 
-            <button
+            {app.can('leads.manage') && <button
               onClick={() => {
                 setOpenMenu(false);
                 app.navigateTo("leads", "All", true);
               }}
-              className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-purple-400 hover:bg-neutral-800 text-left transition-all group"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-white hover:bg-neutral-800 text-left transition-all group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-purple-400/10 text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-neutral-800 text-white border border-neutral-700 flex items-center justify-center shrink-0">
                 <Target size={18} />
               </div>
               <div>
-                <span className="block text-xs font-bold text-white group-hover:text-purple-400 transition-colors">
+                <span className="block text-xs font-bold text-white transition-colors">
                   Add Lead
                 </span>
                 <span className="text-[10px] text-neutral-400">Client CRM</span>
               </div>
-            </button>
+            </button>}
           </div>
 
           <button
@@ -126,7 +141,7 @@ export const QuickActionHub: React.FC = () => {
             }}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white text-black font-bold text-xs hover:bg-neutral-200 transition-colors cursor-pointer shadow-lg"
           >
-            <Search size={15} /> Open Command Search (Ctrl + K)
+            <Search size={15} /> Open Command Search <span className="hidden sm:inline">(Ctrl + K)</span>
           </button>
         </div>
       )}
@@ -136,14 +151,16 @@ export const QuickActionHub: React.FC = () => {
         <button
           onClick={() => setOpenMenu(!openMenu)}
           className={`px-5 py-3 rounded-full bg-black text-white border border-neutral-700 shadow-2xl flex items-center gap-2 text-xs font-bold transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
-            openMenu ? "ring-2 ring-amber-400 bg-neutral-900" : ""
+            openMenu ? "ring-2 ring-white bg-neutral-900" : ""
           }`}
           style={{
-            boxShadow: "0 12px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.1)",
+            boxShadow: "0 12px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 255, 255, 0.08)",
           }}
           aria-label="Quick Actions"
+          aria-haspopup="dialog"
+          aria-expanded={openMenu}
         >
-          <div className="w-5 h-5 rounded-full bg-amber-400 text-black flex items-center justify-center font-bold text-xs shrink-0">
+          <div className="w-5 h-5 rounded-full bg-white text-black flex items-center justify-center font-bold text-xs shrink-0">
             {openMenu ? <X size={12} /> : <Plus size={13} />}
           </div>
           <span>Quick Actions</span>
@@ -152,7 +169,7 @@ export const QuickActionHub: React.FC = () => {
       </div>
 
       {/* Command Palette Search Modal */}
-      <CommandPaletteModal isOpen={openCommand} onClose={() => setOpenCommand(false)} />
+      <CommandPaletteModal key={openCommand ? 'open' : 'closed'} isOpen={openCommand} onClose={() => setOpenCommand(false)} />
     </>
   );
 };

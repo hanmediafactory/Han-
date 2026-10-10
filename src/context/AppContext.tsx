@@ -45,7 +45,41 @@ export type Account = {
 };
 
 export type RecordData = Record<string, unknown> & { id: string };
-export type Finance = { income: number; expenses: number; funds: number; savings: number; total: number; salaries: number };
+export type Finance = {
+  income: number;
+  expenses: number;
+  funds: number;
+  savings: number;
+  total: number;
+  salaries: number;
+  currentMonthExpenses?: number;
+  individualSpending?: number;
+  sharedSpending?: number;
+  activeExpensesCount?: number;
+  voidExpensesCount?: number;
+  missingReceiptsCount?: number;
+  categoryBreakdown?: Record<string, number>;
+  subcategoryBreakdown?: Record<string, number>;
+  founderTotals?: Array<{
+    id: string;
+    name: string;
+    paid: number;
+    allocated: number;
+    settledPaid: number;
+    settledReceived: number;
+    netPosition: number;
+    outstanding: number;
+    receivable: number;
+    payable: number;
+  }>;
+  pairwise?: Array<{
+    debtorId: string;
+    debtorName: string;
+    creditorId: string;
+    creditorName: string;
+    amount: number;
+  }>;
+};
 
 export type State = {
   projects: Project[];
@@ -63,6 +97,7 @@ export type State = {
   permissionIds: string[];
   savings_entries: RecordData[];
   salary_payments: RecordData[];
+  settlements: RecordData[];
   finance: Finance | null;
   demo: boolean;
 };
@@ -81,7 +116,11 @@ const empty: State = {
   settings: [],
   activity_logs: [],
   permissionIds: [],
-  savings_entries: [], salary_payments: [], finance: null, demo: false,
+  savings_entries: [],
+  salary_payments: [],
+  settlements: [],
+  finance: null,
+  demo: false,
 };
 
 function useController() {
@@ -501,6 +540,7 @@ function useController() {
     navigateTo,
     screenFilter,
     createOnOpen,
+    setCreateOnOpen,
     switchTab,
     userProfile: {
       name: user?.name || "",
@@ -561,12 +601,14 @@ function useController() {
       return void mutate(`leads/${id}`, "PATCH", { status });
     },
     selectProject: (id: string) => {
+      setCreateOnOpen(false);
       setActiveProjectId(id);
-      navigateTo("project-details");
+      navigateTo("project-details", "All", false);
     },
     selectFunnel: (id: string) => {
+      setCreateOnOpen(false);
       setActiveFunnelId(id);
-      navigateTo("funnel-details");
+      navigateTo("funnel-details", "All", false);
     },
     markAllNotificationsRead: () => void mutate("notifications/read", "POST"),
     resetAllData: () => showToast("Use individual record actions to manage your data."),

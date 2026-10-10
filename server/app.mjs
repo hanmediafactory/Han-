@@ -19,7 +19,7 @@ import { schemas, money } from "./validation.mjs";
 import { z } from "zod";
 import { pushEnabled, webPushEnabled, nativePushEnabled, processPushOutbox } from "./push.mjs";
 import { knownDefaults, requireProductionPassword } from "./security.mjs";
-import { financeSummary, protectFunds } from "./finance.mjs";
+import { financeSummary, protectFunds, computeEqualAllocations } from "./finance.mjs";
 import { EventEmitter } from "node:events";
 import { enqueueWebhooks, webhookDestinationAllowed } from "./webhooks.mjs";
 const changes = new EventEmitter();
@@ -114,39 +114,94 @@ const projectAccess = (user, id) =>
 function permitted(user, table, item, write = false) {
   if (table === "notifications") return item.userId === user.id;
   if (owner(user)) return true;
-  if (table === "projects") return !write && projectAccess(user, item.id);
-  if (table === "tasks")
-    return (
-      !write &&
-      item.assignedUserId === user.id
-    );
-  if (["expenses", "income", "savings_entries", "salary_payments"].includes(table))
-    return !write;
+  if (table === "projects") {
+    return write
+      ? can(user, "projects.manage")
+      : (can(user, "projects.manage") || projectAccess(user, item?.id));
+  }
+  if (table === "tasks") {
+    return write
+      ? can(user, "tasks.manage")
+      : (can(user, "tasks.manage") || (item && item.assignedUserId === user.id));
+  }
+  if (["expenses", "income", "settlements"].includes(table)) {
+    return write ? can(user, "finance.manage") : (can(user, "finance.view") || !write);
+  }
+  if (["savings_entries", "salary_payments"].includes(table)) {
+    return write ? owner(user) : (can(user, "finance.view") || !write);
+  }
   if (table === "leads") return can(user, "leads.manage");
   if (table === "funnels") return can(user, "funnels.manage");
   if (table === "calendar_events")
     return write
       ? can(user, "calendar.manage") && item.assignedUserId === user.id
       : item.assignedUserId === user.id;
-  if (table === "notifications") return item.userId === user.id;
   return !write && (table === "team_members" || table === "categories");
 }
-function audit(user, table, id, action) {
+function audit(user, table, id, action, details = null) {
   const now = new Date().toISOString();
-  db.prepare("INSERT INTO activity_logs VALUES (?,?,?,?,?,?)").run(
-    randomUUID(),
-    table,
-    id,
-    action,
-    now,
-    user.id,
-  );
+  try {
+    db.prepare("INSERT INTO activity_logs (id, entity, entity_id, action, created_at, created_by, details) VALUES (?,?,?,?,?,?,?)").run(
+      randomUUID(),
+      table,
+      id,
+      action,
+      now,
+      user.id,
+      details ? (typeof details === "string" ? details : JSON.stringify(details)) : null,
+    );
+  } catch {
+    db.prepare("INSERT INTO activity_logs (id, entity, entity_id, action, created_at, created_by) VALUES (?,?,?,?,?,?)").run(
+      randomUUID(),
+      table,
+      id,
+      action,
+      now,
+      user.id,
+    );
+  }
 }
 function validateRelationships(table, data) {
-  const users = table === "projects" ? [data.ownerId, ...data.memberIds] : ["tasks", "calendar_events", "leads"].includes(table) ? [data.assignedUserId] : [];
+  const users = table === "projects" ? [data.ownerId, ...data.memberIds] : ["tasks", "calendar_events", "leads"].includes(table) ? [data.assignedUserId] : table === "settlements" ? [data.payerId, data.recipientId] : table === "expenses" && data.paidBy ? [data.paidBy] : [];
   for (const userId of users) if (!db.prepare("SELECT id FROM users WHERE id=? AND active=1").get(userId)) throw fail(400, "Assigned accounts must be active.");
   if (table === "projects" && !data.memberIds.includes(data.ownerId)) throw fail(400, "The project owner must be an assigned member.");
   if (table === "tasks" && data.startDate && data.startDate > data.date) throw fail(400, "Start date must not be after the due date.");
+  if (table === "settlements") {
+    if (data.payerId === data.recipientId) throw fail(400, "Payer and recipient must be different accounts.");
+  }
+  if (table === "expenses") {
+    if (['custom', 'percentage'].includes(data.splitType) && (!Array.isArray(data.allocations) || data.allocations.length === 0)) throw fail(400, 'Custom splits require explicit allocations that reconcile with the expense amount.');
+    if (Array.isArray(data.allocations) && data.allocations.length > 0) {
+      const userSet = new Set();
+      for (const alloc of data.allocations) {
+        if (!db.prepare("SELECT id FROM users WHERE id=? AND active=1").get(alloc.userId)) {
+          throw fail(400, "Allocated accounts must be active.");
+        }
+        if (userSet.has(alloc.userId)) {
+          throw fail(400, "Duplicate founder allocation for the same transaction.");
+        }
+        userSet.add(alloc.userId);
+      }
+      if (data.status !== "void") {
+        const allocCents = data.allocations.reduce((sum, a) => sum + Math.round(a.amount * 100), 0);
+        const expCents = Math.round(data.amount * 100);
+        if (allocCents !== expCents) {
+          throw fail(400, `Allocation amounts sum to ₹${(allocCents / 100).toFixed(2)}, which does not reconcile with total amount ₹${(expCents / 100).toFixed(2)}.`);
+        }
+      }
+    }
+  }
+}
+function validateSettlementAmount(data, existing = null) {
+  const pairs = financeSummary().pairwise;
+  const forward = pairs.find(pair => pair.debtorId === data.payerId && pair.creditorId === data.recipientId)?.amount || 0;
+  const reverse = pairs.find(pair => pair.debtorId === data.recipientId && pair.creditorId === data.payerId)?.amount || 0;
+  let availableCents = Math.round(forward * 100) - Math.round(reverse * 100);
+  // Undo the prior contribution when validating a correction to the same pair.
+  if (existing?.payerId === data.payerId && existing.recipientId === data.recipientId) availableCents += Math.round(existing.amount * 100);
+  if (existing?.payerId === data.recipientId && existing.recipientId === data.payerId) availableCents -= Math.round(existing.amount * 100);
+  availableCents = Math.max(0, availableCents);
+  if (Math.round(data.amount * 100) > availableCents) throw fail(400, `Settlement amount exceeds outstanding debt of ₹${(availableCents / 100).toFixed(2)}.`);
 }
 function recalculate(projectId, user) {
   if (!projectId) return;
@@ -174,6 +229,17 @@ function recalculate(projectId, user) {
 }
 function store(table, id, data, user, exists = false) {
   if (table === "projects") data.manualProgress = data.manualProgress ?? data.progress;
+  if (table === "expenses") {
+    if (!data.paidBy) data.paidBy = user.id;
+    if (!Array.isArray(data.allocations) || data.allocations.length === 0) {
+      if (data.splitType === "individual") {
+        data.allocations = [{ userId: data.paidBy, amount: data.amount, percentage: 100 }];
+      } else {
+        const founderIds = db.prepare("SELECT id FROM users WHERE active=1 ORDER BY id").all().map((u) => u.id);
+        data.allocations = computeEqualAllocations(data.amount, founderIds);
+      }
+    }
+  }
   const previous = exists ? db.prepare(`SELECT updated_at FROM ${table} WHERE id=?`).get(id)?.updated_at : null;
   const now = new Date(Math.max(Date.now(), previous ? Date.parse(previous) + 1 : 0)).toISOString();
   if (exists)
@@ -256,14 +322,16 @@ function notify(user, table, id) {
       ? "Tasks"
       : table === "projects"
         ? "Projects"
-        : ["expenses", "income", "savings_entries", "salary_payments"].includes(table)
+        : ["expenses", "income", "savings_entries", "salary_payments", "settlements"].includes(table)
           ? "Payments"
           : "General";
   for (const recipient of db
     .prepare("SELECT * FROM users WHERE active=1")
     .all()) {
     const item = rows(table).find((r) => r.id === id);
-    if (!item || !permitted(recipient, table, item)) continue;
+    if (!item) continue;
+    const isFinancial = ["expenses", "income", "settlements"].includes(table);
+    if (!isFinancial && !permitted(recipient, table, item)) continue;
 
     let title = "Workspace updated";
     let subtitle = item.title || item.name || id;
@@ -272,6 +340,14 @@ function notify(user, table, id) {
       title = "Savings protected 🛡️";
     } else if (table === "salary_payments") {
       title = "Salary recorded 💵";
+    } else if (table === "settlements") {
+      const payer = db.prepare("SELECT name FROM users WHERE id=?").get(item.payerId)?.name || item.payerId;
+      const rec = db.prepare("SELECT name FROM users WHERE id=?").get(item.recipientId)?.name || item.recipientId;
+      title = "Reimbursement settled 🤝";
+      subtitle = `${payer} settled ₹${Number(item.amount).toLocaleString("en-IN")} with ${rec}`;
+    } else if (table === "expenses") {
+      title = item.status === "void" ? "Expense voided 🚫" : "Expense recorded 💳";
+      subtitle = `${user.name || "A team member"} recorded ₹${Number(item.amount).toLocaleString("en-IN")} for ${item.category || "Expenses"}`;
     } else if (table === "tasks") {
       if (item.status === "COMPLETED") {
         title = "Task completed ✅";
@@ -290,7 +366,7 @@ function notify(user, table, id) {
         title = "Project updated 📁";
       }
     } else {
-      title = { expenses: "Expense updated 💳", income: "Income updated 💰", leads: "Lead updated 🎯", funnels: "Funnel updated 📊", calendar_events: "Calendar updated 📅", team_members: "Team profile updated 👥" }[table] || "Workspace updated";
+      title = { income: "Income updated 💰", leads: "Lead updated 🎯", funnels: "Funnel updated 📊", calendar_events: "Calendar updated 📅", team_members: "Team profile updated 👥" }[table] || "Workspace updated";
     }
 
     const data = {
@@ -707,10 +783,17 @@ app.delete("/api/webhooks/:id", (req, res) => {
 
 app.get("/api/reports/csv", (req, res) => {
   const table = (req.query.table || "tasks").toString();
-  if (!["tasks", "leads", "expenses", "income", "projects", "activity_logs"].includes(table)) throw fail(400, "Invalid export table selection.");
+  if (!["tasks", "leads", "expenses", "income", "projects", "activity_logs", "settlements"].includes(table)) throw fail(400, "Invalid export table selection.");
   let items = table === "activity_logs" 
     ? db.prepare("SELECT * FROM activity_logs ORDER BY rowid DESC LIMIT 500").all().filter(a => owner(req.user) || a.created_by === req.user.id)
     : rows(table).filter(i => permitted(req.user, table, i));
+
+  if (table === "expenses") {
+    items = items.map(item => ({
+      ...item,
+      allocations_summary: Array.isArray(item.allocations) ? item.allocations.map(a => `${a.userId}:${a.amount}`).join("; ") : "",
+    }));
+  }
 
   const startDate = req.query.startDate ? z.iso.date().parse(req.query.startDate) : null;
   const endDate = req.query.endDate ? z.iso.date().parse(req.query.endDate) : null;
@@ -877,10 +960,11 @@ app.get("/api/state", (req, res) => {
     ...state.expenses.map((e) => ({ ...e, type: "expense" })),
     ...state.income.map((e) => ({ ...e, type: "income" })),
   ];
+  const canViewSharedActivity = owner(req.user) || can(req.user, "finance.view") || can(req.user, "projects.manage") || can(req.user, "tasks.manage");
   state.activity_logs = db
     .prepare("SELECT * FROM activity_logs ORDER BY rowid DESC LIMIT 100")
     .all()
-    .filter((a) => owner(req.user) || a.created_by === req.user.id);
+    .filter((a) => canViewSharedActivity || a.created_by === req.user.id);
   state.permissionIds = permissionIds;
   state.finance = financeSummary();
   state.salary_payments = rows("salary_payments");
@@ -959,7 +1043,7 @@ app.patch("/api/users/:id", (req, res) => {
       name: z.string().trim().min(1).max(100),
       role: z.enum(["OWNER", "MEMBER"]),
       active: z.boolean(),
-      permissions: z.array(z.enum(permissionIds)).max(4),
+      permissions: z.array(z.enum(permissionIds)).max(permissionIds.length),
       password: z.string().min(12).max(200).optional(),
     })
     .parse(req.body);
@@ -992,7 +1076,7 @@ app.patch("/api/users/:id", (req, res) => {
 });
 app.post("/api/users", (req, res) => {
   if (!owner(req.user)) throw fail(403, "Owner permission required.");
-  const data = z.object({ name: z.string().trim().min(1).max(100), password: z.string().min(12).max(200), permissions: z.array(z.enum(permissionIds)).max(4).default([]), active: z.boolean().default(true), role: z.literal("MEMBER").default("MEMBER") }).strict().parse(req.body);
+  const data = z.object({ name: z.string().trim().min(1).max(100), password: z.string().min(12).max(200), permissions: z.array(z.enum(permissionIds)).max(permissionIds.length).default([]), active: z.boolean().default(true), role: z.literal("MEMBER").default("MEMBER") }).strict().parse(req.body);
   if (db.prepare("SELECT id FROM users WHERE lower(name)=lower(?)").get(data.name)) throw fail(409, "An account already uses that name.");
   const id = randomUUID();
   transaction(() => {
@@ -1055,6 +1139,28 @@ app.delete("/api/salary_payments/:id", (req, res) => {
   });
   res.json({ ok: true });
 });
+app.post("/api/expenses/:id/void", (req, res) => {
+  if (!owner(req.user) && !can(req.user, "finance.manage"))
+    throw fail(403, "You do not have permission to void expenses.");
+  const existing = rows("expenses").find((r) => r.id === req.params.id);
+  if (!existing) throw fail(404, "Expense not found.");
+  if (existing.salaryPaymentId) throw fail(409, 'Salary payment expenses cannot be voided directly. Use salary payment management.');
+  if (existing.status === "void") throw fail(409, "Expense is already voided.");
+  const body = z.object({ reason: z.string().trim().min(1).max(500).default("Voided by user") }).parse(req.body || {});
+  transaction(() => {
+    const updated = {
+      ...existing,
+      status: "void",
+      voidReason: body.reason,
+      voidedAt: new Date().toISOString(),
+      voidedBy: req.user.id,
+    };
+    store("expenses", existing.id, updated, req.user, true);
+    audit(req.user, "expenses", existing.id, "voided", { reason: body.reason });
+    notify(req.user, "expenses", existing.id);
+  });
+  res.json({ ok: true });
+});
 app.post("/api/:table", (req, res) => {
   const table = req.params.table;
   if (!Object.hasOwn(schemas, table)) throw fail(404, "Unknown collection.");
@@ -1084,6 +1190,7 @@ app.post("/api/:table", (req, res) => {
   }
   transaction(() => {
     const previousFunds = financeSummary().funds;
+    if (table === 'settlements') validateSettlementAmount(data);
     store(table, id, data, req.user);
     if (["income", "expenses", "savings_entries"].includes(table)) protectFunds(table === "income" ? previousFunds : 0);
     if (table === "tasks") recalculate(data.projectId, req.user);
@@ -1099,14 +1206,15 @@ app.patch("/api/:table/:id", (req, res) => {
   const existing = rows(table).find((r) => r.id === id);
   if (!existing) throw fail(404, "Record not found.");
   if (table === "savings_entries" || existing.salaryPaymentId) throw fail(409, "Protected savings and recorded salary payments cannot be edited or withdrawn.");
+  if (table === "expenses" && existing.status === "void") throw fail(409, "Voided expenses cannot be edited.");
   if (req.get("If-Unmodified-Since") && req.get("If-Unmodified-Since") !== existing.updated_at) throw fail(409, "This record changed on another device. Refresh and review your edit.");
   if (table === "notifications") req.body = z.object({ read: z.boolean() }).strict().parse(req.body);
-  if (table === "tasks" && !owner(req.user)) {
+  if (table === "tasks" && !owner(req.user) && !can(req.user, "tasks.manage")) {
     if (existing.assignedUserId !== req.user.id)
       throw fail(403, "Only the assigned user may update this task.");
     req.body = z
       .object({
-        status: z.enum(["TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED"]),
+        status: z.enum(["TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED", "BLOCKED", "IN_REVIEW"]),
       })
       .strict()
       .parse(req.body);
@@ -1149,6 +1257,7 @@ app.patch("/api/:table/:id", (req, res) => {
   }
   transaction(() => {
     const previousFunds = financeSummary().funds;
+    if (table === 'settlements') validateSettlementAmount(data, existing);
     store(table, id, data, req.user, true);
     if (["income", "expenses"].includes(table)) protectFunds(previousFunds);
     if(table==='projects'&&db.prepare('SELECT id FROM tasks WHERE project_id=? LIMIT 1').get(id))recalculate(id,req.user);
@@ -1168,6 +1277,7 @@ app.delete("/api/:table/:id", (req, res) => {
   const existing = rows(table).find((r) => r.id === id);
   if (!existing) throw fail(404, "Record not found.");
   if (table === "savings_entries" || existing.salaryPaymentId) throw fail(409, "Protected savings and recorded salary payments cannot be deleted or withdrawn.");
+  if (table === "expenses" && existing.status === "void") throw fail(409, "Voided expenses cannot be deleted.");
   if (req.get("If-Unmodified-Since") && req.get("If-Unmodified-Since") !== existing.updated_at) throw fail(409, "This record changed on another device. Refresh before deleting.");
   if (!permitted(req.user, table, existing, true))
     throw fail(403, "You do not have permission to delete this record.");
@@ -1212,4 +1322,3 @@ app.use((error, _req, res, _next) => {
 if (process.argv[1] && resolve(process.argv[1]).endsWith("app.mjs")) {
   void import("./index.mjs");
 }
-

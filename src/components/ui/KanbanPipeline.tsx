@@ -11,12 +11,12 @@ interface KanbanPipelineProps {
 }
 
 const STAGES = [
-  { key: "New", label: "New Leads", color: "bg-blue-50 text-blue-800 border-blue-200" },
-  { key: "Contacted", label: "Contacted", color: "bg-amber-50 text-amber-800 border-amber-200" },
-  { key: "Interested", label: "Interested", color: "bg-purple-50 text-purple-800 border-purple-200" },
-  { key: "Follow Up", label: "Follow Up", color: "bg-indigo-50 text-indigo-800 border-indigo-200" },
-  { key: "Won", label: "Won (Closed)", color: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-  { key: "Lost", label: "Lost", color: "bg-rose-50 text-rose-800 border-rose-200" },
+  { key: "New", label: "New Leads", color: "bg-white text-black border-neutral-300" },
+  { key: "Contacted", label: "Contacted", color: "bg-neutral-100 text-neutral-800 border-neutral-300" },
+  { key: "Interested", label: "Interested", color: "bg-neutral-200 text-neutral-900 border-neutral-400" },
+  { key: "Follow Up", label: "Follow Up", color: "bg-neutral-800 text-neutral-100 border-neutral-700" },
+  { key: "Won", label: "Won (Closed)", color: "bg-black text-white border-black" },
+  { key: "Lost", label: "Lost", color: "bg-neutral-100 text-neutral-500 border-neutral-300" },
 ];
 
 export const KanbanPipeline: React.FC<KanbanPipelineProps> = ({
@@ -74,7 +74,7 @@ export const KanbanPipeline: React.FC<KanbanPipelineProps> = ({
                       </div>
 
                       {(lead as any).dealValue > 0 && (
-                        <div className="flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-700">
+                        <div className="flex items-center gap-1 text-[11px] font-mono font-bold text-black">
                           <DollarSign size={11} /> ₹{Number((lead as any).dealValue).toLocaleString("en-IN")}
                         </div>
                       )}

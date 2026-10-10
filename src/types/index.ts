@@ -18,7 +18,7 @@ export type ScreenType =
 export type MainTabType = 'home' | 'money' | 'work' | 'growth' | 'you';
 
 export interface Task {
-  status?: 'TODO'|'IN_PROGRESS'|'COMPLETED'|'CANCELLED';
+  status?: 'TODO' | 'IN_PROGRESS' | 'BLOCKED' | 'IN_REVIEW' | 'COMPLETED' | 'CANCELLED';
   assignedUserId?: string;
   description?: string;
   priority?: string;
@@ -52,14 +52,44 @@ export interface Project {
   category: 'Active' | 'Completed';
 }
 
+export interface Allocation {
+  userId: string;
+  amount: number;
+  percentage?: number;
+}
+
 export interface Expense {
   id: string;
   title: string;
+  description?: string;
   amount: number;
   category: string;
+  subcategory?: string;
   date: string;
+  paidBy?: string;
+  splitType?: 'individual' | 'equal' | 'custom' | 'percentage';
+  allocations?: Allocation[];
+  projectId?: string;
+  vendor?: string;
+  paymentMethod?: string;
+  receipt?: string;
+  status?: 'active' | 'void';
+  voidReason?: string;
+  voidedAt?: string;
+  voidedBy?: string;
   notes?: string;
   type: 'expense' | 'income';
+}
+
+export interface Settlement {
+  id: string;
+  payerId: string;
+  recipientId: string;
+  amount: number;
+  date: string;
+  paymentReference?: string;
+  notes?: string;
+  status?: 'completed';
 }
 
 export interface TeamMember {

@@ -18,7 +18,7 @@ import { MoneyCard } from "../components/ui/MoneyCard";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Timeline } from "../components/ui/Timeline";
 import { BottomNavigation } from "../components/ui/BottomNavigation";
-import { entityLabel } from "../utils/display";
+import { TeamWorkspaceFeed } from "../components/ui/TeamWorkspaceFeed";
 
 export const HomeScreen: React.FC = () => {
   const {
@@ -37,9 +37,9 @@ export const HomeScreen: React.FC = () => {
     selectProject,
     toggleTask,
     unreadNotificationCount,
-    state,
     user,
     showToast,
+    can,
   } = useApp();
 
   const todayTasks = tasks.filter(
@@ -58,11 +58,10 @@ export const HomeScreen: React.FC = () => {
 
   // Next actionable task
   const nextTask = todayTasks.find((t) => !t.completed) || overdueTasks[0];
-  const recentActivity = state.activity_logs.filter(item => item.entity !== "notifications");
 
   const permittedToggle = (id: string) => {
     const task = tasks.find((t) => t.id === id);
-    if (user?.role === "OWNER" || task?.assignedUserId === user?.id) {
+    if (can('tasks.manage') || task?.assignedUserId === user?.id) {
       toggleTask(id);
     } else {
       showToast("Only the assigned user can update this task.");
@@ -77,7 +76,7 @@ export const HomeScreen: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <span className="font-serif text-xs font-semibold tracking-widest text-neutral-400 uppercase flex items-center gap-1">
-              <Sparkles size={11} className="text-amber-500" /> HAN EXECUTIVE CENTER
+              <Sparkles size={11} className="text-black" /> HAN EXECUTIVE CENTER
             </span>
             <h1 className="font-serif text-2xl font-bold text-black tracking-tight leading-snug mt-0.5">
               {userProfile.greeting} {userProfile.name}.
@@ -93,7 +92,7 @@ export const HomeScreen: React.FC = () => {
             >
               <Bell size={19} className="text-black" />
               {unreadNotificationCount > 0 && (
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500 border border-white animate-ping" />
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-black border border-white animate-ping" />
               )}
             </button>
 
@@ -110,43 +109,43 @@ export const HomeScreen: React.FC = () => {
 
         {/* LUXURY EXECUTIVE ACTION STRIP */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
-          <button
+          {can('tasks.manage') && <button
             onClick={() => navigateTo("tasks", "All", true)}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black text-white text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer"
           >
-            <Plus size={14} className="text-amber-400" /> + Task
-          </button>
-          <button
+            <Plus size={14} className="text-white" /> + Task
+          </button>}
+          {can('projects.manage') && <button
             onClick={() => navigateTo("projects", "Active", true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-200 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-300 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
           >
-            <Briefcase size={14} className="text-emerald-600" /> + Project
-          </button>
-          <button
+            <Briefcase size={14} className="text-black" /> + Project
+          </button>}
+          {can('finance.manage') && <button
             onClick={() => navigateTo("money", "All", true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-200 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-300 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
           >
-            <Wallet size={14} className="text-sky-600" /> Log Money
-          </button>
-          <button
+            <Wallet size={14} className="text-black" /> Log Money
+          </button>}
+          {can('leads.manage') && <button
             onClick={() => navigateTo("leads", "All", true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-200 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-neutral-300 text-black text-xs font-semibold shadow-sm hover:border-black active:scale-95 transition-all shrink-0 cursor-pointer"
           >
-            <Target size={14} className="text-purple-600" /> Add Lead
-          </button>
+            <Target size={14} className="text-black" /> Add Lead
+          </button>}
         </div>
 
         {/* URGENT OVERDUE ALERT BANNER */}
         {(overdueProjects.length > 0 || overdueTasks.length > 0) && (
           <div className="bg-black text-white p-4 rounded-2xl border border-neutral-800 shadow-md flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-neutral-800 flex items-center justify-center text-amber-400 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-white shrink-0">
                 <AlertTriangle size={20} />
               </div>
               <div>
                 <h4 className="font-bold text-sm text-white flex items-center gap-2">
                   Attention Needed
-                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-amber-400 text-black font-bold">
+                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-white text-black font-bold">
                     Overdue
                   </span>
                 </h4>
@@ -157,7 +156,7 @@ export const HomeScreen: React.FC = () => {
             </div>
             <button
               onClick={() => navigateTo(overdueProjects.length > 0 ? "projects" : "tasks", "Overdue")}
-              className="text-xs font-semibold px-3 py-2 bg-white text-black rounded-lg hover:bg-neutral-200 shrink-0"
+              className="text-xs font-semibold px-3 py-2 bg-white text-black rounded-lg hover:bg-neutral-200 shrink-0 cursor-pointer"
             >
               Review
             </button>
@@ -341,28 +340,8 @@ export const HomeScreen: React.FC = () => {
           <Timeline tasks={todayTasks} onToggleTask={permittedToggle} />
         </div>
 
-        {/* RECENT ACTIVITY */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-200 space-y-3">
-          <h4 className="font-serif text-lg font-bold text-black">
-            Recent Activity
-          </h4>
-          <div className="space-y-2 text-xs">
-            {recentActivity.slice(0, 5).map((item) => (
-              <div key={item.id} className="py-2 border-b border-gray-100">
-                <p>
-                  <span className="font-semibold">{entityLabel(String(item.entity))}</span> ·{" "}
-                  {String(item.action)}
-                </p>
-                <p className="text-neutral-500 mt-0.5 font-mono text-[10px]">
-                  {new Date(String(item.created_at)).toLocaleString("en-IN")}
-                </p>
-              </div>
-            ))}
-            {recentActivity.length === 0 && (
-              <p className="text-neutral-500 text-center py-4">Your recent workspace activities will appear here.</p>
-            )}
-          </div>
-        </div>
+        {/* TEAM WORKSPACE SLACK FEED */}
+        <TeamWorkspaceFeed />
       </div>
 
       {/* Bottom Navigation */}

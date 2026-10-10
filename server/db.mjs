@@ -1,6 +1,7 @@
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { requireProductionPassword } from './security.mjs';
 import {
   randomBytes,
   scryptSync,
@@ -15,6 +16,7 @@ function getDbPath() {
     return resolved;
   } catch (error) {
     if (error?.code === "EACCES" || error?.code === "EPERM") {
+      if (process.env.NODE_ENV === 'production') throw error;
       console.warn(`[DB] Directory ${dirname(resolved)} is not writable (${error.message}). Falling back to local data/han.sqlite.`);
       const fallback = resolve("data/han.sqlite");
       mkdirSync(dirname(fallback), { recursive: true });
@@ -63,6 +65,9 @@ db.prepare("INSERT OR IGNORE INTO roles VALUES (?,?)").run(
 db.prepare("INSERT OR IGNORE INTO roles VALUES (?,?)").run("MEMBER", "Member");
 export const permissionIds = [
   "finance.view",
+  "finance.manage",
+  "projects.manage",
+  "tasks.manage",
   "leads.manage",
   "funnels.manage",
   "calendar.manage",
@@ -94,16 +99,16 @@ if (
 ) {
   try {
     transaction(() => {
-      envPasswords.forEach((password, i) =>
+      envPasswords.forEach((password, i) => {
+        const id = `user-${i + 1}`;
+        if (process.env.NODE_ENV === 'production' && !db.prepare('SELECT password_hash FROM users WHERE id=?').get(id)?.password_hash) requireProductionPassword(password);
         db
-          .prepare("UPDATE users SET password_hash=?,updated_at=? WHERE id=?")
-          .run(hashPassword(password), new Date().toISOString(), `user-${i + 1}`),
-      );
-      db.prepare("DELETE FROM sessions").run();
+          .prepare("UPDATE users SET password_hash=?,updated_at=? WHERE id=? AND password_hash IS NULL")
+          .run(hashPassword(password), new Date().toISOString(), id);
+      });
     });
-    console.log("[DB] Provisioned account password hashes from environment variables.");
+    console.log("[DB] Initialized missing credentials; existing credentials and sessions were preserved.");
   } catch (err) {
     console.error("[DB] Auto-provisioning error:", err.message);
   }
 }
-

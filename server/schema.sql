@@ -91,3 +91,12 @@ CREATE TABLE IF NOT EXISTS webhook_outbox (
 );
 CREATE INDEX IF NOT EXISTS webhook_outbox_retry_idx ON webhook_outbox(next_attempt);
 INSERT OR IGNORE INTO schema_migrations VALUES ('008-durable-webhooks', datetime('now'));
+CREATE TABLE IF NOT EXISTS settlements (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL CHECK(json_valid(data)),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id),
+  updated_by TEXT NOT NULL REFERENCES users(id)
+);
+INSERT OR IGNORE INTO schema_migrations VALUES ('009-founder-financial-ledger-settlements', datetime('now'));

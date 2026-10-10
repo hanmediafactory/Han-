@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AppProvider, useApp } from "./context/AppContext";
 import { HomeScreen } from "./screens/HomeScreen";
 import { Workspace } from "./screens/Workspace";
@@ -13,6 +13,7 @@ import { Bell, X, ArrowRight } from "lucide-react";
 function Shell() {
   const app = useApp();
   const [showWelcome, setShowWelcome] = useState(false);
+  const welcomeUserId = app.user?.id;
 
   useEffect(() => {
     if (app.user && !app.loading) {
@@ -24,12 +25,12 @@ function Shell() {
     }
   }, [app.user, app.loading]);
 
-  const handleWelcomeComplete = () => {
-    if (app.user) {
-      sessionStorage.setItem(`han_welcome_${app.user.id}`, "true");
+  const handleWelcomeComplete = useCallback(() => {
+    if (welcomeUserId) {
+      sessionStorage.setItem(`han_welcome_${welcomeUserId}`, "true");
     }
     setShowWelcome(false);
-  };
+  }, [welcomeUserId]);
 
   return (
     <div className="han-app min-h-screen bg-[#FAFAFA] text-[#0F0F0F] flex flex-col justify-between">
@@ -98,7 +99,7 @@ function Shell() {
           role="status"
           aria-label="New notification alert"
         >
-          <div className="p-2.5 bg-neutral-800 border border-neutral-700 rounded-xl text-amber-400 shrink-0">
+          <div className="p-2.5 bg-neutral-800 border border-neutral-700 rounded-xl text-white shrink-0">
             <Bell size={18} className="animate-pulse" />
           </div>
           <button
@@ -109,14 +110,14 @@ function Shell() {
             }}
           >
             <div className="flex items-center gap-2">
-              <b className="block text-sm font-semibold tracking-tight text-white group-hover:text-amber-400 transition-colors">
+              <b className="block text-sm font-semibold tracking-tight text-white group-hover:text-neutral-300 transition-colors">
                 {app.notificationAlert.title}
               </b>
             </div>
             <p className="text-xs text-neutral-300 line-clamp-2 leading-relaxed">
               {app.notificationAlert.subtitle}
             </p>
-            <span className="inline-flex items-center gap-1 text-[11px] font-mono font-medium text-emerald-400 pt-1">
+            <span className="inline-flex items-center gap-1 text-[11px] font-mono font-medium text-white underline pt-1">
               View update <ArrowRight size={11} />
             </span>
           </button>

@@ -53,14 +53,14 @@ export const TaskRow: React.FC<TaskRowProps> = ({ task, onToggle, className = ''
         <div className="flex-1 min-w-0">
           <h4
             className={`font-sans font-medium text-sm transition-all duration-200 ${
-              task.completed ? 'line-through text-gray-400 font-normal' : 'text-black font-bold group-hover:text-amber-600'
+              task.completed ? 'line-through text-gray-400 font-normal' : 'text-black font-bold group-hover:text-neutral-600'
             }`}
           >
             {task.title}
           </h4>
           <p className="text-xs text-gray-500 mt-0.5 font-sans flex items-center gap-1.5">
             <span className={`text-[10px] uppercase font-mono px-2 py-0.5 rounded-md font-bold ${
-              task.completed ? 'bg-neutral-100 text-neutral-500' : task.status === 'IN_PROGRESS' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-700'
+              task.completed ? 'bg-neutral-100 text-neutral-500' : task.status === 'IN_PROGRESS' ? 'bg-black text-white' : 'bg-neutral-100 text-neutral-700'
             }`}>{statusLabel}</span>
             {task.timeSlot && <span className="font-mono">· {task.timeSlot}</span>}
             {task.projectName && <span className="text-gray-400">· {task.projectName}</span>}

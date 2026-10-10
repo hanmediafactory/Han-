@@ -1,0 +1,2399 @@
+{
+  "generatedAt": "2026-10-10T06:24:26.265Z",
+  "sourceControls": [
+    {
+      "id": "UI-SOURCE-0001",
+      "file": "src\\App.tsx",
+      "line": 80,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0002",
+      "file": "src\\App.tsx",
+      "line": 105,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0003",
+      "file": "src\\App.tsx",
+      "line": 124,
+      "tag": "button",
+      "label": "Dismiss notification alert",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0004",
+      "file": "src\\components\\ui\\AuditLogStream.tsx",
+      "line": 31,
+      "tag": "button",
+      "label": "Toggle activity history",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0005",
+      "file": "src\\components\\ui\\AuditLogStream.tsx",
+      "line": 77,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0006",
+      "file": "src\\components\\ui\\BottomNavigation.tsx",
+      "line": 28,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0007",
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "line": 78,
+      "tag": "input",
+      "label": "Search workspace",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0008",
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "line": 87,
+      "tag": "button",
+      "label": "Clear search",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0009",
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "line": 109,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0010",
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "line": 127,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0011",
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "line": 145,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0012",
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "line": 163,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0013",
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "line": 197,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0014",
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "line": 223,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0015",
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "line": 255,
+      "tag": "button",
+      "label": "Close command search",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0016",
+      "file": "src\\components\\ui\\DeviceFrame.tsx",
+      "line": 55,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0017",
+      "file": "src\\components\\ui\\DeviceFrame.tsx",
+      "line": 69,
+      "tag": "select",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0018",
+      "file": "src\\components\\ui\\ErrorBoundary.tsx",
+      "line": 49,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0019",
+      "file": "src\\components\\ui\\FilterChips.tsx",
+      "line": 19,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0020",
+      "file": "src\\components\\ui\\FunnelCard.tsx",
+      "line": 16,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0021",
+      "file": "src\\components\\ui\\KanbanPipeline.tsx",
+      "line": 111,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0022",
+      "file": "src\\components\\ui\\KanbanPipeline.tsx",
+      "line": 118,
+      "tag": "select",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0023",
+      "file": "src\\components\\ui\\KanbanPipeline.tsx",
+      "line": 121,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0024",
+      "file": "src\\components\\ui\\Modal.tsx",
+      "line": 62,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0025",
+      "file": "src\\components\\ui\\Modal.tsx",
+      "line": 83,
+      "tag": "button",
+      "label": "Close dialog",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0026",
+      "file": "src\\components\\ui\\MoneyCard.tsx",
+      "line": 17,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0027",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 147,
+      "tag": "button",
+      "label": "Add expense",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0028",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 150,
+      "tag": "button",
+      "label": "Add income",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0029",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 153,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0030",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 167,
+      "tag": "button",
+      "label": "Protect savings",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0031",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 176,
+      "tag": "button",
+      "label": "Record salary",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0032",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 292,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0033",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 314,
+      "tag": "summary",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0034",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 401,
+      "tag": "summary",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0035",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 422,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0036",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 425,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0037",
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "line": 437,
+      "tag": "summary",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0038",
+      "file": "src\\components\\ui\\ProjectCard.tsx",
+      "line": 33,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0039",
+      "file": "src\\components\\ui\\ProjectCard.tsx",
+      "line": 67,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0040",
+      "file": "src\\components\\ui\\PushPreferences.tsx",
+      "line": 73,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0041",
+      "file": "src\\components\\ui\\PushPreferences.tsx",
+      "line": 74,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0042",
+      "file": "src\\components\\ui\\QuickActionHub.tsx",
+      "line": 41,
+      "tag": "interactive container",
+      "label": "Quick actions",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0043",
+      "file": "src\\components\\ui\\QuickActionHub.tsx",
+      "line": 54,
+      "tag": "button",
+      "label": "Close quick actions",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0044",
+      "file": "src\\components\\ui\\QuickActionHub.tsx",
+      "line": 64,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0045",
+      "file": "src\\components\\ui\\QuickActionHub.tsx",
+      "line": 82,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0046",
+      "file": "src\\components\\ui\\QuickActionHub.tsx",
+      "line": 100,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0047",
+      "file": "src\\components\\ui\\QuickActionHub.tsx",
+      "line": 118,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0048",
+      "file": "src\\components\\ui\\QuickActionHub.tsx",
+      "line": 137,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0049",
+      "file": "src\\components\\ui\\QuickActionHub.tsx",
+      "line": 151,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0050",
+      "file": "src\\components\\ui\\ScreenHeader.tsx",
+      "line": 49,
+      "tag": "button",
+      "label": "Go back",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0051",
+      "file": "src\\components\\ui\\ScreenHeader.tsx",
+      "line": 79,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0052",
+      "file": "src\\components\\ui\\ScreenHeader.tsx",
+      "line": 93,
+      "tag": "button",
+      "label": "Notificati",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0053",
+      "file": "src\\components\\ui\\ScreenHeader.tsx",
+      "line": 110,
+      "tag": "button",
+      "label": "Settings",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0054",
+      "file": "src\\components\\ui\\ScreenHeader.tsx",
+      "line": 124,
+      "tag": "button",
+      "label": "More options",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0055",
+      "file": "src\\components\\ui\\SearchBar.tsx",
+      "line": 23,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0056",
+      "file": "src\\components\\ui\\SearchBar.tsx",
+      "line": 32,
+      "tag": "button",
+      "label": "Clear search",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0057",
+      "file": "src\\components\\ui\\TaskRow.tsx",
+      "line": 28,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0058",
+      "file": "src\\components\\ui\\TaskRow.tsx",
+      "line": 37,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0059",
+      "file": "src\\components\\ui\\TeamWorkspaceFeed.tsx",
+      "line": 95,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0060",
+      "file": "src\\components\\ui\\TeamWorkspaceFeed.tsx",
+      "line": 135,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0061",
+      "file": "src\\components\\ui\\TeamWorkspaceFeed.tsx",
+      "line": 142,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0062",
+      "file": "src\\components\\ui\\Timeline.tsx",
+      "line": 14,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0063",
+      "file": "src\\components\\ui\\WelcomeSplash.tsx",
+      "line": 100,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0064",
+      "file": "src\\components\\ui\\WorkspaceStatus.tsx",
+      "line": 7,
+      "tag": "button",
+      "label": "Refresh workspace",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0065",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 88,
+      "tag": "button",
+      "label": "Notifications",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0066",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 100,
+      "tag": "button",
+      "label": "Profile",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0067",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 112,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0068",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 118,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0069",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 124,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0070",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 130,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0071",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 157,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0072",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 176,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0073",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 190,
+      "tag": "button",
+      "label": "View task details",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0074",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 204,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0075",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 215,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0076",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 245,
+      "tag": "button",
+      "label": "View Tasks",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0077",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 256,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0078",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 278,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0079",
+      "file": "src\\screens\\HomeScreen.tsx",
+      "line": 303,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0080",
+      "file": "src\\screens\\LoginScreen.tsx",
+      "line": 70,
+      "tag": "interactive container",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0081",
+      "file": "src\\screens\\LoginScreen.tsx",
+      "line": 123,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0082",
+      "file": "src\\screens\\LoginScreen.tsx",
+      "line": 128,
+      "tag": "input",
+      "label": "Enter password...",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0083",
+      "file": "src\\screens\\LoginScreen.tsx",
+      "line": 139,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0084",
+      "file": "src\\screens\\LoginScreen.tsx",
+      "line": 156,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0085",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 368,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0086",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 389,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0087",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 413,
+      "tag": "textarea",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0088",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 421,
+      "tag": "select",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0089",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 427,
+      "tag": "select",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0090",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 457,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0091",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 488,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0092",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 495,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0093",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 502,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0094",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 517,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0095",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 563,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0096",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 582,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0097",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 595,
+      "tag": "select",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0098",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 611,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0099",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 620,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0100",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 674,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0101",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 679,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0102",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 685,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0103",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 703,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0104",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 778,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0105",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 784,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0106",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 795,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0107",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 820,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0108",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 830,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0109",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 853,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0110",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 861,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0111",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 863,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0112",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 865,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0113",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 986,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0114",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 995,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0115",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1007,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0116",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1016,
+      "tag": "button",
+      "label": "Task filters",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0117",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1026,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0118",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1029,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0119",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1039,
+      "tag": "select",
+      "label": "Assigned to",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0120",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1040,
+      "tag": "select",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0121",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1041,
+      "tag": "select",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0122",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1047,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0123",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1059,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0124",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1074,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0125",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1085,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0126",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1092,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0127",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1137,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0128",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1177,
+      "tag": "select",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0129",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1198,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0130",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1210,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0131",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1215,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0132",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1242,
+      "tag": "a",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0133",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1257,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0134",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1267,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0135",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1280,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0136",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1347,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0137",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1360,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0138",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1403,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0139",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1421,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0140",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1457,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0141",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1470,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0142",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1479,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0143",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1510,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0144",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1520,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0145",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1533,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0146",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1550,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0147",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1578,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0148",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1586,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0149",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1599,
+      "tag": "input",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0150",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1609,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    },
+    {
+      "id": "UI-SOURCE-0151",
+      "file": "src\\screens\\Workspace.tsx",
+      "line": 1619,
+      "tag": "button",
+      "label": "Dynamic/source-defined control; inspect runtime context",
+      "status": "NOT TESTED",
+      "provenance": "Source discovery; may be generated, repeated, conditional, or unused. Runtime inventories are separate.",
+      "preconditions": "Render owning component with the required identity, permission and record state.",
+      "action": "Execute applicable interaction and alternative states in isolated test environment.",
+      "expected": "Investigate the contextual acceptance criteria; verify intended action, validation, navigation and persisted effect. No PASS inferred from source presence."
+    }
+  ],
+  "endpoints": [
+    {
+      "id": "API-ROUTE-001",
+      "method": "GET",
+      "route": "/api/health",
+      "line": 429,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-002",
+      "method": "GET",
+      "route": "/api/identities",
+      "line": 431,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-003",
+      "method": "GET",
+      "route": "/api/ready",
+      "line": 455,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-004",
+      "method": "POST",
+      "route": "/api/login",
+      "line": 461,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-005",
+      "method": "GET",
+      "route": "/api/events",
+      "line": 531,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-006",
+      "method": "GET",
+      "route": "/api/session",
+      "line": 546,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-007",
+      "method": "GET",
+      "route": "/api/health/details",
+      "line": 550,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-008",
+      "method": "GET",
+      "route": "/api/search",
+      "line": 555,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-009",
+      "method": "GET",
+      "route": "/api/analytics",
+      "line": 604,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-010",
+      "method": "POST",
+      "route": "/api/batch",
+      "line": 659,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-011",
+      "method": "GET",
+      "route": "/api/sessions",
+      "line": 727,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-012",
+      "method": "DELETE",
+      "route": "/api/sessions/others",
+      "line": 736,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-013",
+      "method": "GET",
+      "route": "/api/webhooks",
+      "line": 747,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-014",
+      "method": "POST",
+      "route": "/api/webhooks",
+      "line": 753,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-015",
+      "method": "DELETE",
+      "route": "/api/webhooks/:id",
+      "line": 772,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-016",
+      "method": "GET",
+      "route": "/api/reports/csv",
+      "line": 784,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-017",
+      "method": "GET",
+      "route": "/api/push/config",
+      "line": 830,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-018",
+      "method": "POST",
+      "route": "/api/push/native-subscribe",
+      "line": 831,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-019",
+      "method": "POST",
+      "route": "/api/push/preferences",
+      "line": 841,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-020",
+      "method": "POST",
+      "route": "/api/logout",
+      "line": 848,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-021",
+      "method": "POST",
+      "route": "/api/push/subscribe",
+      "line": 860,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-022",
+      "method": "POST",
+      "route": "/api/push/unsubscribe",
+      "line": 885,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-023",
+      "method": "POST",
+      "route": "/api/push/test",
+      "line": 890,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-024",
+      "method": "POST",
+      "route": "/api/password",
+      "line": 908,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-025",
+      "method": "GET",
+      "route": "/api/state",
+      "line": 933,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-026",
+      "method": "GET",
+      "route": "/api/export",
+      "line": 1008,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-027",
+      "method": "GET",
+      "route": "/api/backup",
+      "line": 1026,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-028",
+      "method": "PATCH",
+      "route": "/api/users/:id",
+      "line": 1035,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-029",
+      "method": "POST",
+      "route": "/api/users",
+      "line": 1077,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-030",
+      "method": "POST",
+      "route": "/api/notifications/read",
+      "line": 1091,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-031",
+      "method": "POST",
+      "route": "/api/salary_payments",
+      "line": 1100,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-032",
+      "method": "PATCH",
+      "route": "/api/salary_payments/:id",
+      "line": 1113,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-033",
+      "method": "DELETE",
+      "route": "/api/salary_payments/:id",
+      "line": 1129,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-034",
+      "method": "POST",
+      "route": "/api/expenses/:id/void",
+      "line": 1142,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-035",
+      "method": "POST",
+      "route": "/api/:table",
+      "line": 1164,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-036",
+      "method": "PATCH",
+      "route": "/api/:table/:id",
+      "line": 1203,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-037",
+      "method": "DELETE",
+      "route": "/api/:table/:id",
+      "line": 1274,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    },
+    {
+      "id": "API-ROUTE-038",
+      "method": "GET",
+      "route": "/{*path}",
+      "line": 1295,
+      "status": "NOT TESTED",
+      "note": "Route declaration inventory. Match executed contract tests separately; generic :table expands schemas."
+    }
+  ],
+  "schemaTables": [
+    "schema_migrations",
+    "roles",
+    "permissions",
+    "users",
+    "sessions",
+    "projects",
+    "project_members",
+    "tasks",
+    "expenses",
+    "income",
+    "team_members",
+    "leads",
+    "funnels",
+    "funnel_steps",
+    "notifications",
+    "calendar_events",
+    "activity_logs",
+    "categories",
+    "settings",
+    "push_subscriptions",
+    "mutation_receipts",
+    "notification_preferences",
+    "push_outbox",
+    "reminder_receipts",
+    "native_push_tokens",
+    "savings_entries",
+    "salary_payments",
+    "webhooks",
+    "webhook_outbox",
+    "settlements"
+  ],
+  "package": {
+    "scripts": {
+      "demo": "node scripts/demo-server.mjs",
+      "dev": "vite",
+      "build": "tsc -b && vite build",
+      "lint": "oxlint",
+      "preview": "vite preview",
+      "start": "node server/index.mjs",
+      "provision": "node server/provision.mjs",
+      "test": "node --test tests/api.test.mjs tests/enterprise.test.mjs tests/founder-ascension.test.mjs tests/qa-startup.test.mjs tests/qa-finance.test.mjs",
+      "test:mobile": "playwright test",
+      "mobile:sync": "node scripts/mobile-sync.mjs",
+      "preflight": "node scripts/preflight.mjs",
+      "deploy:check": "npm run lint && npm test && npm run build && node scripts/preflight.mjs"
+    },
+    "dependencies": {
+      "@capacitor/android": "^8.5.2",
+      "@capacitor/app": "^8.1.2",
+      "@capacitor/core": "^8.5.2",
+      "@capacitor/ios": "^8.5.2",
+      "@capacitor/push-notifications": "^8.1.3",
+      "@tailwindcss/vite": "^4.3.3",
+      "@types/node": "^24.13.3",
+      "@types/react": "^19.2.18",
+      "@types/react-dom": "^19.2.7",
+      "@vitejs/plugin-react": "^6.1.1",
+      "express": "^5.2.1",
+      "express-rate-limit": "^8.7.0",
+      "firebase-admin": "^14.5.0",
+      "framer-motion": "^14.0.0",
+      "helmet": "^8.3.0",
+      "lucide-react": "^1.51.0",
+      "react": "^19.2.8",
+      "react-dom": "^19.2.8",
+      "tailwindcss": "^4.3.3",
+      "typescript": "~6.0.2",
+      "vite": "^8.3.0",
+      "web-push": "^3.6.7",
+      "zod": "^4.6.5"
+    },
+    "devDependencies": {
+      "@capacitor/cli": "^8.4.3",
+      "@playwright/test": "^1.63.0",
+      "@types/web-push": "^3.6.4",
+      "oxlint": "^1.81.0",
+      "prettier": "^3.9.9",
+      "sharp": "^0.35.5"
+    }
+  },
+  "sourceHashes": [
+    {
+      "file": "src\\App.css",
+      "sha256": "6e25a776d3e8102da5bacb3cb99f4a5fc662a2e01e6143140671a556d28c3d5c"
+    },
+    {
+      "file": "src\\App.tsx",
+      "sha256": "ba62acde7f17649378963c7c23df2353c5942a859d6553350b8056eba3df3190"
+    },
+    {
+      "file": "src\\components\\ui\\AuditLogStream.tsx",
+      "sha256": "696a8ef9bba79313da12cf6130d2dbbb0b91dbe87016d9791efd2d48604270ee"
+    },
+    {
+      "file": "src\\components\\ui\\AvatarStack.tsx",
+      "sha256": "b824b206d04514d80b8e6322135aeb0e8799939eb3bf3a3368dc74bba6a40684"
+    },
+    {
+      "file": "src\\components\\ui\\BottomNavigation.tsx",
+      "sha256": "c9c9b6f79f634954d2bc7f1114a44665b1dbc7c002ed2a36525e18c9b09f5468"
+    },
+    {
+      "file": "src\\components\\ui\\CommandPaletteModal.tsx",
+      "sha256": "19c607aa34b7202e17994095f8e83959cffa1c32fd747498cda82a660a0f8651"
+    },
+    {
+      "file": "src\\components\\ui\\DeviceFrame.tsx",
+      "sha256": "72fd87298352e8a368c5e2413f253d0241f319ac4feb57f6070cc2c76b32c79e"
+    },
+    {
+      "file": "src\\components\\ui\\ErrorBoundary.tsx",
+      "sha256": "77fe07e7825f27e340ac50ea2e1aeb695e79289ef0bb97dc9203015e9d8c1682"
+    },
+    {
+      "file": "src\\components\\ui\\FilterChips.tsx",
+      "sha256": "a5f0b84342c75a2dd318124f3178f3f2d10e4894ed74c09a07cea9f8bbf1476c"
+    },
+    {
+      "file": "src\\components\\ui\\FunnelCard.tsx",
+      "sha256": "c7469b1c2a5a251d01437009ecb94bcc7120363ef2c2bfdc5ad789a406335cc8"
+    },
+    {
+      "file": "src\\components\\ui\\HANLogo.tsx",
+      "sha256": "53285a73bdc4435852e6122676f35df1974eb0e4376ec4107929020cb18f0bdb"
+    },
+    {
+      "file": "src\\components\\ui\\KanbanPipeline.tsx",
+      "sha256": "9e8613d1c55a7980b65bc5594c0743c17990414c621ebbc04b8218d3811e1cc6"
+    },
+    {
+      "file": "src\\components\\ui\\LeadCard.tsx",
+      "sha256": "2a5fbfe96fd713f0c0100c4ca427a57d548c6110474a2282da14a4392c90318c"
+    },
+    {
+      "file": "src\\components\\ui\\Modal.tsx",
+      "sha256": "c9d54a449c38640bd1faaddf3fc66454e94f96edf6896ff3a099e2d274985ca0"
+    },
+    {
+      "file": "src\\components\\ui\\MoneyCard.tsx",
+      "sha256": "24b431ee5ade30db344853f0be8442bbec111153d5f7e95b0dc56c014d06263a"
+    },
+    {
+      "file": "src\\components\\ui\\MoneyOverview.tsx",
+      "sha256": "93eee694478638534e34f2cfcf4edb8d4d0bc1567f961473019668e67da9a8ab"
+    },
+    {
+      "file": "src\\components\\ui\\ProgressBar.tsx",
+      "sha256": "35f208bf4138a3b3c84127865766f79b552dca67f4c8a69b6b6c11aa8346f445"
+    },
+    {
+      "file": "src\\components\\ui\\ProgressRing.tsx",
+      "sha256": "dde4a7f641fd77ceddb06e3b44fbe5eecec30b3c3e8b37155eba33f09e603eec"
+    },
+    {
+      "file": "src\\components\\ui\\ProjectCard.tsx",
+      "sha256": "fb1035f81255ca37240fdfede877deb4718eede1f6c7f30c97ef08da41783987"
+    },
+    {
+      "file": "src\\components\\ui\\PushPreferences.tsx",
+      "sha256": "4bd0a5a627e776020cd4a22347c9f8cb6fa4e08645734dc65839af5d2f83e6f9"
+    },
+    {
+      "file": "src\\components\\ui\\QuickActionHub.tsx",
+      "sha256": "0f93bf909b628ba1f99f541e7f0cb754e8592e807252c8aa1f31f0ff039924ac"
+    },
+    {
+      "file": "src\\components\\ui\\ScreenHeader.tsx",
+      "sha256": "ca8cc21e7fa8c6a03d98830c213131cc08199debbc4e8b1f0959c61210a7fab4"
+    },
+    {
+      "file": "src\\components\\ui\\SearchBar.tsx",
+      "sha256": "fa245c2b1da883e7d0cdd2355d4fa8634f36f0d1d86f06525f44052bdac1e625"
+    },
+    {
+      "file": "src\\components\\ui\\TaskRow.tsx",
+      "sha256": "efa6b79c36616de628f6ed116a31572fab362812ff39be75b1bc691d8fb31810"
+    },
+    {
+      "file": "src\\components\\ui\\TeamMemberCard.tsx",
+      "sha256": "874463e52929c7763ee09fe12401dd3dacc6bffd9c4e9081c7eceeb8879145dd"
+    },
+    {
+      "file": "src\\components\\ui\\TeamWorkspaceFeed.tsx",
+      "sha256": "40d5cefb2f30d9482b89204ed8abe7667c4fe1d738e488c0653166996d95762b"
+    },
+    {
+      "file": "src\\components\\ui\\Timeline.tsx",
+      "sha256": "1551660e84876d5fb785727dc78c466493eecb5c643a93d5cfe83e0ac7088071"
+    },
+    {
+      "file": "src\\components\\ui\\Toast.tsx",
+      "sha256": "47a3c55b399084d57a432194af564ed3f6d21a477d92b209296314194617fded"
+    },
+    {
+      "file": "src\\components\\ui\\TransactionRow.tsx",
+      "sha256": "e5606b95bcd5ffa96aaa34fbef51b5afd88b34f639458c9efa12dc622e2ff771"
+    },
+    {
+      "file": "src\\components\\ui\\useDialogFocus.ts",
+      "sha256": "8feca96569e0c526a6876271b1b00159a70180f855e1b5a5f329377eb651f3db"
+    },
+    {
+      "file": "src\\components\\ui\\WelcomeSplash.tsx",
+      "sha256": "8ea80ed5a1cd1124c24f08557868a962e4083e22b4e833896bdc0602b3086ad4"
+    },
+    {
+      "file": "src\\components\\ui\\WorkspaceStatus.tsx",
+      "sha256": "310ca4ec055c3ff38c75d953509b191e4e7e282a9c86abd39faa0c5acf1c19bb"
+    },
+    {
+      "file": "src\\context\\AppContext.tsx",
+      "sha256": "824cf2057769329ef64a2a22f485a5155a39f7e7d874a00737ddcff1ed1eadca"
+    },
+    {
+      "file": "src\\context\\dates.ts",
+      "sha256": "cf1be71bf065e4c32c24219dcf29a4ffbc22c7ba81766b4326a4ac59a4f52469"
+    },
+    {
+      "file": "src\\data\\initialData.ts",
+      "sha256": "767ae76a5750bbaf9075dc8860e680147aacd8c8cc09d6c9e3bb4f0ed9685d1e"
+    },
+    {
+      "file": "src\\index.css",
+      "sha256": "505896bd097225194cf231c4709f5d8ca9e4626683f3cf767a1c966c4d89dab2"
+    },
+    {
+      "file": "src\\main.tsx",
+      "sha256": "6fe6bba5f5eb4aaa1fa731a54a446ff15f78ec62c7b457e531f73265ba767283"
+    },
+    {
+      "file": "src\\screens\\HomeScreen.tsx",
+      "sha256": "22e2efbc07d221cc3fda70f06587e94974ac8bde73c93c571a95d61c03dc0a10"
+    },
+    {
+      "file": "src\\screens\\LoginScreen.tsx",
+      "sha256": "e3a9f80e4963828c1de03888e61892ab21354839087a4779b5c26de44e1ca899"
+    },
+    {
+      "file": "src\\screens\\Workspace.tsx",
+      "sha256": "a44ff0ace21ccc469a517733f276da6fd7f41b403d7f3a427e6e2a0144e9a160"
+    },
+    {
+      "file": "src\\styles\\theme.css",
+      "sha256": "8cfd744c861cdaa6947e4453f6012d3e11246dd00c97e8e34514c67ca99a8bfd"
+    },
+    {
+      "file": "src\\types\\index.ts",
+      "sha256": "4927db91d993ecf58bce70f92bca61ba50f15b509b816a24ac499915d14136c4"
+    },
+    {
+      "file": "src\\utils\\analytics.ts",
+      "sha256": "38c76782c010585b697221b3675bf1e62fb32cf2121e0234ff978c23efcd3d57"
+    },
+    {
+      "file": "src\\utils\\apiConfig.ts",
+      "sha256": "15452a2d1459e735063c7c65b554704ddf4878aadcaaa1a850313be0f31cd6ac"
+    },
+    {
+      "file": "src\\utils\\display.ts",
+      "sha256": "14022aa8e2e13aa29155c85c7cbbb5c5ca46378b81575d13feb600d1f75b0b9f"
+    },
+    {
+      "file": "src\\utils\\notifications.ts",
+      "sha256": "00e37d5a00874b8b7560be9baedfb8a8d05105cf0c9d56dfeead57060544073d"
+    },
+    {
+      "file": "src\\utils\\offlineStore.ts",
+      "sha256": "126a011a1ca620e38c44c227fb7de07468d085107b7d5aa796a8fe38d8a83e03"
+    }
+  ],
+  "limitations": [
+    "Source candidates are not runtime control coverage. Every candidate has an explicit unexecuted record.",
+    "Runtime control observations in evidence/controls-*.json supplement this discovery.",
+    "Conditional rows, account-specific forms and native plugins require further context-specific execution."
+  ]
+}

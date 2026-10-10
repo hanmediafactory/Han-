@@ -148,7 +148,7 @@ export function LoginScreen() {
           </div>
 
           {error && (
-            <p role="alert" className="text-xs font-semibold text-red-600 bg-red-50 p-3 rounded-xl border border-red-200 text-center">
+            <p role="alert" className="text-xs font-semibold text-black bg-neutral-100 p-3 rounded-xl border border-neutral-300 text-center">
               {error}
             </p>
           )}

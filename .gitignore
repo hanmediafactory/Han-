@@ -37,3 +37,6 @@ android/app/google-services.json
 *.keystore
 *service-account*.json
 backups/
+*.sqlite
+*.sqlite3
+*.apk

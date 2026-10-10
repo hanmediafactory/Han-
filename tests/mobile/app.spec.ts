@@ -82,7 +82,7 @@ for (const [width, height] of [
     expect(errors).toEqual([]);
   });
 }
-test("Member task controls and private finance", async ({ page }) => {
+test("Member task controls, transparent finance and restricted management", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.getByRole("radio", { name: "Nihaal Team Member" }).click();
@@ -93,8 +93,11 @@ test("Member task controls and private finance", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Welcome back, Nihaal." })).toBeVisible();
   await page.getByRole("button", { name: "Money", exact: true }).click();
   await expect(
-    page.getByText("Financial access is restricted to permitted accounts."),
+    page.getByRole("region", { name: "Funds and shared financial ledger" }),
   ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add income", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Add expense", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Record salary", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Work", exact: true }).click();
   await expect(page.getByRole("button", { name: /^Add (project|task|funnel|lead|event)$/ })).toHaveCount(0);
   await expect(page.getByText("Reviewly", { exact: true })).toBeVisible();

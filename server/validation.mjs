@@ -3,7 +3,7 @@ const text = z.string().trim().min(1).max(250);
 const note = z.string().max(10000).default("");
 const date = z.iso.date();
 const user = z.string().trim().min(1).max(100);
-const priority = z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM");
+const priority = z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM");
 export const money = z.number().positive().max(1e10).refine(v => Number.isSafeInteger(Math.round(v * 100)) && Math.abs(v * 100 - Math.round(v * 100)) < 0.0001, "Maximum two decimal places");
 const url = z
   .union([
@@ -41,25 +41,42 @@ export const schemas = {
     notes: note,
     priority,
     status: z
-      .enum(["TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED"])
+      .enum(["TODO", "IN_PROGRESS", "BLOCKED", "IN_REVIEW", "COMPLETED", "CANCELLED"])
       .default("TODO"),
   }),
   expenses: z.object({
     account: z.literal("funds").default("funds"),
     title: text,
-    amount: z
-      .number()
-      .positive()
-      .max(1e10)
-      .refine(
-        (v) =>
-          Number.isSafeInteger(Math.round(v * 100)) &&
-          Math.abs(v * 100 - Math.round(v * 100)) < 0.0001,
-        "Maximum two decimal places",
-      ),
+    description: note,
+    amount: money,
     category: text,
+    subcategory: z.string().max(100).default(""),
     date,
     notes: note,
+    paidBy: user.default("user-1"),
+    splitType: z.enum(["individual", "equal", "custom", "percentage"]).default("equal"),
+    allocations: z.array(z.object({
+      userId: user,
+      amount: z.number().min(0).max(1e10).refine(v => Math.abs(v * 100 - Math.round(v * 100)) < 0.0001, "Maximum two decimal places"),
+      percentage: z.number().min(0).max(100).optional(),
+    })).optional(),
+    projectId: z.string().max(100).optional(),
+    vendor: z.string().max(250).default(""),
+    paymentMethod: z.string().max(100).default("UPI"),
+    receipt: z.string().max(10000).default(""),
+    status: z.enum(["active", "void"]).default("active"),
+    voidReason: z.string().max(500).default(""),
+    voidedAt: z.string().max(100).optional(),
+    voidedBy: user.optional(),
+  }),
+  settlements: z.object({
+    payerId: user,
+    recipientId: user,
+    amount: money,
+    date,
+    paymentReference: z.string().max(250).default(""),
+    notes: note,
+    status: z.enum(["completed"]).default("completed"),
   }),
   income: z.object({
     title: text,

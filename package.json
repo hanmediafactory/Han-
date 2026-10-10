@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "start": "node server/index.mjs",
     "provision": "node server/provision.mjs",
-    "test": "node --test tests/api.test.mjs tests/enterprise.test.mjs",
+    "test": "node --test tests/api.test.mjs tests/enterprise.test.mjs tests/founder-ascension.test.mjs tests/qa-startup.test.mjs tests/qa-finance.test.mjs",
     "test:mobile": "playwright test",
     "mobile:sync": "node scripts/mobile-sync.mjs",
     "preflight": "node scripts/preflight.mjs",

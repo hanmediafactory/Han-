@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { useApp } from "../context/AppContext";
 import { today, dateLabel } from "../context/dates";
@@ -14,6 +14,7 @@ import { ProgressBar } from "../components/ui/ProgressBar";
 import { SearchBar } from "../components/ui/SearchBar";
 import { KanbanPipeline } from "../components/ui/KanbanPipeline";
 import { AuditLogStream } from "../components/ui/AuditLogStream";
+import { TeamWorkspaceFeed } from "../components/ui/TeamWorkspaceFeed";
 import { PushPreferences } from "../components/ui/PushPreferences";
 import {
   Pencil,
@@ -35,8 +36,8 @@ type Field = {
   options?: string[];
   required?: boolean;
 };
-const priorities = ["LOW", "MEDIUM", "HIGH"];
-const readable = (value: string) => ({ TODO: "To Do", IN_PROGRESS: "In Progress", COMPLETED: "Completed", CANCELLED: "Cancelled", LOW: "Low", MEDIUM: "Medium", HIGH: "High" }[value] || value);
+const priorities = ["LOW", "MEDIUM", "HIGH", "URGENT"];
+const readable = (value: string) => ({ TODO: "To Do", IN_PROGRESS: "In Progress", BLOCKED: "Blocked", IN_REVIEW: "In Review", COMPLETED: "Completed", CANCELLED: "Cancelled", LOW: "Low", MEDIUM: "Medium", HIGH: "High", URGENT: "Urgent" }[value] || value);
 const fields: Record<string, Field[]> = {
   savings_entries: [
     { key: "title", label: "Savings purpose", required: true },
@@ -73,7 +74,7 @@ const fields: Record<string, Field[]> = {
     {
       key: "status",
       label: "Status",
-      options: ["TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED"],
+      options: ["TODO", "IN_PROGRESS", "BLOCKED", "IN_REVIEW", "COMPLETED", "CANCELLED"],
     },
     { key: "priority", label: "Priority", options: priorities },
     { key: "date", label: "Due date", type: "date", required: true },
@@ -86,7 +87,20 @@ const fields: Record<string, Field[]> = {
     { key: "title", label: "Title", required: true },
     { key: "amount", label: "Amount (₹)", type: "number", required: true },
     { key: "category", label: "Category", required: true },
+    { key: "subcategory", label: "Subcategory" },
     { key: "date", label: "Date", type: "date", required: true },
+    { key: "paidBy", label: "Paid by", type: "user" },
+    { key: "vendor", label: "Vendor / Merchant" },
+    { key: "paymentMethod", label: "Payment method", options: ["UPI", "Bank Transfer", "Credit Card", "Debit Card", "Cash"] },
+    { key: "receipt", label: "Receipt / Invoice URL" },
+    { key: "notes", label: "Notes", type: "textarea" },
+  ],
+  settlements: [
+    { key: "payerId", label: "Payer (who paid)", type: "user", required: true },
+    { key: "recipientId", label: "Recipient (who received)", type: "user", required: true },
+    { key: "amount", label: "Settlement amount (₹)", type: "number", required: true },
+    { key: "date", label: "Date", type: "date", required: true },
+    { key: "paymentReference", label: "Payment Reference / UTR" },
     { key: "notes", label: "Notes", type: "textarea" },
   ],
   leads: [
@@ -255,11 +269,111 @@ function Editor({
       }
       return updated;
     });
-  const memberTask = table === "tasks" && app.user?.role !== "OWNER";
+
+  const canManageTasks = app.can("tasks.manage");
+  const memberTask = table === "tasks" && !canManageTasks && !!item;
+
+  const activeFounders = app.state.users.filter((u) => u.active);
+  const [splitType, setSplitType] = useState<"equal" | "individual" | "custom">(
+    (value.splitType as "equal" | "individual" | "custom") || "equal"
+  );
+  const [customAllocations, setCustomAllocations] = useState<Record<string, number>>(() => {
+    const existing = Array.isArray(value.allocations) ? value.allocations : [];
+    const map: Record<string, number> = {};
+    for (const u of activeFounders) {
+      const found = existing.find((a: any) => a.userId === u.id);
+      map[u.id] = found ? Number(found.amount) : 0;
+    }
+    return map;
+  });
+
+  const totalCustom = Object.values(customAllocations).reduce(
+    (sum, a) => sum + (Number(a) || 0),
+    0
+  );
+  const expAmount = Number(value.amount) || 0;
+  const discrepancyCents =
+    Math.round(totalCustom * 100) - Math.round(expAmount * 100);
+
   const [error, setError] = useState("");
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Form pre-validation with clear, specific user error messages
+    if (table === "tasks") {
+      if (!String(value.title || "").trim()) {
+        setError("Task title is required.");
+        return;
+      }
+      if (!value.date) {
+        setError("Due date is required.");
+        return;
+      }
+      if (value.startDate && value.date && String(value.startDate) > String(value.date)) {
+        setError("Start date cannot be after the due date.");
+        return;
+      }
+    }
+    if (table === "projects") {
+      if (!String(value.name || "").trim()) {
+        setError("Project name is required.");
+        return;
+      }
+      if (!Array.isArray(value.memberIds) || value.memberIds.length === 0) {
+        setError("Please select at least one assigned team member.");
+        return;
+      }
+    }
+    if (table === "expenses") {
+      if (!String(value.title || "").trim()) {
+        setError("Expense title is required.");
+        return;
+      }
+      if (!value.amount || Number(value.amount) <= 0) {
+        setError("Expense amount must be greater than ₹0.00.");
+        return;
+      }
+      if (!value.date) {
+        setError("Date is required.");
+        return;
+      }
+    }
+    if (table === "income") {
+      if (!String(value.title || "").trim()) {
+        setError("Income title is required.");
+        return;
+      }
+      if (!value.amount || Number(value.amount) <= 0) {
+        setError("Income amount must be greater than ₹0.00.");
+        return;
+      }
+      if (!value.date) {
+        setError("Date is required.");
+        return;
+      }
+    }
+    if (table === "settlements") {
+      if (!value.amount || Number(value.amount) <= 0) {
+        setError("Settlement amount must be greater than ₹0.00.");
+        return;
+      }
+      if (!value.payerId || !value.recipientId) {
+        setError("Both payer and recipient must be selected.");
+        return;
+      }
+      if (value.payerId === value.recipientId) {
+        setError("Payer and recipient cannot be the same team member.");
+        return;
+      }
+    }
+    if (table === "leads") {
+      if (!String(value.name || "").trim()) {
+        setError("Lead name is required.");
+        return;
+      }
+    }
+
     const data: Record<string, unknown> = {};
     for (const field of fields[table] || []) data[field.key] = value[field.key];
     if (table === "tasks" && !data.projectId) delete data.projectId;
@@ -267,6 +381,42 @@ function Editor({
     if (table === "notifications") {
       data.read = value.read;
       data.timestamp = value.timestamp;
+    }
+    if (table === "expenses") {
+      data.paidBy = value.paidBy || app.user?.id;
+      data.splitType = splitType;
+      if (splitType === "individual") {
+        data.allocations = [
+          {
+            userId: String(data.paidBy),
+            amount: Number(data.amount),
+            percentage: 100,
+          },
+        ];
+      } else if (splitType === "custom") {
+        if (discrepancyCents !== 0) {
+          setError(
+            `Allocations sum to ₹${totalCustom.toFixed(2)}, which does not reconcile with total amount ₹${expAmount.toFixed(2)} (difference: ₹${(Math.abs(discrepancyCents) / 100).toFixed(2)}).`
+          );
+          return;
+        }
+        data.allocations = activeFounders
+          .map((u) => ({
+            userId: u.id,
+            amount: Number(customAllocations[u.id] || 0),
+          }))
+          .filter((a) => a.amount > 0);
+      } else {
+        const founderIds = activeFounders.map((u) => u.id);
+        const count = founderIds.length || 1;
+        const totalCents = Math.round(Number(data.amount) * 100);
+        const base = Math.floor(totalCents / count);
+        const rem = totalCents % count;
+        data.allocations = founderIds.map((id, i) => ({
+          userId: id,
+          amount: (base + (i < rem ? 1 : 0)) / 100,
+        }));
+      }
     }
     if (memberTask) {
       for (const key of Object.keys(data))
@@ -403,6 +553,88 @@ function Editor({
               )}
             </div>
           ))}
+
+        {table === "expenses" && (
+          <div className="space-y-3 p-3 bg-neutral-50 rounded-xl border border-neutral-200">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600">
+              Founder Expense Allocation
+            </label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className={`filter-chip text-xs ${splitType === "equal" ? "active" : ""}`}
+                onClick={() => setSplitType("equal")}
+              >
+                Equal (All 4)
+              </button>
+              <button
+                type="button"
+                className={`filter-chip text-xs ${splitType === "individual" ? "active" : ""}`}
+                onClick={() => setSplitType("individual")}
+              >
+                Individual (100% Payer)
+              </button>
+              <button
+                type="button"
+                className={`filter-chip text-xs ${splitType === "custom" ? "active" : ""}`}
+                onClick={() => setSplitType("custom")}
+              >
+                Custom Split
+              </button>
+            </div>
+            {splitType === "custom" && (
+              <div className="space-y-2 pt-2 border-t border-neutral-200">
+                {activeFounders.map((u) => (
+                  <div key={u.id} className="flex items-center justify-between gap-3 text-xs">
+                        <span className="font-semibold">{u.name}</span>
+                    <div className="flex items-center gap-1">
+                      <span>₹</span>
+                      <input
+                        aria-label={`Allocation for ${u.name}`}
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        className="han-input w-28 text-right py-1"
+                        value={customAllocations[u.id] ?? ""}
+                        onChange={(e) =>
+                          setCustomAllocations((prev) => ({
+                            ...prev,
+                            [u.id]: Number(e.target.value) || 0,
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                ))}
+                <div
+                  className={`p-2 rounded text-xs flex justify-between font-semibold ${
+                    discrepancyCents === 0
+                      ? "bg-black text-white"
+                      : "bg-neutral-100 text-black border border-neutral-300"
+                  }`}
+                >
+                  <span>Allocated Total: ₹{totalCustom.toFixed(2)}</span>
+                  <span>
+                    {discrepancyCents === 0
+                      ? "✓ Reconciled"
+                      : `Discrepancy: ₹${(Math.abs(discrepancyCents) / 100).toFixed(2)}`}
+                  </span>
+                </div>
+              </div>
+            )}
+            {splitType === "equal" && (
+              <p className="text-xs text-neutral-500">
+                Total ₹{Number(value.amount || 0).toLocaleString("en-IN")} will be split equally across all active founders with deterministic integer-paise remainder.
+              </p>
+            )}
+            {splitType === "individual" && (
+              <p className="text-xs text-neutral-500">
+                Entire amount belongs exclusively to the payer. No reimbursement debt is generated.
+              </p>
+            )}
+          </div>
+        )}
+
         <button className="han-btn-primary" disabled={app.busy}>
           {app.busy ? "Saving…" : "Save"}
         </button>
@@ -491,51 +723,105 @@ function Actions({
   remove: () => void;
 }) {
   const app = useApp();
+  const isOwner = app.user?.role === "OWNER";
   const allowed =
     table !== "notifications" && !item.salaryPaymentId && (
-    app.user?.role === "OWNER" ||
-    (table === "tasks" && item.assignedUserId === app.user?.id) ||
+    isOwner ||
+    (table === "projects" && app.can("projects.manage")) ||
+    (table === "tasks" && (app.can("tasks.manage") || item.assignedUserId === app.user?.id)) ||
+    (table === "expenses" && app.can("finance.manage")) ||
+    (table === "income" && app.can("finance.manage")) ||
+    (table === "settlements" && app.can("finance.manage")) ||
     (table === "leads" && app.can("leads.manage")) ||
     (table === "funnels" && app.can("funnels.manage")) ||
     (table === "calendar_events" && app.can("calendar.manage") && item.assignedUserId === app.user?.id));
   if (!allowed) return null;
+  const isVoid = table === "expenses" && item.status === "void";
+
   return (
-    <div className="flex gap-2 mt-3 border-t border-neutral-100 pt-2">
-      <button className="action" onClick={edit}>
-        <Pencil size={15} />
-        Edit
-      </button>
-      {app.user?.role === "OWNER" || table !== "tasks" ? (
-        <button className="action" onClick={remove}>
-          <Trash2 size={15} />
-          Delete
-        </button>
-      ) : null}
-      {table === "projects" && (
-        <button
-          className="action"
-          disabled={app.busy}
-          onClick={() =>
-            void app.mutate(`projects/${item.id}`, "PATCH", {
-              archived: !item.archived,
-            })
-          }
-        >
-          {item.archived ? <RotateCcw size={15} /> : <Archive size={15} />}{" "}
-          {item.archived ? "Restore" : "Archive"}
-        </button>
+    <div className="flex items-center gap-2 mt-3 border-t border-neutral-100 pt-2">
+      {isVoid ? (
+        <span className="text-[11px] font-mono font-bold text-neutral-500 bg-neutral-100 px-2 py-0.5 rounded border border-neutral-300 line-through">
+          Voided {item.voidReason ? `(${String(item.voidReason)})` : ""}
+        </span>
+      ) : (
+        <>
+          <button className="action" onClick={edit}>
+            <Pencil size={15} />
+            Edit
+          </button>
+          {isOwner || app.can("tasks.manage") || table !== "tasks" ? (
+            <button className="action" onClick={remove}>
+              <Trash2 size={15} />
+              Delete
+            </button>
+          ) : null}
+          {table === "expenses" && (isOwner || app.can("finance.manage")) && (
+            <button
+              className="action text-neutral-800 hover:text-black font-medium"
+              disabled={app.busy}
+              onClick={async () => {
+                const reason = window.prompt("Reason for voiding this expense:", "Voided by user");
+                if (reason) {
+                  const res = await app.request(`expenses/${item.id}/void`, "POST", { reason });
+                  if (res?.ok) {
+                    app.showToast("Expense voided.");
+                    await app.refresh();
+                  }
+                }
+              }}
+            >
+              Void
+            </button>
+          )}
+          {table === "projects" && (
+            <button
+              className="action"
+              disabled={app.busy}
+              onClick={() =>
+                void app.mutate(`projects/${item.id}`, "PATCH", {
+                  archived: !item.archived,
+                })
+              }
+            >
+              {item.archived ? <RotateCcw size={15} /> : <Archive size={15} />}{" "}
+              {item.archived ? "Restore" : "Archive"}
+            </button>
+          )}
+        </>
       )}
     </div>
   );
 }
 export function Workspace() {
   const app = useApp();
+  const map: Record<string, string> = {
+    "project-details": "projects",
+    "funnel-details": "funnels",
+    money: "expenses",
+    "add-expense": "expenses",
+    team: "team_members",
+    calendar: "calendar_events",
+  };
+  const table = map[app.currentScreen] || app.currentScreen;
+
   const [editing, setEditing] = useState<{
       table: string;
       item?: RecordData;
       initialValues?: Record<string, unknown>;
-    } | null>(app.createOnOpen ? { table: app.currentScreen === "tasks" ? "tasks" : "projects" } : null),
-    [deleting, setDeleting] = useState<{
+    } | null>(null);
+
+  useEffect(() => {
+    if (app.createOnOpen) {
+      app.setCreateOnOpen(false);
+      if (!["project-details", "funnel-details", "profile", "home"].includes(app.currentScreen)) {
+        const timer = setTimeout(() => setEditing({ table }), 0);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [app.createOnOpen, table, app.currentScreen, app]);
+
+  const [deleting, setDeleting] = useState<{
       table: string;
       item: RecordData;
     } | null>(null),
@@ -547,15 +833,6 @@ export function Workspace() {
   const [taskProject, setTaskProject] = useState("All");
   const [taskSort, setTaskSort] = useState("Due date");
   const [alertEnabled, setAlertEnabled] = useState(() => localStorage.getItem(`han_alerts_${app.user?.id}`) !== "off");
-  const map: Record<string, string> = {
-    "project-details": "projects",
-    "funnel-details": "funnels",
-    money: "expenses",
-    "add-expense": "expenses",
-    team: "team_members",
-    calendar: "calendar_events",
-  };
-  const table = map[app.currentScreen] || app.currentScreen;
 
   const isOwner = app.user?.role === "OWNER";
   if (app.currentScreen === "profile")
@@ -572,6 +849,7 @@ export function Workspace() {
             {app.tasks.filter((t) => t.completed).length} completed tasks
           </div>
         </div>
+        <TeamWorkspaceFeed />
         <button
           className="han-btn-secondary"
           onClick={() => app.navigateTo("team")}
@@ -584,6 +862,9 @@ export function Workspace() {
         >
           Calendar <ArrowRight size={16} />
         </button>
+        {(isOwner || app.can("finance.view") || app.can("projects.manage") || app.can("tasks.manage")) && (
+          <AuditLogStream logs={app.state.activity_logs as any[]} />
+        )}
         {isOwner && (
           <>
             <button
@@ -609,7 +890,6 @@ export function Workspace() {
             >
               <Download size={16} /> Download System Backup
             </button>
-            <AuditLogStream logs={app.state.activity_logs as any[]} />
             <div className="flex gap-2">
               {["settings", "categories"].map((t) => (
                 <button
@@ -681,6 +961,11 @@ export function Workspace() {
     );
   const write = table !== "notifications" && (
     isOwner ||
+    (table === "projects" && app.can("projects.manage")) ||
+    (table === "tasks" && app.can("tasks.manage")) ||
+    (table === "expenses" && app.can("finance.manage")) ||
+    (table === "income" && app.can("finance.manage")) ||
+    (table === "settlements" && app.can("finance.manage")) ||
     (table === "leads" && app.can("leads.manage")) ||
     (table === "funnels" && app.can("funnels.manage")) ||
     (table === "calendar_events" && app.can("calendar.manage")));
@@ -768,7 +1053,7 @@ export function Workspace() {
       )}
       {table === "expenses" && (
         <>
-          <MoneyOverview onAdd={table => setEditing({ table })} onEdit={item => setEditing({ table: "salary_payments", item })} onDelete={item => setDeleting({ table: "salary_payments", item })} />
+          <MoneyOverview onAdd={(tbl, initialValues) => setEditing({ table: tbl, initialValues })} onEdit={item => setEditing({ table: "salary_payments", item })} onDelete={item => setDeleting({ table: "salary_payments", item })} />
           <h2 className="font-serif text-2xl">Transactions</h2>
           <SearchBar value={query} onChange={setQuery} placeholder="Search transactions…" />
           <div className="flex gap-2">
@@ -923,7 +1208,7 @@ export function Workspace() {
                     {String(item.title || item.name)}
                   </h3>
                   {table === "tasks" &&
-                    (isOwner || item.assignedUserId === app.user?.id) && (
+                    (app.can('tasks.manage') || item.assignedUserId === app.user?.id) && (
                       <button
                         aria-label={
                           item.completed ? "Mark pending" : "Mark complete"
@@ -964,7 +1249,7 @@ export function Workspace() {
                     {readable(String(item.status))}
                   </p>
                 ) : null}
-                {table === "tasks" && <div className="flex items-center gap-2 mt-3 text-xs"><span>Priority: {readable(String(item.priority))}</span>{(isOwner || item.assignedUserId === app.user?.id) && <select className="han-input" aria-label={`Status for ${item.title}`} disabled={app.busy} value={String(item.status)} onChange={event => void app.mutate(`tasks/${item.id}`, "PATCH", { status: event.target.value })}>{["TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED"].map(status => <option key={status} value={status}>{readable(status)}</option>)}</select>}</div>}
+                {table === "tasks" && <div className="flex items-center gap-2 mt-3 text-xs"><span>Priority: {readable(String(item.priority))}</span>{(app.can('tasks.manage') || item.assignedUserId === app.user?.id) && <select className="han-input" aria-label={`Status for ${item.title}`} disabled={app.busy} value={String(item.status)} onChange={event => void app.mutate(`tasks/${item.id}`, "PATCH", { status: event.target.value })}>{["TODO", "IN_PROGRESS", "BLOCKED", "IN_REVIEW", "COMPLETED", "CANCELLED"].map(status => <option key={status} value={status}>{readable(status)}</option>)}</select>}</div>}
                 {item.assignedUserId ? (
                   <p className="text-xs mt-2">
                     Assigned to{" "}
@@ -980,7 +1265,7 @@ export function Workspace() {
                       Role: <span className="font-semibold">{String(item.role)}</span>
                       {item.sharePercentage ? ` · Share: ${item.sharePercentage}` : ""}
                     </p>
-                    <p className="text-xs text-emerald-800 font-semibold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg inline-block">
+                    <p className="text-xs text-neutral-900 font-semibold bg-neutral-100 border border-neutral-300 px-2.5 py-1 rounded-lg inline-block">
                       Assigned Monthly Salary: {item.salary ? `₹${Number(item.salary).toLocaleString("en-IN")}` : "Not assigned"}
                     </p>
                     {isOwner && (
@@ -1281,11 +1566,14 @@ function AccountManagement() {
                     (
                       {
                         "finance.view": "View finances",
+                        "finance.manage": "Manage finances & expenses",
+                        "projects.manage": "Manage projects",
+                        "tasks.manage": "Manage team tasks",
                         "leads.manage": "Manage leads",
                         "funnels.manage": "Manage funnels",
                         "calendar.manage": "Manage own calendar",
                       } as Record<string, string>
-                    )[p]
+                    )[p] || p
                   }
                 </label>
               ))}
@@ -1415,14 +1703,18 @@ function exportTransactions(items: ReturnType<typeof useApp>["expenses"]) {
       .replace(/^[=+@\-\t\r]/, "'")
       .replaceAll('"', '""')}"`;
   const data = [
-    ["Date", "Title", "Type", "Category", "Amount INR", "Notes"],
+    ["Date", "Title", "Type", "Category", "Subcategory", "Amount INR", "Paid By", "Status", "Receipt", "Notes"],
     ...items.map((i) => [
       i.date,
       i.title,
       i.type,
       i.category,
+      i.subcategory || "",
       i.amount,
-      i.notes,
+      i.paidBy || "",
+      i.status || "active",
+      i.receipt || "",
+      i.notes || "",
     ]),
   ]
     .map((row) => row.map(cell).join(","))

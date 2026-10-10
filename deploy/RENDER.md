@@ -74,13 +74,17 @@ If creating the Web Service manually via Render UI:
 | **Branch** | `main` |
 | **Root Directory** | `.` (Repository root) |
 | **Build Command** | `npm install --include=dev && npm run build` |
-| **Start Command** | `node server/provision.mjs && npm start` |
+| **Start Command** | `node server/provision.mjs --only-missing && npm start` |
 | **Instance Type** | **Starter** or higher (Required for Persistent Disk support) |
 | **Health Check Path** | `/api/health` |
 
 ---
 
 ## 4. Persistent Disk Setup
+
+For an existing service on the Free plan, first back up its current SQLite database using the SQLite backup API and verify the backup can be restored. A plan change or redeploy can replace the ephemeral filesystem. Preserve password hashes, sessions and all workspace records in the migration; do not bootstrap a new empty database over existing data. Restore the verified backup onto the disk before switching `HAN_DB_PATH`, then verify record counts and all four sign-ins after restart.
+
+Startup provisioning preserves existing passwords and sessions by default, including an older start command without `--only-missing`. The separate `--reset-existing` flag replaces all four credentials and revokes sessions; use it only for an explicit administrative recovery operation with private environment secrets.
 
 In the Render Web Service settings:
 1. Navigate to **Disks** > **Add Disk**.
