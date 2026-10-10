@@ -734,7 +734,9 @@ function Actions({
     (table === "settlements" && app.can("finance.manage")) ||
     (table === "leads" && app.can("leads.manage")) ||
     (table === "funnels" && app.can("funnels.manage")) ||
-    (table === "calendar_events" && app.can("calendar.manage") && item.assignedUserId === app.user?.id));
+    (table === "calendar_events" && (app.can("calendar.manage") || item.assignedUserId === app.user?.id)) ||
+    (table === "team_members" && app.can("projects.manage")) ||
+    (table === "categories" && app.can("projects.manage")));
   if (!allowed) return null;
   const isVoid = table === "expenses" && item.status === "void";
 
@@ -841,7 +843,7 @@ export function Workspace() {
         <div className="han-card dark">
           <p className="han-tagline">Signed in</p>
           <h1 className="font-serif text-4xl mt-3">{app.user?.name}</h1>
-          <p className="text-xs mt-2 tracking-widest">{app.user?.role}</p>
+          <p className="text-xs mt-2 tracking-widest">{["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "") ? "FOUNDER" : app.user?.role}</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="han-card">{app.projects.length} projects</div>
@@ -865,7 +867,7 @@ export function Workspace() {
         {(isOwner || app.can("finance.view") || app.can("projects.manage") || app.can("tasks.manage")) && (
           <AuditLogStream logs={app.state.activity_logs as any[]} />
         )}
-        {isOwner && (
+        {(isOwner || app.can("projects.manage")) && (
           <>
             <button
               className="han-btn-secondary flex items-center justify-center gap-2"
@@ -1111,7 +1113,7 @@ export function Workspace() {
           ))}
         </div>
         <div className="grid grid-cols-2 gap-3">
-          {isOwner && <label className="text-xs">Assigned to<select aria-label="Assigned to" className="han-input mt-1" value={assigneeFilter} onChange={event => setAssigneeFilter(event.target.value)}><option value="All">Everyone</option>{app.state.users.map(user => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>}
+          {(isOwner || app.can("tasks.manage")) && <label className="text-xs">Assigned to<select aria-label="Assigned to" className="han-input mt-1" value={assigneeFilter} onChange={event => setAssigneeFilter(event.target.value)}><option value="All">Everyone</option>{app.state.users.map(user => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>}
           {!app.activeProjectId && <label className="text-xs">Project filter<select className="han-input mt-1" value={taskProject} onChange={event => setTaskProject(event.target.value)}><option value="All">All projects</option><option value="Unassigned">No project</option>{app.projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>}
           <label className="text-xs">Sort tasks<select className="han-input mt-1" value={taskSort} onChange={event => setTaskSort(event.target.value)}>{["Due date", "Priority"].map(value => <option key={value}>{value}</option>)}</select></label>
         </div>
@@ -1146,7 +1148,7 @@ export function Workspace() {
                 <p className="text-xs text-neutral-500 mt-2">
                   Task · {readable(t.status || "TODO")}
                 </p>
-                {(isOwner || t.assignedUserId === app.user?.id) && t.status !== "CANCELLED" && <button disabled={app.busy} className="action underline" onClick={() => app.toggleTask(t.id)}>{t.completed ? "Reopen task" : "Complete task"}</button>}
+                {(isOwner || app.can("tasks.manage") || t.assignedUserId === app.user?.id) && t.status !== "CANCELLED" && <button disabled={app.busy} className="action underline" onClick={() => app.toggleTask(t.id)}>{t.completed ? "Reopen task" : "Complete task"}</button>}
               </div>
             ))}
           {app.tasks.filter((t) => t.date === app.selectedDate).length === 0 && visible.length === 0 && (
@@ -1208,7 +1210,7 @@ export function Workspace() {
                     {String(item.title || item.name)}
                   </h3>
                   {table === "tasks" &&
-                    (app.can('tasks.manage') || item.assignedUserId === app.user?.id) && (
+                    (isOwner || app.can('tasks.manage') || item.assignedUserId === app.user?.id) && (
                       <button
                         aria-label={
                           item.completed ? "Mark pending" : "Mark complete"
@@ -1249,7 +1251,7 @@ export function Workspace() {
                     {readable(String(item.status))}
                   </p>
                 ) : null}
-                {table === "tasks" && <div className="flex items-center gap-2 mt-3 text-xs"><span>Priority: {readable(String(item.priority))}</span>{(app.can('tasks.manage') || item.assignedUserId === app.user?.id) && <select className="han-input" aria-label={`Status for ${item.title}`} disabled={app.busy} value={String(item.status)} onChange={event => void app.mutate(`tasks/${item.id}`, "PATCH", { status: event.target.value })}>{["TODO", "IN_PROGRESS", "BLOCKED", "IN_REVIEW", "COMPLETED", "CANCELLED"].map(status => <option key={status} value={status}>{readable(status)}</option>)}</select>}</div>}
+                {table === "tasks" && <div className="flex items-center gap-2 mt-3 text-xs"><span>Priority: {readable(String(item.priority))}</span>{(isOwner || app.can('tasks.manage') || item.assignedUserId === app.user?.id) && <select className="han-input" aria-label={`Status for ${item.title}`} disabled={app.busy} value={String(item.status)} onChange={event => void app.mutate(`tasks/${item.id}`, "PATCH", { status: event.target.value })}>{["TODO", "IN_PROGRESS", "BLOCKED", "IN_REVIEW", "COMPLETED", "CANCELLED"].map(status => <option key={status} value={status}>{readable(status)}</option>)}</select>}</div>}
                 {item.assignedUserId ? (
                   <p className="text-xs mt-2">
                     Assigned to{" "}
@@ -1268,7 +1270,7 @@ export function Workspace() {
                     <p className="text-xs text-neutral-900 font-semibold bg-neutral-100 border border-neutral-300 px-2.5 py-1 rounded-lg inline-block">
                       Assigned Monthly Salary: {item.salary ? `₹${Number(item.salary).toLocaleString("en-IN")}` : "Not assigned"}
                     </p>
-                    {isOwner && (
+                    {(isOwner || app.can("finance.manage")) && (
                       <div className="pt-1">
                         <button
                           className="action text-xs font-semibold text-black hover:underline flex items-center gap-1.5"
@@ -1339,7 +1341,7 @@ export function Workspace() {
                       .filter((t) => t.projectId === item.id)
                       .map((t) => (
                         <div key={t.id} className="text-sm mt-3 flex items-center justify-between gap-2">
-                          <span>{t.title} · {readable(t.status || "TODO")}</span>{(isOwner || t.assignedUserId === app.user?.id) && t.status !== "CANCELLED" && <button className="action underline" disabled={app.busy} onClick={() => app.toggleTask(t.id)}>{t.completed ? "Reopen" : "Complete"}</button>}
+                          <span>{t.title} · {readable(t.status || "TODO")}</span>{(isOwner || app.can("tasks.manage") || t.assignedUserId === app.user?.id) && t.status !== "CANCELLED" && <button className="action underline" disabled={app.busy} onClick={() => app.toggleTask(t.id)}>{t.completed ? "Reopen" : "Complete"}</button>}
                         </div>
                       ))}
                   </>
@@ -1475,7 +1477,7 @@ function AccountManagement() {
     <>
       <h2 className="font-serif text-2xl">Application accounts</h2>
       <p className="text-sm text-neutral-600">Accounts control sign-in and permissions. Team profiles below are descriptive records and do not grant access.</p>
-      {app.user?.role === "OWNER" && <button className="han-btn-secondary" onClick={() => { setEditing({ id: "", name: "", role: "MEMBER", active: true, permissions: [] }); setName(""); setPermissions([]); setActive(true); setPassword(""); }}>Add member account</button>}
+      {(app.user?.role === "OWNER" || app.can("projects.manage")) && <button className="han-btn-secondary" onClick={() => { setEditing({ id: "", name: "", role: "MEMBER", active: true, permissions: [] }); setName(""); setPermissions([]); setActive(true); setPassword(""); }}>Add member account</button>}
       {app.state.users.map((u) => (
         <div
           className={`han-card ${u.id === app.user?.id ? "dark" : ""}`}
@@ -1492,7 +1494,7 @@ function AccountManagement() {
                 ? "Account enabled"
                 : "Account disabled"}
           </p>
-          {app.user?.role === "OWNER" && (
+          {(app.user?.role === "OWNER" || app.can("projects.manage")) && (
             <button
               className="action"
               onClick={() => {

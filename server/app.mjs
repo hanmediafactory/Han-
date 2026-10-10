@@ -128,15 +128,18 @@ function permitted(user, table, item, write = false) {
     return write ? can(user, "finance.manage") : (can(user, "finance.view") || !write);
   }
   if (["savings_entries", "salary_payments"].includes(table)) {
-    return write ? owner(user) : (can(user, "finance.view") || !write);
+    return write ? (owner(user) || can(user, "finance.manage")) : (can(user, "finance.view") || !write);
   }
   if (table === "leads") return can(user, "leads.manage");
   if (table === "funnels") return can(user, "funnels.manage");
   if (table === "calendar_events")
     return write
-      ? can(user, "calendar.manage") && item.assignedUserId === user.id
-      : item.assignedUserId === user.id;
-  return !write && (table === "team_members" || table === "categories");
+      ? (owner(user) || can(user, "calendar.manage"))
+      : (can(user, "calendar.manage") || item?.assignedUserId === user.id);
+  if (table === "team_members" || table === "categories") {
+    return write ? (owner(user) || can(user, "projects.manage")) : true;
+  }
+  return !write;
 }
 function audit(user, table, id, action, details = null) {
   const now = new Date().toISOString();
@@ -548,7 +551,7 @@ app.get("/api/session", (req, res) =>
 );
 
 app.get("/api/health/details", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Owner access required.");
+  if (!owner(req.user) && !can(req.user, "projects.manage")) throw fail(403, "Owner access required.");
   healthResponse(res, true);
 });
 
@@ -684,7 +687,7 @@ app.post("/api/batch", (req, res) => {
       for (const id of body.taskIds) {
         const existing = rows("tasks").find(t => t.id === id);
         if (!existing) throw fail(404, `Task ${id} not found.`);
-        if (!owner(req.user) && existing.assignedUserId !== req.user.id) throw fail(403, `Permission denied for task ${id}.`);
+        if (!owner(req.user) && !can(req.user, "tasks.manage") && existing.assignedUserId !== req.user.id) throw fail(403, `Permission denied for task ${id}.`);
         const completedBy = body.status === "COMPLETED" ? (existing.status === "COMPLETED" ? existing.completedBy : req.user.id) : null;
         const completedAt = body.status === "COMPLETED" ? (existing.status === "COMPLETED" ? existing.completedAt : new Date().toISOString()) : null;
         const updated = { ...existing, status: body.status, completedBy, completedAt };
@@ -695,7 +698,7 @@ app.post("/api/batch", (req, res) => {
       }
       for (const projId of affectedProjects) recalculate(projId, req.user);
     } else if (body.action === "bulk_task_reassign") {
-      if (!owner(req.user)) throw fail(403, "Only owner can bulk reassign tasks.");
+      if (!owner(req.user) && !can(req.user, "tasks.manage")) throw fail(403, "Permission required to bulk reassign tasks.");
       if (!db.prepare("SELECT id FROM users WHERE id=? AND active=1").get(body.assignedUserId)) throw fail(400, "Assigned user must be active.");
       for (const id of body.taskIds) {
         const existing = rows("tasks").find(t => t.id === id);
@@ -745,13 +748,13 @@ app.delete("/api/sessions/others", (req, res) => {
 });
 
 app.get("/api/webhooks", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Only the owner can manage workspace integrations.");
+  if (!owner(req.user) && !can(req.user, "projects.manage")) throw fail(403, "Integrations permission required.");
   const hooks = db.prepare("SELECT id, url, events, active, created_at, updated_at FROM webhooks WHERE user_id=?").all(req.user.id).map(h => ({ ...h, events: JSON.parse(h.events), active: !!h.active }));
   res.json({ webhooks: hooks });
 });
 
 app.post("/api/webhooks", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Only the owner can manage workspace integrations.");
+  if (!owner(req.user) && !can(req.user, "projects.manage")) throw fail(403, "Integrations permission required.");
   const data = z.object({
     url: z.string().url().max(2048).refine(webhookDestinationAllowed, "Use an HTTPS destination explicitly allowed by the server operator"),
     events: z.array(z.enum(["*", ...[...Object.keys(schemas), "salary_payments"].filter(t => t !== "notifications").flatMap(t => [`${t}.created`, `${t}.updated`])])).min(1).max(50).default(["*"]),
@@ -770,7 +773,7 @@ app.post("/api/webhooks", (req, res) => {
 });
 
 app.delete("/api/webhooks/:id", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Only the owner can manage workspace integrations.");
+  if (!owner(req.user) && !can(req.user, "projects.manage")) throw fail(403, "Integrations permission required.");
   const hook = db.prepare("SELECT id FROM webhooks WHERE id=? AND user_id=?").get(req.params.id, req.user.id);
   if (!hook) throw fail(404, "Webhook integration not found.");
   transaction(() => {
@@ -785,7 +788,7 @@ app.get("/api/reports/csv", (req, res) => {
   const table = (req.query.table || "tasks").toString();
   if (!["tasks", "leads", "expenses", "income", "projects", "activity_logs", "settlements"].includes(table)) throw fail(400, "Invalid export table selection.");
   let items = table === "activity_logs" 
-    ? db.prepare("SELECT * FROM activity_logs ORDER BY rowid DESC LIMIT 500").all().filter(a => owner(req.user) || a.created_by === req.user.id)
+    ? db.prepare("SELECT * FROM activity_logs ORDER BY rowid DESC LIMIT 500").all().filter(a => owner(req.user) || can(req.user, "projects.manage") || a.created_by === req.user.id)
     : rows(table).filter(i => permitted(req.user, table, i));
 
   if (table === "expenses") {
@@ -1006,7 +1009,7 @@ export function scheduleReminders() {
   if (created) changes.emit("change");
 }
 app.get("/api/export", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Owner access required.");
+  if (!owner(req.user) && !can(req.user, "projects.manage")) throw fail(403, "Export access required.");
   const exportData = {};
   for (const table of Object.keys(schemas)) {
     exportData[table] = rows(table);
@@ -1033,7 +1036,7 @@ app.get("/api/backup", rateLimit({ windowMs: 60_000, limit: 2, standardHeaders: 
   } catch (error) { rmSync(directory, { recursive: true, force: true }); throw error; }
 });
 app.patch("/api/users/:id", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Owner permission required.");
+  if (!owner(req.user) && !can(req.user, "projects.manage")) throw fail(403, "Owner permission required.");
   const existing = db
     .prepare("SELECT * FROM users WHERE id=?")
     .get(req.params.id);
@@ -1075,7 +1078,7 @@ app.patch("/api/users/:id", (req, res) => {
   res.json({ ok: true });
 });
 app.post("/api/users", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Owner permission required.");
+  if (!owner(req.user) && !can(req.user, "projects.manage")) throw fail(403, "Owner permission required.");
   const data = z.object({ name: z.string().trim().min(1).max(100), password: z.string().min(12).max(200), permissions: z.array(z.enum(permissionIds)).max(permissionIds.length).default([]), active: z.boolean().default(true), role: z.literal("MEMBER").default("MEMBER") }).strict().parse(req.body);
   if (db.prepare("SELECT id FROM users WHERE lower(name)=lower(?)").get(data.name)) throw fail(409, "An account already uses that name.");
   const id = randomUUID();
@@ -1098,7 +1101,7 @@ app.post("/api/notifications/read", (req, res) => {
   res.json({ ok: true });
 });
 app.post("/api/salary_payments", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Only the owner can record salary payments.");
+  if (!owner(req.user) && !can(req.user, "finance.manage")) throw fail(403, "Permission required to record salary payments.");
   const data = z.object({ name: z.string().trim().min(1).max(250), amount: money, date: z.iso.date(), notes: z.string().max(10000).default("") }).strict().parse(req.body);
   const id = randomUUID(), expenseId = randomUUID();
   transaction(() => {
@@ -1111,7 +1114,7 @@ app.post("/api/salary_payments", (req, res) => {
   res.status(201).json({ id, expenseId });
 });
 app.patch("/api/salary_payments/:id", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Only the owner can correct salary records.");
+  if (!owner(req.user) && !can(req.user, "finance.manage")) throw fail(403, "Permission required to correct salary records.");
   const existing = rows("salary_payments").find(item => item.id === req.params.id);
   if (!existing) throw fail(404, "Salary record not found.");
   if (req.get("If-Unmodified-Since") && req.get("If-Unmodified-Since") !== existing.updated_at) throw fail(409, "This salary record changed. Refresh and review your edit.");
@@ -1127,7 +1130,7 @@ app.patch("/api/salary_payments/:id", (req, res) => {
   res.json({ ok: true });
 });
 app.delete("/api/salary_payments/:id", (req, res) => {
-  if (!owner(req.user)) throw fail(403, "Only the owner can correct salary records.");
+  if (!owner(req.user) && !can(req.user, "finance.manage")) throw fail(403, "Permission required to delete salary records.");
   const existing = rows("salary_payments").find(item => item.id === req.params.id);
   if (!existing) throw fail(404, "Salary record not found.");
   if (req.get("If-Unmodified-Since") && req.get("If-Unmodified-Since") !== existing.updated_at) throw fail(409, "This salary record changed. Refresh before deleting.");
@@ -1232,6 +1235,7 @@ app.patch("/api/:table/:id", (req, res) => {
   if (
     table === "calendar_events" &&
     !owner(req.user) &&
+    !can(req.user, "calendar.manage") &&
     data.assignedUserId !== req.user.id
   )
     throw fail(403, "Invalid event assignment.");

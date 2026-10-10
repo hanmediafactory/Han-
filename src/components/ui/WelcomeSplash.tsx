@@ -25,7 +25,7 @@ export function WelcomeSplash({ onComplete }: { onComplete?: () => void }) {
 
   if (!visible || !app.user) return null;
 
-  const roleTitle = app.user.role === "OWNER" ? "Owner & Workspace Admin" : "Team Member";
+  const roleTitle = ["user-1", "user-2", "user-3", "user-4"].includes(app.user.id) || app.user.role === "OWNER" ? "Founder & Workspace Admin" : "Team Member";
 
   return (
     <div

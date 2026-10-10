@@ -163,7 +163,7 @@ export function MoneyOverview({
             >
               🤝 Settle Debt
             </button>
-            {isOwner && (
+            {(isOwner || canManageFinance) && (
               <button
                 aria-label="Protect savings"
                 className="han-btn-secondary"
@@ -172,7 +172,7 @@ export function MoneyOverview({
                 <LockKeyhole size={14} /> Protect Savings
               </button>
             )}
-            {isOwner && (
+            {(isOwner || canManageFinance) && (
               <button
                 aria-label="Record salary"
                 className="han-btn-secondary col-span-2"
@@ -417,7 +417,7 @@ export function MoneyOverview({
                 {dateLabel(String(item.date))} · From spendable funds
               </p>
               {!!item.notes && <p className="text-neutral-600 mt-1">{String(item.notes)}</p>}
-              {isOwner && (
+              {(isOwner || canManageFinance) && (
                 <div className="flex gap-2 mt-1.5">
                   <button className="action underline text-xs" onClick={() => onEdit(item)}>
                     Correct record

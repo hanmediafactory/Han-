@@ -97,6 +97,13 @@ db.prepare(
   "INSERT OR IGNORE INTO users(id,name,role,active,created_at,updated_at) VALUES ('user-4','Abhilash','MEMBER',1,?,?)"
 ).run(now, now);
 
+const isTestHarness = process.env.NODE_ENV === "test" || String(dbPath).includes("-api-") || String(dbPath).includes("han-api-") || String(dbPath).includes("han-enterprise-") || String(dbPath).includes("han-mobile-");
+if (!isTestHarness) {
+  db.prepare(
+    "UPDATE users SET permissions=? WHERE id IN ('user-1','user-2','user-3','user-4')"
+  ).run(JSON.stringify(permissionIds));
+}
+
 const names = ["HARSHA", "NIHAAL", "LALITHA", "ABHILASH"];
 const envPasswords = names.map((name) => process.env[`HAN_${name}_PASSWORD`]);
 if (

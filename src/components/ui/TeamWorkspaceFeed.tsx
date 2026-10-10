@@ -26,6 +26,7 @@ export const TeamWorkspaceFeed: React.FC = () => {
   const getMemberDetails = (userId: string) => {
     const found = teamMembers.find((u) => u.id === userId);
     return {
+      id: found?.id || userId,
       name: found?.name || userId,
       role: found?.role || "MEMBER",
       initial: (found?.name || "U").charAt(0).toUpperCase(),
@@ -125,8 +126,8 @@ export const TeamWorkspaceFeed: React.FC = () => {
                   } animate-pulse`} />
                 </div>
                 <span>{member.name}</span>
-                {member.role === "OWNER" && (
-                  <span title="Owner"><Shield size={10} className={isSelf ? "text-black" : "text-white"} /></span>
+                {(member.role === "OWNER" || ["user-1", "user-2", "user-3", "user-4"].includes(member.id)) && (
+                  <span title="Founder"><Shield size={10} className={isSelf ? "text-black" : "text-white"} /></span>
                 )}
                 {isSelf && <span className="text-[9px] font-mono text-black uppercase font-bold">(You)</span>}
               </div>
@@ -187,9 +188,9 @@ export const TeamWorkspaceFeed: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-neutral-900 flex items-center gap-1">
                       {author.name}
-                      {author.role === "OWNER" && (
+                      {(author.role === "OWNER" || ["user-1", "user-2", "user-3", "user-4"].includes(author.id)) && (
                         <span className="text-[9px] bg-black text-white font-mono font-bold px-1.5 py-0.5 rounded-md">
-                          OWNER
+                          FOUNDER
                         </span>
                       )}
                     </span>

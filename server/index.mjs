@@ -3,6 +3,18 @@ import { processPushOutbox } from "./push.mjs";
 import { processWebhookOutbox } from "./webhooks.mjs";
 import { db } from "./db.mjs";
 import "./seed.mjs";
+if (!process.env.HAN_DEMO) {
+  const founderPerms = JSON.stringify([
+    "finance.view",
+    "finance.manage",
+    "projects.manage",
+    "tasks.manage",
+    "leads.manage",
+    "funnels.manage",
+    "calendar.manage",
+  ]);
+  db.prepare("UPDATE users SET permissions=? WHERE id IN ('user-1','user-2','user-3','user-4')").run(founderPerms);
+}
 const port = Number(process.env.PORT || 3001);
 const host = process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1");
 const server = app.listen(port, host, () =>

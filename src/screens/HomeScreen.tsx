@@ -202,10 +202,10 @@ export const HomeScreen: React.FC = () => {
                 <p className="text-xs text-neutral-500">Schedule your next priority or review projects.</p>
               </div>
               <button
-                onClick={() => navigateTo("tasks", "All", user?.role === "OWNER")}
+                onClick={() => navigateTo("tasks", "All", can("tasks.manage"))}
                 className="flex items-center gap-1 text-xs font-bold bg-black text-white px-3 py-2 rounded-xl"
               >
-                <Plus size={14} /> {user?.role === "OWNER" ? "Add Task" : "View Tasks"}
+                <Plus size={14} /> {can("tasks.manage") ? "Add Task" : "View Tasks"}
               </button>
             </div>
           )}

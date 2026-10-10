@@ -24,6 +24,16 @@ try {
       .prepare("UPDATE users SET password_hash=?,updated_at=? WHERE id=?")
       .run(hashPassword(passwords[index]), new Date().toISOString(), id),
   );
+  const founderPerms = JSON.stringify([
+    "finance.view",
+    "finance.manage",
+    "projects.manage",
+    "tasks.manage",
+    "leads.manage",
+    "funnels.manage",
+    "calendar.manage",
+  ]);
+  db.prepare("UPDATE users SET permissions=? WHERE id IN ('user-1','user-2','user-3','user-4')").run(founderPerms);
   if (!onlyMissing) db.prepare('DELETE FROM sessions').run();
   db.exec('COMMIT');
   console.log(
@@ -35,4 +45,14 @@ try {
   throw error;
 }
 }
+const founderPerms = JSON.stringify([
+  "finance.view",
+  "finance.manage",
+  "projects.manage",
+  "tasks.manage",
+  "leads.manage",
+  "funnels.manage",
+  "calendar.manage",
+]);
+db.prepare("UPDATE users SET permissions=? WHERE id IN ('user-1','user-2','user-3','user-4')").run(founderPerms);
 db.close();
