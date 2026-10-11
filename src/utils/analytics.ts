@@ -6,6 +6,7 @@ export type AnalyticsEvent =
   | "logout"
   | "task_created"
   | "task_completed"
+  | "task_progress_updated"
   | "project_created"
   | "expense_added"
   | "lead_created"

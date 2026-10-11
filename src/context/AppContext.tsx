@@ -518,7 +518,9 @@ function useController() {
   }
 
   const can = (permission: string) =>
-    user?.role === "OWNER" || !!user?.permissions.includes(permission);
+    user?.role === "OWNER" ||
+    (permission === "tasks.manage" && ["user-1", "user-2", "user-3", "user-4"].includes(user?.id || "")) ||
+    !!user?.permissions.includes(permission);
 
   return {
     state,
@@ -578,18 +580,37 @@ function useController() {
     toggleTask: (id: string) => {
       const task = tasks.find((t) => t.id === id);
       if (task) {
-        analytics.track("task_completed", { id, title: task.title });
+        const nextCompleted = !task.completed;
+        const nextStatus = nextCompleted ? "COMPLETED" : "TODO";
+        const nextProgress = nextCompleted ? 100 : 0;
+        analytics.track("task_completed", { id, title: task.title, completed: nextCompleted });
         void mutate(`tasks/${id}`, "PATCH", {
-          status: task.completed ? "TODO" : "COMPLETED",
+          status: nextStatus,
+          progress: nextProgress,
+        });
+      }
+    },
+    updateTaskProgress: (id: string, progress: number) => {
+      const task = tasks.find((t) => t.id === id);
+      if (task) {
+        const clamped = Math.min(100, Math.max(0, Math.round(progress)));
+        const status = clamped === 100 ? "COMPLETED" : clamped > 0 ? "IN_PROGRESS" : "TODO";
+        analytics.track("task_progress_updated", { id, title: task.title, progress: clamped, status });
+        void mutate(`tasks/${id}`, "PATCH", {
+          progress: clamped,
+          status,
         });
       }
     },
     addTask: (t: Omit<Task, "id">) => {
       analytics.track("task_created", { title: t.title });
+      const initialProgress = t.progress !== undefined ? Math.min(100, Math.max(0, Math.round(t.progress))) : (t.status === "COMPLETED" ? 100 : 0);
+      const initialStatus = t.status || (initialProgress === 100 ? "COMPLETED" : (initialProgress > 0 ? "IN_PROGRESS" : "TODO"));
       return void mutate("tasks", "POST", {
         ...t,
         assignedUserId: t.assignedUserId || user?.id,
-        status: "TODO",
+        status: initialStatus,
+        progress: initialProgress,
       });
     },
     addExpense: (e: Omit<Expense, "id" | "type">) => {

@@ -10,6 +10,8 @@ import {
 import { useApp } from "../context/AppContext";
 import { today } from "../context/dates";
 import { BottomNavigation } from "../components/ui/BottomNavigation";
+import { formatTaskAudit } from "../utils/display";
+import { WorkspaceTargetsWidget } from "../components/ui/WorkspaceTargetsWidget";
 
 export const HomeScreen: React.FC = () => {
   const {
@@ -21,11 +23,14 @@ export const HomeScreen: React.FC = () => {
     navigateTo,
     selectProject,
     toggleTask,
+    updateTaskProgress,
     unreadNotificationCount,
     user,
-    showToast,
     can,
   } = useApp();
+
+  const isFounder = ["user-1", "user-2", "user-3", "user-4"].includes(user?.id || "");
+  const canManageTasks = can('tasks.manage') || isFounder;
 
   const todayTasks = tasks.filter(
     (t) => t.date === today() && t.status !== "CANCELLED",
@@ -40,12 +45,11 @@ export const HomeScreen: React.FC = () => {
   );
 
   const permittedToggle = (id: string) => {
-    const task = tasks.find((t) => t.id === id);
-    if (can('tasks.manage') || task?.assignedUserId === user?.id) {
-      toggleTask(id);
-    } else {
-      showToast("Only the assigned user can update this task.");
-    }
+    toggleTask(id);
+  };
+
+  const permittedProgress = (id: string, progress: number) => {
+    updateTaskProgress(id, progress);
   };
 
   const [todayDate] = React.useState(() => new Date());
@@ -130,9 +134,9 @@ export const HomeScreen: React.FC = () => {
         </div>
 
         {/* Creation Shortcuts Row */}
-        {(can("tasks.manage") || can("projects.manage") || can("finance.manage") || can("leads.manage")) && (
+        {(canManageTasks || can("projects.manage") || can("finance.manage") || can("leads.manage")) && (
           <div className="home-shortcuts flex gap-2 overflow-x-auto no-scrollbar py-0.5">
-            {can("tasks.manage") && (
+            {canManageTasks && (
               <button
                 onClick={() => navigateTo("tasks", "All", true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-overlay border border-border-subtle hover:border-border-strong text-text-primary hover:text-text-primary text-xs font-semibold shrink-0 cursor-pointer transition-colors"
@@ -173,6 +177,11 @@ export const HomeScreen: React.FC = () => {
           <div><span>Done today</span><strong>{todayTasks.filter(task => task.completed).length}</strong><small>Of {todayTasks.length} scheduled</small></div>
         </section>
 
+        {/* Workspace Targets Suite */}
+        <section aria-label="Workspace targets and milestones">
+          <WorkspaceTargetsWidget onNavigate={navigateTo} />
+        </section>
+
         {/* Overdue Banner */}
         {overdueCount > 0 && (
           <div
@@ -208,37 +217,93 @@ export const HomeScreen: React.FC = () => {
             </button>
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {focusTasks.length > 0 ? focusTasks.map((task) => {
               const isOverdue = task.date < today();
               const isToday = task.date === today();
+              const progress = task.progress !== undefined ? task.progress : (task.completed ? 100 : 0);
+              const audit = formatTaskAudit(task);
               return (
                 <div
                   key={task.id}
-                  className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-surface-elevated border border-border-subtle/60 transition-colors"
+                  className="flex flex-col py-2.5 px-3 rounded-xl bg-surface-elevated border border-border-subtle/60 transition-colors gap-2"
                 >
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <button
-                      onClick={() => permittedToggle(task.id)}
-                      className="shrink-0 cursor-pointer text-text-secondary hover:text-text-primary transition-colors"
-                      aria-label={`Toggle ${task.title}`}
-                    >
-                      {task.completed ? (
-                        <CheckCircle2 size={19} className="text-text-primary" />
-                      ) : (
-                        <Circle size={19} className="text-text-muted" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <button
+                        onClick={() => permittedToggle(task.id)}
+                        className="shrink-0 cursor-pointer text-text-secondary hover:text-text-primary transition-colors"
+                        aria-label={`Toggle ${task.title}`}
+                      >
+                        {task.completed ? (
+                          <CheckCircle2 size={19} className="text-text-primary" />
+                        ) : (
+                          <Circle size={19} className="text-text-muted" />
+                        )}
+                      </button>
+                      <div className="min-w-0 flex-1">
+                        <p className={`text-xs font-medium truncate ${task.completed ? "line-through text-text-muted" : "text-text-primary"}`}>
+                          {task.title}
+                        </p>
+                        {task.assignedUserName && (
+                          <p className="text-[10px] text-text-muted truncate mt-0.5">
+                            Assigned to {task.assignedUserName}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-surface-overlay text-text-secondary">
+                        {progress}%
+                      </span>
+                      {isOverdue && (
+                        <span className="badge-overdue shrink-0">Overdue</span>
                       )}
-                    </button>
-                    <p className={`text-xs font-medium truncate ${task.completed ? "line-through text-text-muted" : "text-text-primary"}`}>
-                      {task.title}
-                    </p>
+                      {isToday && !isOverdue && (
+                        <span className="badge-today shrink-0">Today</span>
+                      )}
+                    </div>
                   </div>
-                  {isOverdue && (
-                    <span className="badge-overdue ml-2 shrink-0">Overdue</span>
-                  )}
-                  {isToday && !isOverdue && (
-                    <span className="badge-today ml-2 shrink-0">Today</span>
-                  )}
+
+                  {/* Task Progress Bar & Quick Adjust */}
+                  <div className="flex flex-col gap-1.5 pt-1 border-t border-border-subtle/40">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex-1 bg-surface-overlay rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-300 ${task.completed ? 'bg-neutral-400' : 'bg-page'}`}
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        {[0, 25, 50, 75, 100].map((step) => (
+                          <button
+                            key={step}
+                            type="button"
+                            onClick={() => permittedProgress(task.id, step)}
+                            className={`text-[9px] px-1.5 py-0.5 rounded font-mono transition-all cursor-pointer ${
+                              progress === step
+                                ? 'bg-page text-text-primary font-bold border border-border-strong'
+                                : 'bg-surface-overlay text-text-muted hover:text-text-primary'
+                            }`}
+                            aria-label={`Set ${task.title} progress to ${step}%`}
+                          >
+                            {step}%
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Audit line: who updated progress and relative time */}
+                    {audit && (
+                      <div className="flex items-center justify-between text-[10px] text-text-muted pt-0.5">
+                        <span className="flex items-center gap-1.5 font-sans truncate">
+                          <span className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${task.completed ? 'bg-emerald-500' : progress > 0 ? 'bg-blue-500' : 'bg-neutral-400'}`} />
+                          <span className="truncate">{audit.text}</span>
+                        </span>
+                        {audit.time && <span className="font-mono text-[9px] text-text-muted shrink-0 ml-2">{audit.time}</span>}
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             }) : (
@@ -246,7 +311,7 @@ export const HomeScreen: React.FC = () => {
             )}
           </div>
 
-          {can("tasks.manage") && (
+          {canManageTasks && (
             <button
               onClick={() => navigateTo("tasks", "All", true)}
               className="w-full mt-2.5 py-2.5 px-4 rounded-xl bg-surface-elevated border border-border-subtle hover:border-border-strong text-xs font-medium text-text-primary hover:text-text-primary transition-all flex items-center justify-center gap-2 cursor-pointer"

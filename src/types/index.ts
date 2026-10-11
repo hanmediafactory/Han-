@@ -30,6 +30,16 @@ export interface Task {
   timeSlot: string;
   date: string; // e.g., '2026-10-03'
   completed: boolean;
+  progress?: number; // 0 - 100
+  completedBy?: string;
+  completedByName?: string;
+  completedAt?: string;
+  progressUpdatedBy?: string;
+  progressUpdatedByName?: string;
+  progressUpdatedAt?: string;
+  assignedUserName?: string;
+  lastUpdatedBy?: string;
+  lastUpdatedAt?: string;
   category?: string;
 }
 
@@ -157,4 +167,25 @@ export interface UserProfile {
     leadsCount: number;
     revenue: string;
   };
+}
+
+export interface FinanceGoal {
+  id: string;
+  title: string;
+  category: 'Runway' | 'Equipment' | 'Expansion' | 'Tax Reserve' | 'Security';
+  targetAmount: number;
+  deadline?: string;
+  description?: string;
+  isDefault?: boolean;
+}
+
+export interface WorkspaceTarget {
+  id: string;
+  type: 'finance' | 'tasks' | 'growth';
+  title: string;
+  targetValue: number;
+  currentValue?: number;
+  unit: string;
+  period: 'daily' | 'weekly' | 'monthly';
+  completed?: boolean;
 }

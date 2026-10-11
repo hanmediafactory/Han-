@@ -3,6 +3,7 @@ import type { FormEvent, ReactNode } from "react";
 import { useApp } from "../context/AppContext";
 import { today, dateLabel } from "../context/dates";
 import { getApiUrl } from "../utils/apiConfig";
+import { formatTaskAudit } from "../utils/display";
 import { getTheme, setTheme as saveTheme, type Theme } from "../utils/theme";
 import type { RecordData, Account, State } from "../context/AppContext";
 import { ScreenHeader } from "../components/ui/ScreenHeader";
@@ -16,6 +17,7 @@ import { KanbanPipeline } from "../components/ui/KanbanPipeline";
 import { AuditLogStream } from "../components/ui/AuditLogStream";
 import { TeamWorkspaceFeed } from "../components/ui/TeamWorkspaceFeed";
 import { PushPreferences } from "../components/ui/PushPreferences";
+import { WorkspaceTargetsWidget } from "../components/ui/WorkspaceTargetsWidget";
 import {
   Pencil,
   Trash2,
@@ -92,6 +94,7 @@ const fields: Record<string, Field[]> = {
       label: "Status",
       options: ["TODO", "IN_PROGRESS", "BLOCKED", "IN_REVIEW", "COMPLETED", "CANCELLED"],
     },
+    { key: "progress", label: "Progress (%)", type: "number" },
     { key: "priority", label: "Priority", options: priorities },
     { key: "date", label: "Due date", type: "date", required: true },
     { key: "startDate", label: "Start date", type: "date" },
@@ -392,7 +395,12 @@ function Editor({
 
     const data: Record<string, unknown> = {};
     for (const field of fields[table] || []) data[field.key] = value[field.key];
-    if (table === "tasks" && !data.projectId) delete data.projectId;
+    if (table === "tasks") {
+      if (!data.projectId) delete data.projectId;
+      if (data.progress !== undefined) data.progress = Math.min(100, Math.max(0, Math.round(Number(data.progress) || 0)));
+      if (data.progress === 100 && data.status !== "CANCELLED") data.status = "COMPLETED";
+      else if (data.status === "COMPLETED") data.progress = 100;
+    }
     if (table === "projects") data.archived = value.archived;
     if (table === "notifications") {
       data.read = value.read;
@@ -458,8 +466,21 @@ function Editor({
         {table === "salary_payments" && <p className="text-sm text-text-secondary">Record a salary you have paid. It deducts funds and appears once in expenses. HAN does not send money to a bank account.</p>}
         {table === "savings_entries" && <label className="flex items-start gap-3 text-sm"><input type="checkbox" required className="mt-1" />I understand this moves funds into protected savings and cannot be withdrawn or deleted in HAN.</label>}
         {table === "projects" && <p className="text-sm text-text-secondary">Progress is calculated from completed, non-cancelled tasks. Without tasks, it uses your estimate. Leave the deadline blank if it is not yet agreed.</p>}
+        {table === "tasks" && item && (() => {
+          const audit = formatTaskAudit(item as any);
+          if (!audit) return null;
+          return (
+            <div className="p-2.5 rounded-xl bg-surface-elevated border border-border-subtle/80 flex items-center justify-between text-xs">
+              <span className="text-text-secondary flex items-center gap-1.5 font-medium">
+                <span className={`w-2 h-2 rounded-full ${item.completed ? 'bg-emerald-500' : Number(item.progress) > 0 ? 'bg-blue-500' : 'bg-neutral-400'}`} />
+                {audit.text}
+              </span>
+              {audit.time && <span className="font-mono text-[11px] text-text-muted">{audit.time}</span>}
+            </div>
+          );
+        })()}
         {fields[table]
-          .filter((f) => !memberTask || f.key === "status")
+          .filter((f) => !memberTask || f.key === "status" || f.key === "progress")
           .map((field) => (
             <div key={field.key}>
               <label
@@ -1333,6 +1354,9 @@ export function Workspace() {
       )}
       {table === "tasks" && (
         <section className="space-y-3" aria-label="Task filters">
+        {/* Workspace Targets for To-Do Lists */}
+        <WorkspaceTargetsWidget filterCategory="tasks" compact={true} />
+
         {app.activeProjectId && <div className="han-card text-sm">Tasks for {app.projects.find(p => p.id === app.activeProjectId)?.name}<button className="block underline mt-2" onClick={() => app.selectProject(app.activeProjectId!)}>Back to project</button></div>}
         <div className="flex gap-2 flex-wrap">
           {["All", "Today", "Overdue", "Upcoming", "In Progress", "Completed", "Cancelled"].map((t) => (
@@ -1346,7 +1370,7 @@ export function Workspace() {
           ))}
         </div>
         <div className="grid grid-cols-2 gap-3">
-          {(isOwner || app.can("tasks.manage")) && <label className="text-xs">Assigned to<select aria-label="Assigned to" className="han-input mt-1" value={assigneeFilter} onChange={event => setAssigneeFilter(event.target.value)}><option value="All">Everyone</option>{app.state.users.map(user => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>}
+          {(isOwner || app.can("tasks.manage") || ["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "")) && <label className="text-xs">Assigned to<select aria-label="Assigned to" className="han-input mt-1" value={assigneeFilter} onChange={event => setAssigneeFilter(event.target.value)}><option value="All">Everyone</option>{app.state.users.map(user => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>}
           {!app.activeProjectId && <label className="text-xs">Project filter<select className="han-input mt-1" value={taskProject} onChange={event => setTaskProject(event.target.value)}><option value="All">All projects</option><option value="Unassigned">No project</option>{app.projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>}
           <label className="text-xs">Sort tasks<select className="han-input mt-1" value={taskSort} onChange={event => setTaskSort(event.target.value)}>{["Due date", "Priority"].map(value => <option key={value}>{value}</option>)}</select></label>
         </div>
@@ -1414,6 +1438,9 @@ export function Workspace() {
                   <p className="text-[10px] font-mono text-text-secondary">Recorded income</p>
                 </div>
               </div>
+
+              {/* Growth Targets to Achieve */}
+              <WorkspaceTargetsWidget filterCategory="growth" compact={true} />
 
               {/* Action Button: Manage leads (Satisfies Playwright tests) */}
               {write && (
@@ -1643,7 +1670,7 @@ export function Workspace() {
                     {String(item.title || item.name)}
                   </h3>
                   {table === "tasks" &&
-                    (isOwner || app.can('tasks.manage') || item.assignedUserId === app.user?.id) && (
+                    (isOwner || app.can('tasks.manage') || ["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "") || item.assignedUserId === app.user?.id) && (
                       <button
                         aria-label={
                           item.completed ? "Mark pending" : "Mark complete"
@@ -1684,7 +1711,81 @@ export function Workspace() {
                     {readable(String(item.status))}
                   </p>
                 ) : null}
-                {table === "tasks" && <div className="flex items-center gap-2 mt-3 text-xs"><span>Priority: {readable(String(item.priority))}</span>{(isOwner || app.can('tasks.manage') || item.assignedUserId === app.user?.id) && <select className="han-input" aria-label={`Status for ${item.title}`} disabled={app.busy} value={String(item.status)} onChange={event => void app.mutate(`tasks/${item.id}`, "PATCH", { status: event.target.value })}>{["TODO", "IN_PROGRESS", "BLOCKED", "IN_REVIEW", "COMPLETED", "CANCELLED"].map(status => <option key={status} value={status}>{readable(status)}</option>)}</select>}</div>}
+                {table === "tasks" && (
+                  <>
+                    <div className="flex items-center gap-2 mt-3 text-xs">
+                      <span>Priority: {readable(String(item.priority))}</span>
+                      {(isOwner || app.can('tasks.manage') || ["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "") || item.assignedUserId === app.user?.id) && (
+                        <select
+                          className="han-input"
+                          aria-label={`Status for ${item.title}`}
+                          disabled={app.busy}
+                          value={String(item.status)}
+                          onChange={event => void app.mutate(`tasks/${item.id}`, "PATCH", { status: event.target.value })}
+                        >
+                          {["TODO", "IN_PROGRESS", "BLOCKED", "IN_REVIEW", "COMPLETED", "CANCELLED"].map(status => (
+                            <option key={status} value={status}>{readable(status)}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+
+                    {/* Task Progress Bar & Quick Adjust */}
+                    <div className="mt-3 pt-2.5 border-t border-border-subtle/60 flex flex-col gap-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-text-secondary font-medium">Task Progress</span>
+                        <span className="font-mono font-bold text-text-primary bg-surface-elevated px-2 py-0.5 rounded border border-border-subtle">
+                          {item.progress !== undefined ? Number(item.progress) : (item.completed ? 100 : 0)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-surface-elevated rounded-full h-2 overflow-hidden border border-border-subtle/40">
+                        <div
+                          className={`h-full transition-all duration-300 ${item.completed ? 'bg-neutral-400' : 'bg-page'}`}
+                          style={{ width: `${item.progress !== undefined ? Number(item.progress) : (item.completed ? 100 : 0)}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between gap-1 pt-0.5 flex-wrap">
+                        <span className="text-[10px] font-mono uppercase text-text-muted">Update:</span>
+                        <div className="flex items-center gap-1">
+                          {[0, 25, 50, 75, 100].map(step => {
+                            const cur = item.progress !== undefined ? Number(item.progress) : (item.completed ? 100 : 0);
+                            return (
+                              <button
+                                key={step}
+                                type="button"
+                                disabled={app.busy}
+                                onClick={() => app.updateTaskProgress(item.id, step)}
+                                className={`text-[10px] px-2 py-0.5 rounded-md font-mono transition-all cursor-pointer ${
+                                  cur === step
+                                    ? 'bg-page text-text-primary font-bold border border-border-strong shadow-xs'
+                                    : 'bg-surface-elevated text-text-secondary hover:text-text-primary hover:bg-surface-overlay'
+                                }`}
+                                aria-label={`Set progress to ${step}%`}
+                              >
+                                {step}%
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Audit info: who updated the task progress and when */}
+                      {(() => {
+                        const audit = formatTaskAudit(item as any);
+                        if (!audit) return null;
+                        return (
+                          <div className="flex items-center justify-between text-[11px] text-text-muted pt-1 border-t border-border-subtle/30">
+                            <span className="flex items-center gap-1.5 font-sans">
+                              <span className={`inline-block w-1.5 h-1.5 rounded-full ${item.completed ? 'bg-emerald-500' : Number(item.progress) > 0 ? 'bg-blue-500' : 'bg-neutral-400'}`} />
+                              {audit.text}
+                            </span>
+                            {audit.time && <span className="font-mono text-[10px] text-text-muted">{audit.time}</span>}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </>
+                )}
                 {item.assignedUserId ? (
                   <p className="text-xs mt-2">
                     Assigned to{" "}
@@ -1814,42 +1915,81 @@ export function Workspace() {
                           {app.tasks
                             .filter((t) => t.projectId === item.id)
                             .map((t) => {
-                              const canToggle = isOwner || app.can("tasks.manage") || t.assignedUserId === app.user?.id;
+                              const taskProg = t.progress !== undefined ? Number(t.progress) : (t.completed ? 100 : 0);
+                              const audit = formatTaskAudit(t);
                               return (
                                 <div
                                   key={t.id}
-                                  className="flex items-center justify-between p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle shadow-sm"
+                                  className="flex flex-col p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle shadow-sm gap-2"
                                 >
-                                  <div className="flex items-center gap-3 min-w-0">
-                                    <button
-                                      onClick={() => canToggle && app.toggleTask(t.id)}
-                                      disabled={app.busy || !canToggle}
-                                      className="shrink-0 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
-                                      aria-label={t.completed ? "Mark pending" : "Mark complete"}
-                                    >
-                                      {t.completed ? (
-                                        <CheckCircle2 size={19} className="text-text-primary" />
-                                      ) : (
-                                        <Circle size={19} className="text-text-muted" />
-                                      )}
-                                    </button>
-                                    <div className="min-w-0">
-                                      <p className={`text-xs font-semibold truncate ${t.completed ? "line-through text-text-muted" : "text-text-primary"}`}>
-                                        {t.title}
-                                      </p>
-                                      <p className="text-[10px] text-text-muted mt-0.5">
-                                        {readable(t.status || "TODO")}
-                                      </p>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                                      <button
+                                        onClick={() => app.toggleTask(t.id)}
+                                        disabled={app.busy}
+                                        className="shrink-0 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                                        aria-label={t.completed ? "Mark pending" : "Mark complete"}
+                                      >
+                                        {t.completed ? (
+                                          <CheckCircle2 size={19} className="text-text-primary" />
+                                        ) : (
+                                          <Circle size={19} className="text-text-muted" />
+                                        )}
+                                      </button>
+                                      <div className="min-w-0 flex-1">
+                                        <p className={`text-xs font-semibold truncate ${t.completed ? "line-through text-text-muted" : "text-text-primary"}`}>
+                                          {t.title}
+                                        </p>
+                                        <p className="text-[10px] text-text-muted mt-0.5">
+                                          {readable(t.status || "TODO")} · {taskProg}% {t.assignedUserName ? `· Assigned to ${t.assignedUserName}` : ""}
+                                        </p>
+                                      </div>
                                     </div>
-                                  </div>
-                                  {canToggle && (
                                     <button
                                       onClick={() => app.toggleTask(t.id)}
                                       disabled={app.busy}
-                                      className="text-[11px] underline text-text-secondary hover:text-text-primary cursor-pointer shrink-0"
+                                      className="text-[11px] underline text-text-secondary hover:text-text-primary cursor-pointer shrink-0 ml-2"
                                     >
                                       {t.completed ? "Reopen" : "Complete"}
                                     </button>
+                                  </div>
+
+                                  {/* Progress bar & quick steps */}
+                                  <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-border-subtle/40">
+                                    <div className="flex-1 bg-surface-overlay rounded-full h-1.5 overflow-hidden">
+                                      <div
+                                        className={`h-full transition-all duration-300 ${t.completed ? 'bg-neutral-400' : 'bg-page'}`}
+                                        style={{ width: `${taskProg}%` }}
+                                      />
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      {[0, 25, 50, 75, 100].map(step => (
+                                        <button
+                                          key={step}
+                                          type="button"
+                                          disabled={app.busy}
+                                          onClick={() => app.updateTaskProgress(t.id, step)}
+                                          className={`text-[9px] px-1.5 py-0.5 rounded font-mono transition-all cursor-pointer ${
+                                            taskProg === step
+                                              ? 'bg-page text-text-primary font-bold border border-border-strong'
+                                              : 'bg-surface-overlay text-text-muted hover:text-text-primary'
+                                          }`}
+                                        >
+                                          {step}%
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* Audit info: who updated the task progress and when */}
+                                  {audit && (
+                                    <div className="flex items-center justify-between text-[10px] text-text-muted pt-0.5">
+                                      <span className="flex items-center gap-1 font-sans">
+                                        <span className={`inline-block w-1.5 h-1.5 rounded-full ${t.completed ? 'bg-emerald-500' : taskProg > 0 ? 'bg-blue-500' : 'bg-neutral-400'}`} />
+                                        {audit.text}
+                                      </span>
+                                      {audit.time && <span className="font-mono text-[9px] text-text-muted">{audit.time}</span>}
+                                    </div>
                                   )}
                                 </div>
                               );
@@ -1857,7 +1997,7 @@ export function Workspace() {
                         </div>
 
                         {/* Add Task Button matching Screen 5 */}
-                        {app.can("tasks.manage") && (
+                        {(isOwner || app.can("tasks.manage") || ["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "")) && (
                           <button
                             aria-label="Add task"
                             onClick={() =>
@@ -1929,37 +2069,63 @@ export function Workspace() {
                 )}
                 {table === "funnels" && detail && (
                   <div className="mt-4 space-y-3">
-                    {(item.steps as Step[]).map((step) => (
-                      <div
-                        key={step.id}
-                        className="flex items-center justify-between gap-3 border-t pt-3"
-                      >
-                        <p className="text-sm">{step.title}</p>
-                        <button
-                          className="action"
-                          disabled={app.busy}
-                          onClick={() =>
-                            void app.mutate(`funnels/${item.id}`, "PATCH", {
-                              steps: (item.steps as Step[]).map((s) =>
-                                s.id === step.id
-                                  ? {
-                                      ...s,
-                                      status:
-                                        step.status === "Completed"
-                                          ? "Pending"
-                                          : step.status === "Pending"
-                                            ? "In Progress"
-                                            : "Completed",
-                                    }
-                                  : s,
-                              ),
-                            })
-                          }
-                        >
-                          {step.status}
-                        </button>
+                    {/* Step Completion Summary Banner */}
+                    {Array.isArray(item.steps) && (
+                      <div className="p-3.5 rounded-2xl bg-surface-overlay border border-border-subtle space-y-2">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-semibold text-text-primary">Funnel Execution Progress</span>
+                          <span className="font-mono text-emerald-400 font-bold">
+                            {(item.steps as Step[]).filter((s) => s.status === "Completed").length} / {(item.steps as Step[]).length} Completed
+                          </span>
+                        </div>
+                        <div className="w-full h-2 bg-surface rounded-full overflow-hidden border border-border-subtle">
+                          <div
+                            className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300"
+                            style={{
+                              width: `${(item.steps as Step[]).length > 0 ? Math.round(((item.steps as Step[]).filter((s) => s.status === "Completed").length / (item.steps as Step[]).length) * 100) : 0}%`,
+                            }}
+                          />
+                        </div>
                       </div>
-                    ))}
+                    )}
+                    <div className="space-y-2">
+                      {(item.steps as Step[]).map((step, idx) => (
+                        <div
+                          key={step.id}
+                          className="flex items-center justify-between gap-3 p-3 rounded-xl bg-surface-overlay border border-border-subtle hover:border-border-strong transition-all"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span className="w-6 h-6 rounded-lg bg-surface flex items-center justify-center font-mono text-[11px] font-bold text-text-secondary shrink-0">
+                              {idx + 1}
+                            </span>
+                            <p className="text-xs font-semibold text-text-primary truncate">{step.title}</p>
+                          </div>
+                          <button
+                            className="action px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all cursor-pointer shrink-0"
+                            disabled={app.busy}
+                            onClick={() =>
+                              void app.mutate(`funnels/${item.id}`, "PATCH", {
+                                steps: (item.steps as Step[]).map((s) =>
+                                  s.id === step.id
+                                    ? {
+                                        ...s,
+                                        status:
+                                          step.status === "Completed"
+                                            ? "Pending"
+                                            : step.status === "Pending"
+                                              ? "In Progress"
+                                              : "Completed",
+                                      }
+                                    : s,
+                                ),
+                              })
+                            }
+                          >
+                            {step.status}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

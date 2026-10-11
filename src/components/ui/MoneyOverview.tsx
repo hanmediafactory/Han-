@@ -11,10 +11,13 @@ import {
   ArrowRightLeft,
   Search,
   Filter,
+  Target,
+  ArrowRight,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import type { RecordData } from "../../context/AppContext";
 import { dateLabel, today } from "../../context/dates";
+import { FinanceGoalFlowchart } from "./FinanceGoalFlowchart";
 
 const rupees = (amount: number) =>
   `₹${Number(amount || 0).toLocaleString("en-IN", {
@@ -36,7 +39,9 @@ export function MoneyOverview({
   const isOwner = app.user?.role === "OWNER";
   const canManageFinance = isOwner || app.can("finance.manage");
 
-  const [activeTab, setActiveTab] = useState<"Overview" | "Transactions" | "Salaries" | "Settlements">("Overview");
+  const [activeTab, setActiveTab] = useState<
+    "Overview" | "Goals & Flowchart" | "Transactions" | "Salaries" | "Settlements"
+  >("Overview");
   const [transactionFilter, setTransactionFilter] = useState<"All" | "income" | "expense">("All");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -60,9 +65,9 @@ export function MoneyOverview({
 
   return (
     <section className="space-y-4 select-none" aria-label="Funds and shared financial ledger">
-      {/* Sub-Navigation Tabs matching Screen 7, 8, 9 */}
+      {/* Sub-Navigation Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-        {(["Overview", "Transactions", "Salaries", "Settlements"] as const).map((tab) => {
+        {(["Overview", "Goals & Flowchart", "Transactions", "Salaries", "Settlements"] as const).map((tab) => {
           const isActive = activeTab === tab;
           return (
             <button
@@ -150,6 +155,40 @@ export function MoneyOverview({
               <p className="text-[10px] text-text-muted mt-1 font-sans">
                 Active operational spend
               </p>
+            </div>
+          </div>
+
+          {/* Active Goal Summary Teaser Card */}
+          <div className="p-4 rounded-2xl bg-surface-elevated border border-emerald-900/40 shadow-lg bg-gradient-to-br from-surface-elevated to-emerald-950/20 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Target size={16} className="text-emerald-400" />
+                <span className="text-xs font-bold text-text-primary">Finance Savings Goal & Pipeline</span>
+              </div>
+              <button
+                onClick={() => setActiveTab("Goals & Flowchart")}
+                className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer transition-colors"
+              >
+                <span>View Flowchart</span>
+                <ArrowRight size={12} />
+              </button>
+            </div>
+            <div className="flex items-baseline justify-between">
+              <div>
+                <p className="text-[11px] text-text-secondary">Protected Savings Counted Live</p>
+                <p className="font-serif text-xl font-bold text-text-primary mt-0.5">{rupees(app.totalSavings)}</p>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-700/60 text-emerald-300">
+                  {Math.min(100, Math.round((app.totalSavings / 250000) * 100))}% of Target
+                </span>
+              </div>
+            </div>
+            <div className="w-full h-2 bg-surface rounded-full overflow-hidden border border-border-subtle">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full transition-all duration-300"
+                style={{ width: `${Math.min(100, Math.max(3, Math.round((app.totalSavings / 250000) * 100)))}%` }}
+              />
             </div>
           </div>
 
@@ -278,6 +317,16 @@ export function MoneyOverview({
               )}
             </div>
           </details>
+        </div>
+      )}
+
+      {/* ── GOALS & FLOWCHART TAB ── */}
+      {activeTab === "Goals & Flowchart" && (
+        <div className="space-y-4 animate-fadeIn">
+          <FinanceGoalFlowchart
+            onAddSavings={(vals) => onAdd("savings_entries", vals)}
+            canManage={canManageFinance}
+          />
         </div>
       )}
 

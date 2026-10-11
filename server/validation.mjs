@@ -43,6 +43,13 @@ export const schemas = {
     status: z
       .enum(["TODO", "IN_PROGRESS", "BLOCKED", "IN_REVIEW", "COMPLETED", "CANCELLED"])
       .default("TODO"),
+    progress: z.number().min(0).max(100).default(0),
+    progressUpdatedBy: z.string().max(100).nullable().optional(),
+    progressUpdatedAt: z.string().max(100).nullable().optional(),
+    completedBy: z.string().max(100).nullable().optional(),
+    completedAt: z.string().max(100).nullable().optional(),
+    lastUpdatedBy: z.string().max(100).nullable().optional(),
+    lastUpdatedAt: z.string().max(100).nullable().optional(),
   }),
   expenses: z.object({
     account: z.literal("funds").default("funds"),

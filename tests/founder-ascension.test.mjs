@@ -123,12 +123,19 @@ test("FOUNDER MATRIX: All 4 founders can collaborate on projects and team tasks 
   assert.equal(taskRes.status, 201, "Lalitha should be able to create task with full payload");
   const taskId = taskRes.data.id;
 
-  // 3. Abhilash updates the task to IN_REVIEW and changes description
+  // 3. Abhilash updates the task progress to 75%
   const patchRes = await call(abhilash, `tasks/${taskId}`, "PATCH", {
     status: "IN_REVIEW",
     notes: "Allocations sum matching verified",
+    progress: 75,
   });
   assert.equal(patchRes.status, 200, "Abhilash should be able to update assigned task");
+
+  // Verify Nihaal and Lalitha see the updated 75% progress
+  const nihaalState = (await call(nihaal, "state")).data;
+  const nihaalTask = nihaalState.tasks.find((t) => t.id === taskId);
+  assert.ok(nihaalTask, "Nihaal must see the task");
+  assert.equal(nihaalTask.progress, 75, "Nihaal must see updated progress of 75%");
 
   // 4. Harsha marks it COMPLETED
   const completeRes = await call(harsha, `tasks/${taskId}`, "PATCH", {
@@ -136,12 +143,13 @@ test("FOUNDER MATRIX: All 4 founders can collaborate on projects and team tasks 
   });
   assert.equal(completeRes.status, 200, "Harsha should be able to complete task");
 
-  // 5. Verify all 4 founders see the completed task in state
+  // 5. Verify all 4 founders see the completed task with 100% progress in state
   for (const founder of [harsha, nihaal, lalitha, abhilash]) {
     const st = (await call(founder, "state")).data;
     const foundTask = st.tasks.find((t) => t.id === taskId);
     assert.ok(foundTask, `${founder.id} must see the task`);
     assert.equal(foundTask.status, "COMPLETED");
+    assert.equal(foundTask.progress, 100, `${founder.id} must see 100% progress for completed task`);
   }
 
   // 6. Security invariant: Non-owners cannot perform destructive workspace backups or user creation

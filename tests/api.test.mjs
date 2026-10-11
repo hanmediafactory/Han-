@@ -493,6 +493,70 @@ test("Live synchronization requires authentication and broadcasts no private rec
   } finally { controller.abort(); await reader.cancel().catch(() => {}); }
 });
 
+test("Task progress updates dynamically synchronize status and recalculate project completion", async () => {
+  const proj = await call(owner, "projects", "POST", {
+    name: "Collaborative Project",
+    memberIds: ["user-1", "user-2"],
+    progress: 0,
+  });
+  assert.equal(proj.status, 201);
+
+  const created = await call(owner, "tasks", "POST", {
+    title: "Progress Sync Task",
+    projectId: proj.data.id,
+    assignedUserId: "user-1",
+    progress: 25,
+    date: "2026-10-06"
+  });
+  assert.equal(created.status, 201);
+  const stateCreated = (await call(owner, "state")).data;
+  const taskCreated = stateCreated.tasks.find(t => t.id === created.data.id);
+  assert.ok(taskCreated);
+  assert.equal(taskCreated.progress, 25);
+  assert.equal(taskCreated.status, "IN_PROGRESS");
+  assert.equal(taskCreated.progressUpdatedBy, "user-1");
+
+  // Member (user-2) on the project updates progress on user-1's task to 75%
+  const freshMember = await login("user-2");
+  const patched75 = await call(freshMember, `tasks/${created.data.id}`, "PATCH", { progress: 75 });
+  assert.equal(patched75.status, 200);
+  const state75 = (await call(owner, "state")).data;
+  const task75 = state75.tasks.find(t => t.id === created.data.id);
+  assert.equal(task75.progress, 75);
+  assert.equal(task75.status, "IN_PROGRESS");
+  assert.equal(task75.progressUpdatedBy, "user-2");
+  assert.ok(task75.progressUpdatedByName);
+  assert.ok(task75.progressUpdatedAt);
+
+  // Verify project recalculation reflects task progress
+  const project75 = state75.projects.find(p => p.id === proj.data.id);
+  assert.ok(project75);
+  assert.equal(project75.progressSource, "tasks");
+
+  // Update progress to 100% by owner
+  const patched100 = await call(owner, `tasks/${created.data.id}`, "PATCH", { progress: 100 });
+  assert.equal(patched100.status, 200);
+  const state100 = (await call(owner, "state")).data;
+  const task100 = state100.tasks.find(t => t.id === created.data.id);
+  assert.equal(task100.progress, 100);
+  assert.equal(task100.status, "COMPLETED");
+  assert.equal(task100.completedBy, "user-1");
+  assert.ok(task100.completedByName);
+
+  // Bulk update progress via batch API
+  const batchRes = await call(owner, "batch", "POST", {
+    action: "bulk_task_progress",
+    taskIds: [created.data.id],
+    progress: 50
+  });
+  assert.equal(batchRes.status, 200);
+  const stateBatch = (await call(owner, "state")).data;
+  const taskBatch = stateBatch.tasks.find(t => t.id === created.data.id);
+  assert.equal(taskBatch.progress, 50);
+  assert.equal(taskBatch.status, "IN_PROGRESS");
+  assert.equal(taskBatch.progressUpdatedBy, "user-1");
+});
+
 after(async () => {
   await new Promise((resolve) => server.close(resolve));
   db.close();

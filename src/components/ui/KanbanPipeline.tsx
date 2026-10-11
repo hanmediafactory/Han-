@@ -107,18 +107,28 @@ export const KanbanPipeline: React.FC<KanbanPipelineProps> = ({
                       )}
 
                       {canManage && (
-                        <div className="flex items-center justify-between pt-2 mt-1 border-t border-border-subtle gap-2">
+                        <div className="flex items-center justify-between pt-2 mt-1 border-t border-border-subtle gap-1.5 flex-wrap">
                           <button
                             onClick={() => onEdit(lead)}
-                            className="text-[10px] font-semibold text-text-secondary hover:text-text-primary transition-colors"
+                            className="text-[10px] font-semibold text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
                           >
                             Edit
                           </button>
 
-                          <select aria-label={`Status for ${lead.name}`} value={lead.status} onChange={event => onStatusChange(lead.id, event.target.value)} className="min-w-0 flex-1 text-[10px] bg-page text-text-primary border border-border-subtle rounded px-1 py-0.5">
+                          {lead.status !== "Won" && (
+                            <button
+                              onClick={() => onStatusChange(lead.id, "Won")}
+                              className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer px-1.5 py-0.5 rounded bg-emerald-950/40 border border-emerald-800/60"
+                              title="Mark Won & Convert"
+                            >
+                              ✓ Won
+                            </button>
+                          )}
+
+                          <select aria-label={`Status for ${lead.name}`} value={lead.status} onChange={event => onStatusChange(lead.id, event.target.value)} className="min-w-0 flex-1 text-[10px] bg-page text-text-primary border border-border-subtle rounded px-1 py-0.5 cursor-pointer">
                             {STAGES.map(option => <option key={option.key} value={option.key}>{option.label}</option>)}
                           </select>
-                          <button className="text-[10px] font-semibold text-red-500 hover:text-red-400 transition-colors" onClick={() => onRemove(lead)}>Delete</button>
+                          <button className="text-[10px] font-semibold text-red-500 hover:text-red-400 transition-colors cursor-pointer" onClick={() => onRemove(lead)}>Delete</button>
                         </div>
                       )}
                     </div>

@@ -221,8 +221,10 @@ function recalculate(projectId, user) {
     .filter((t) => t.status !== "CANCELLED");
   project.progress = tasks.length
     ? Math.round(
-        (tasks.filter((t) => t.status === "COMPLETED").length / tasks.length) *
-          100,
+        tasks.reduce((sum, t) => {
+          if (t.status === "COMPLETED") return sum + 100;
+          return sum + (Number(t.progress) || 0);
+        }, 0) / tasks.length,
       )
     : (project.manualProgress ?? project.progress ?? 0);
   if (tasks.length) project.category = project.progress === 100 ? "Completed" : "Active";
@@ -355,12 +357,19 @@ function notify(user, table, id) {
     } else if (table === "tasks") {
       if (item.status === "COMPLETED") {
         title = "Task completed ✅";
-        subtitle = `"${item.title}" completed`;
+        subtitle = `"${item.title}" completed by ${user.name || "A team member"} (${item.progress ?? 100}%)`;
+      } else if (item.progress !== undefined && item.progress > 0) {
+        title = `Task progress: ${item.progress}% 📈`;
+        subtitle = `"${item.title}" set to ${item.progress}% by ${user.name || "A team member"}`;
+      } else if (item.progress === 0 && item.status === "TODO") {
+        title = "Task progress reset 🔄";
+        subtitle = `"${item.title}" reset to 0% by ${user.name || "A team member"}`;
       } else if (item.assignedUserId === recipient.id && user.id !== recipient.id) {
         title = "Work assigned to you! 📋";
         subtitle = `"${item.title}" assigned by ${user.name || "Admin"}`;
       } else {
         title = "Task updated 📝";
+        subtitle = `"${item.title}" updated by ${user.name || "A team member"}`;
       }
     } else if (table === "projects") {
       if (Array.isArray(item.memberIds) && item.memberIds.includes(recipient.id) && user.id !== recipient.id) {
@@ -665,6 +674,11 @@ app.post("/api/batch", (req, res) => {
       status: z.enum(["TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED"]),
     }),
     z.object({
+      action: z.literal("bulk_task_progress"),
+      taskIds: z.array(z.string().min(1).max(100)).min(1).max(50).refine(ids => new Set(ids).size === ids.length, "Task IDs must be unique"),
+      progress: z.number().min(0).max(100),
+    }),
+    z.object({
       action: z.literal("bulk_task_reassign"),
       taskIds: z.array(z.string().min(1).max(100)).min(1).max(50).refine(ids => new Set(ids).size === ids.length, "Task IDs must be unique"),
       assignedUserId: z.string().trim().min(1).max(100),
@@ -686,9 +700,49 @@ app.post("/api/batch", (req, res) => {
         const existing = rows("tasks").find(t => t.id === id);
         if (!existing) throw fail(404, `Task ${id} not found.`);
         if (!owner(req.user) && !can(req.user, "tasks.manage") && existing.assignedUserId !== req.user.id) throw fail(403, `Permission denied for task ${id}.`);
+        const now = new Date().toISOString();
         const completedBy = body.status === "COMPLETED" ? (existing.status === "COMPLETED" ? existing.completedBy : req.user.id) : null;
-        const completedAt = body.status === "COMPLETED" ? (existing.status === "COMPLETED" ? existing.completedAt : new Date().toISOString()) : null;
-        const updated = { ...existing, status: body.status, completedBy, completedAt };
+        const completedAt = body.status === "COMPLETED" ? (existing.status === "COMPLETED" ? existing.completedAt : now) : null;
+        const progress = body.status === "COMPLETED" ? 100 : (body.status === "TODO" ? 0 : (existing.progress || 50));
+        const updated = {
+          ...existing,
+          status: body.status,
+          progress,
+          completedBy,
+          completedAt,
+          progressUpdatedBy: req.user.id,
+          progressUpdatedAt: now,
+          lastUpdatedBy: req.user.id,
+          lastUpdatedAt: now,
+        };
+        store("tasks", id, updated, req.user, true);
+        notify(req.user, "tasks", id);
+        if (existing.projectId) affectedProjects.add(existing.projectId);
+        updatedIds.push(id);
+      }
+      for (const projId of affectedProjects) recalculate(projId, req.user);
+    } else if (body.action === "bulk_task_progress") {
+      const affectedProjects = new Set();
+      for (const id of body.taskIds) {
+        const existing = rows("tasks").find(t => t.id === id);
+        if (!existing) throw fail(404, `Task ${id} not found.`);
+        if (!owner(req.user) && !can(req.user, "tasks.manage") && existing.assignedUserId !== req.user.id) throw fail(403, `Permission denied for task ${id}.`);
+        const now = new Date().toISOString();
+        const progress = Math.min(100, Math.max(0, Math.round(body.progress)));
+        const status = progress === 100 ? "COMPLETED" : (progress > 0 ? "IN_PROGRESS" : "TODO");
+        const completedBy = status === "COMPLETED" ? (existing.status === "COMPLETED" ? existing.completedBy : req.user.id) : null;
+        const completedAt = status === "COMPLETED" ? (existing.status === "COMPLETED" ? existing.completedAt : now) : null;
+        const updated = {
+          ...existing,
+          progress,
+          status,
+          completedBy,
+          completedAt,
+          progressUpdatedBy: req.user.id,
+          progressUpdatedAt: now,
+          lastUpdatedBy: req.user.id,
+          lastUpdatedAt: now,
+        };
         store("tasks", id, updated, req.user, true);
         notify(req.user, "tasks", id);
         if (existing.projectId) affectedProjects.add(existing.projectId);
@@ -946,11 +1000,26 @@ app.get("/api/state", (req, res) => {
       (id) => users.find((u) => u.id === id)?.name || id,
     ),
   }));
-  state.tasks = state.tasks.map((t) => ({
-    ...t,
-    completed: t.status === "COMPLETED",
-    projectName: state.projects.find((p) => p.id === t.projectId)?.name,
-  }));
+  state.tasks = state.tasks.map((t) => {
+    const progressUpdatedByUser = users.find((u) => u.id === (t.progressUpdatedBy || t.updated_by || t.created_by));
+    const completedByUser = users.find((u) => u.id === t.completedBy);
+    const assignedUser = users.find((u) => u.id === t.assignedUserId);
+    const lastUpdatedByUser = users.find((u) => u.id === (t.lastUpdatedBy || t.updated_by || t.created_by));
+    return {
+      ...t,
+      progress: t.progress ?? (t.status === "COMPLETED" ? 100 : 0),
+      completed: t.status === "COMPLETED",
+      projectName: state.projects.find((p) => p.id === t.projectId)?.name,
+      assignedUserName: assignedUser?.name || "Unassigned",
+      progressUpdatedBy: t.progressUpdatedBy || t.updated_by || t.created_by,
+      progressUpdatedByName: progressUpdatedByUser?.name || "Team member",
+      progressUpdatedAt: t.progressUpdatedAt || t.updated_at,
+      completedByName: completedByUser?.name || (t.completedBy ? "Team member" : null),
+      lastUpdatedBy: t.lastUpdatedBy || t.updated_by || t.created_by,
+      lastUpdatedByName: lastUpdatedByUser?.name || "Team member",
+      lastUpdatedAt: t.lastUpdatedAt || t.updated_at,
+    };
+  });
   state.funnels = state.funnels.map((f) => ({
     ...f,
     completedDaysOrSteps: f.steps.filter((s) => s.status === "Completed")
@@ -1185,9 +1254,28 @@ app.post("/api/:table", (req, res) => {
   )
     throw fail(400, "Assign the user to the project first.");
   const id = randomUUID();
-  if(table==='tasks'){
-    data.completedBy=data.status==='COMPLETED'?req.user.id:null;
-    data.completedAt=data.status==='COMPLETED'?new Date().toISOString():null;
+  if (table === "tasks") {
+    const now = new Date().toISOString();
+    data.lastUpdatedBy = req.user.id;
+    data.lastUpdatedAt = now;
+    data.progressUpdatedBy = req.user.id;
+    data.progressUpdatedAt = now;
+    if (data.progress !== undefined) {
+      data.progress = Math.min(100, Math.max(0, Math.round(Number(data.progress))));
+      if (data.progress === 100 && data.status !== "CANCELLED") {
+        data.status = "COMPLETED";
+      } else if (data.status === "COMPLETED") {
+        data.progress = 100;
+      } else if (data.progress > 0 && data.progress < 100 && data.status === "TODO") {
+        data.status = "IN_PROGRESS";
+      }
+    } else if (data.status === "COMPLETED") {
+      data.progress = 100;
+    } else {
+      data.progress = 0;
+    }
+    data.completedBy = data.status === "COMPLETED" ? req.user.id : null;
+    data.completedAt = data.status === "COMPLETED" ? now : null;
   }
   transaction(() => {
     const previousFunds = financeSummary().funds;
@@ -1210,15 +1298,39 @@ app.patch("/api/:table/:id", (req, res) => {
   if (table === "expenses" && existing.status === "void") throw fail(409, "Voided expenses cannot be edited.");
   if (req.get("If-Unmodified-Since") && req.get("If-Unmodified-Since") !== existing.updated_at) throw fail(409, "This record changed on another device. Refresh and review your edit.");
   if (table === "notifications") req.body = z.object({ read: z.boolean() }).strict().parse(req.body);
-  if (table === "tasks" && !owner(req.user) && !can(req.user, "tasks.manage")) {
-    if (existing.assignedUserId !== req.user.id)
-      throw fail(403, "Only the assigned user may update this task.");
-    req.body = z
-      .object({
-        status: z.enum(["TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED", "BLOCKED", "IN_REVIEW"]),
-      })
-      .strict()
-      .parse(req.body);
+  if (table === "tasks") {
+    const isProgressOrStatusOnly = Object.keys(req.body).every((k) => ["progress", "status"].includes(k));
+    const hasTaskAccess =
+      owner(req.user) ||
+      can(req.user, "tasks.manage") ||
+      existing.assignedUserId === req.user.id ||
+      (existing.projectId && projectAccess(req.user, existing.projectId));
+
+    if (!hasTaskAccess) {
+      throw fail(403, "Only the assigned user or team managers may update this task.");
+    }
+
+    if (isProgressOrStatusOnly) {
+      req.body = z
+        .object({
+          status: z.enum(["TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED", "BLOCKED", "IN_REVIEW"]).optional(),
+          progress: z.number().min(0).max(100).optional(),
+        })
+        .strict()
+        .parse(req.body);
+    } else if (!owner(req.user) && !can(req.user, "tasks.manage")) {
+      if (existing.assignedUserId !== req.user.id)
+        throw fail(403, "Only the assigned user may update this task.");
+      req.body = z
+        .object({
+          status: z.enum(["TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED", "BLOCKED", "IN_REVIEW"]).optional(),
+          progress: z.number().min(0).max(100).optional(),
+        })
+        .strict()
+        .parse(req.body);
+    } else if (!permitted(req.user, table, existing, true)) {
+      throw fail(403, "You do not have permission to edit this record.");
+    }
   } else if (!permitted(req.user, table, existing, true))
     throw fail(403, "You do not have permission to edit this record.");
   const data = schemas[table].parse({ ...existing, ...req.body });
@@ -1253,9 +1365,35 @@ app.patch("/api/:table/:id", (req, res) => {
   )
     throw fail(409, "Reassign project tasks before removing their members.");
   if (table === "tasks") {
-    data.completedBy = data.status === "COMPLETED" ? (existing.status==='COMPLETED'?existing.completedBy:req.user.id) : null;
+    const now = new Date().toISOString();
+    data.lastUpdatedBy = req.user.id;
+    data.lastUpdatedAt = now;
+    if (req.body.progress !== undefined) {
+      data.progress = Math.min(100, Math.max(0, Math.round(Number(req.body.progress))));
+      data.progressUpdatedBy = req.user.id;
+      data.progressUpdatedAt = now;
+      if (data.progress === 100 && data.status !== "CANCELLED") {
+        data.status = "COMPLETED";
+      } else if (data.progress === 0 && (data.status === "COMPLETED" || !req.body.status)) {
+        data.status = "TODO";
+      } else if (data.progress > 0 && data.progress < 100 && (data.status === "TODO" || data.status === "COMPLETED" || !req.body.status)) {
+        data.status = "IN_PROGRESS";
+      }
+    } else if (req.body.status === "COMPLETED") {
+      data.progress = 100;
+      data.progressUpdatedBy = req.user.id;
+      data.progressUpdatedAt = now;
+    } else if (req.body.status === "TODO" && existing.status === "COMPLETED") {
+      data.progress = 0;
+      data.progressUpdatedBy = req.user.id;
+      data.progressUpdatedAt = now;
+    } else if (req.body.status !== undefined && req.body.status !== existing.status) {
+      data.progressUpdatedBy = req.user.id;
+      data.progressUpdatedAt = now;
+    }
+    data.completedBy = data.status === "COMPLETED" ? (existing.status === 'COMPLETED' ? existing.completedBy : req.user.id) : null;
     data.completedAt =
-      data.status === "COMPLETED" ? (existing.status==='COMPLETED'?existing.completedAt:new Date().toISOString()) : null;
+      data.status === "COMPLETED" ? (existing.status === 'COMPLETED' ? existing.completedAt : now) : null;
   }
   transaction(() => {
     const previousFunds = financeSummary().funds;
