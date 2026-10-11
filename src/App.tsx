@@ -8,10 +8,15 @@ import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { WorkspaceStatus } from "./components/ui/WorkspaceStatus";
 import { IntroVideoSplash } from "./components/ui/IntroVideoSplash";
 import { QuickActionHub } from "./components/ui/QuickActionHub";
+import { ScrollProgress } from "./components/ui/ScrollProgress";
+import { CookieConsent } from "./components/ui/CookieConsent";
+import { BackToTop } from "./components/ui/BackToTop";
+import { LegalModal } from "./components/ui/LegalModals";
 import { Bell, X, ArrowRight } from "lucide-react";
 
 function Shell() {
   const app = useApp();
+  const [legalType, setLegalType] = useState<"privacy" | "terms" | null>(null);
   const [showIntro, setShowIntro] = useState(() => {
     if (typeof navigator !== "undefined" && navigator.webdriver) return false;
     if (
@@ -36,12 +41,36 @@ function Shell() {
 
   useEffect(() => {
     const replayHandler = () => setShowIntro(true);
+    const privacyHandler = () => setLegalType("privacy");
+    const termsHandler = () => setLegalType("terms");
+
     window.addEventListener("han:play-intro", replayHandler);
-    return () => window.removeEventListener("han:play-intro", replayHandler);
+    window.addEventListener("han:open-privacy", privacyHandler);
+    window.addEventListener("han:open-terms", termsHandler);
+
+    return () => {
+      window.removeEventListener("han:play-intro", replayHandler);
+      window.removeEventListener("han:open-privacy", privacyHandler);
+      window.removeEventListener("han:open-terms", termsHandler);
+    };
   }, []);
 
   return (
     <div className={`han-app min-h-screen bg-page text-text-primary flex flex-col justify-between ${app.user ? "is-authenticated" : ""}`}>
+      {/* Accessible skip link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-page focus:text-text-primary focus:rounded-xl focus:shadow-2xl focus:border focus:border-border-strong text-xs font-bold"
+      >
+        Skip to content
+      </a>
+
+      {/* Website launch essentials */}
+      <ScrollProgress />
+      <BackToTop />
+      <CookieConsent />
+      <LegalModal type={legalType} onClose={() => setLegalType(null)} />
+
       {showIntro && <IntroVideoSplash onComplete={handleIntroComplete} />}
       {app.user && !app.loading && <WorkspaceStatus />}
       {app.user && !app.loading && <QuickActionHub />}

@@ -18,6 +18,7 @@ import { AuditLogStream } from "../components/ui/AuditLogStream";
 import { TeamWorkspaceFeed } from "../components/ui/TeamWorkspaceFeed";
 import { PushPreferences } from "../components/ui/PushPreferences";
 import { WorkspaceTargetsWidget } from "../components/ui/WorkspaceTargetsWidget";
+import { ExpandableFAQ } from "../components/ui/ExpandableFAQ";
 import {
   Pencil,
   Trash2,
@@ -1118,6 +1119,27 @@ export function Workspace() {
             </div>
             <ChevronRight size={16} className="text-text-muted" />
           </button>
+
+          {/* Privacy Policy & Terms */}
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("han:open-privacy"))}
+              className="p-3 rounded-xl bg-surface-elevated border border-border-subtle hover:border-border-strong text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors text-center cursor-pointer"
+            >
+              Privacy Policy
+            </button>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("han:open-terms"))}
+              className="p-3 rounded-xl bg-surface-elevated border border-border-subtle hover:border-border-strong text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors text-center cursor-pointer"
+            >
+              Terms of Service
+            </button>
+          </div>
+
+          {/* Expandable FAQ */}
+          <div className="pt-2">
+            <ExpandableFAQ compact={true} />
+          </div>
 
           <button
             onClick={() => void app.logout()}
