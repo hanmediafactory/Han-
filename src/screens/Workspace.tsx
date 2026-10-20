@@ -46,6 +46,8 @@ import {
   Monitor,
   Moon,
   Sun,
+  Phone,
+  Calendar,
 } from "lucide-react";
 
 type Field = {
@@ -186,6 +188,57 @@ const fields: Record<string, Field[]> = {
       options: ["task", "lead", "payment", "project", "deadline", "team"],
     },
   ],
+  clients: [
+    { key: "name", label: "Client name", required: true },
+    { key: "tagline", label: "Tagline / Business info" },
+    { key: "contact_person", label: "Primary contact", required: true },
+    { key: "contact_role", label: "Contact role" },
+    { key: "phone", label: "Phone number", type: "tel", required: true },
+    { key: "email", label: "Email address", type: "email", required: true },
+    { key: "stage", label: "Lifecycle stage", options: ["Discovery", "Proposal", "Active", "On Hold", "Completed"] },
+    { key: "service", label: "Retainer / Service package", required: true },
+    { key: "account_health", label: "Account health", options: ["Healthy", "Strong", "Good", "At Risk"] },
+    { key: "contract_value", label: "Contract value (₹)" },
+    { key: "next_milestone", label: "Next key milestone" },
+    { key: "milestone_date", label: "Milestone date", type: "date" },
+    { key: "notes", label: "Account notes & relationship history", type: "textarea" },
+  ],
+  client_followups: [
+    { key: "company", label: "Client / Company name", required: true },
+    { key: "person", label: "Person to contact", required: true },
+    { key: "purpose", label: "Follow-up purpose & agenda", type: "textarea", required: true },
+    { key: "due_date", label: "Target due date", type: "date", required: true },
+    { key: "time_str", label: "Target time slot (e.g. 11:30 AM)", required: true },
+    { key: "status", label: "Follow-up status", options: ["Scheduled", "Due Today", "Overdue", "Completed"] },
+  ],
+  client_calls: [
+    { key: "business", label: "Business name", required: true },
+    { key: "contact", label: "Contact person", required: true },
+    { key: "phone", label: "Phone number", type: "tel", required: true },
+    { key: "type", label: "Call type", options: ["Inbound", "Outbound"] },
+    { key: "outcome", label: "Call outcome", required: true },
+    { key: "call_time", label: "Time of call" },
+    { key: "notes", label: "Discussion notes & next steps", type: "textarea" },
+  ],
+  client_emails: [
+    { key: "party", label: "Recipient / Sender email", type: "email", required: true },
+    { key: "subject", label: "Email subject line", required: true },
+    { key: "category", label: "Category (e.g. Proposal, Invoice, Update)", required: true },
+    { key: "status", label: "Delivery status", options: ["QUEUED", "ACCEPTED", "DELIVERED", "FAILED"] },
+    { key: "email_time", label: "Email timestamp" },
+    { key: "body", label: "Email message body", type: "textarea" },
+  ],
+  inquiries: [
+    { key: "brand", label: "Company / Brand name", required: true },
+    { key: "name", label: "Contact person", required: true },
+    { key: "email", label: "Email address", type: "email", required: true },
+    { key: "phone", label: "Phone number", type: "tel" },
+    { key: "budget_band", label: "Budget band" },
+    { key: "status", label: "Inquiry status", options: ["NEW", "IN_REVIEW", "SCOPING", "PROPOSAL_SENT", "WON", "ARCHIVED"] },
+    { key: "priority", label: "Priority", options: ["LOW", "NORMAL", "HIGH", "URGENT"] },
+    { key: "message", label: "Client brief / message", type: "textarea", required: true },
+    { key: "internal_notes", label: "Internal evaluation notes", type: "textarea" },
+  ],
 };
 fields.income = fields.expenses;
 const titleFor: Record<string, string> = {
@@ -194,6 +247,11 @@ const titleFor: Record<string, string> = {
   expenses: "Money",
   income: "Income",
   leads: "Leads",
+  clients: "Clients",
+  client_followups: "Follow-ups",
+  client_calls: "Calls",
+  client_emails: "Emails",
+  inquiries: "Inquiries",
   funnels: "Funnels",
   team_members: "Team",
   calendar_events: "Calendar",
@@ -210,6 +268,11 @@ const singularTitleFor: Record<string, string> = {
   expenses: "Expense",
   income: "Income Entry",
   leads: "Lead",
+  clients: "Client",
+  client_followups: "Follow-up",
+  client_calls: "Call Record",
+  client_emails: "Email Log",
+  inquiries: "Inbound Inquiry",
   funnels: "Funnel",
   team_members: "Team Member",
   calendar_events: "Calendar Event",
@@ -243,7 +306,26 @@ function defaults(table: string, userId: string) {
           ? "General"
           : "General",
     priority: "MEDIUM",
-    status: table === "leads" ? "New" : "TODO",
+    status: table === "leads" ? "New" : table === "client_followups" ? "Scheduled" : table === "inquiries" ? "NEW" : "TODO",
+    stage: "Discovery",
+    account_health: "Healthy",
+    service: "Production Retainer",
+    contact_person: "",
+    contact_role: "Point of Contact",
+    company: "",
+    person: "",
+    purpose: "",
+    due_date: today(),
+    time_str: "11:00 AM",
+    business: "",
+    contact: "",
+    type: "Outbound",
+    outcome: "Connected",
+    call_time: "Just now",
+    party: "",
+    subject: "",
+    brand: "",
+    message: "",
     progress: 0,
     estimatedTime: 0,
     ownerId: "user-1",
@@ -870,7 +952,7 @@ export function Workspace() {
   const [taskSort, setTaskSort] = useState("Due date");
   const [alertEnabled, setAlertEnabled] = useState(() => localStorage.getItem(`han_alerts_${app.user?.id}`) !== "off");
   const [projectSubTab, setProjectSubTab] = useState<"Tasks" | "Files" | "Notes" | "Activity">("Tasks");
-  const [growthTab, setGrowthTab] = useState<"Overview" | "Leads" | "Clients" | "Analytics">("Overview");
+  const [growthTab, setGrowthTab] = useState<"Overview" | "Leads" | "Clients" | "Follow-ups" | "Calls" | "Inquiries" | "Analytics">("Overview");
 
   const isOwner = app.user?.role === "OWNER";
   const [profileSection, setProfileSection] = useState<string | null>(null);
@@ -1392,7 +1474,7 @@ export function Workspace() {
           ))}
         </div>
         <div className="grid grid-cols-2 gap-3">
-          {(isOwner || app.can("tasks.manage") || ["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "")) && <label className="text-xs">Assigned to<select aria-label="Assigned to" className="han-input mt-1" value={assigneeFilter} onChange={event => setAssigneeFilter(event.target.value)}><option value="All">Everyone</option>{app.state.users.map(user => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>}
+          {(isOwner || app.can("tasks.manage")) && <label className="text-xs">Assigned to<select aria-label="Assigned to" className="han-input mt-1" value={assigneeFilter} onChange={event => setAssigneeFilter(event.target.value)}><option value="All">Everyone</option>{app.state.users.map(user => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>}
           {!app.activeProjectId && <label className="text-xs">Project filter<select className="han-input mt-1" value={taskProject} onChange={event => setTaskProject(event.target.value)}><option value="All">All projects</option><option value="Unassigned">No project</option>{app.projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>}
           <label className="text-xs">Sort tasks<select className="han-input mt-1" value={taskSort} onChange={event => setTaskSort(event.target.value)}>{["Due date", "Priority"].map(value => <option key={value}>{value}</option>)}</select></label>
         </div>
@@ -1401,9 +1483,9 @@ export function Workspace() {
       )}
       {table === "funnels" && !detail && (
         <div className="space-y-4">
-          {/* Growth Sub-tabs matching Screen 10 */}
+          {/* Growth Sub-tabs matching Unified CRM and Funnel operations */}
           <div className="flex gap-2 border-b border-border-subtle pb-2 overflow-x-auto no-scrollbar">
-            {(["Overview", "Leads", "Clients", "Analytics"] as const).map((tabName) => {
+            {(["Overview", "Leads", "Clients", "Follow-ups", "Calls", "Inquiries", "Analytics"] as const).map((tabName) => {
               const isActive = growthTab === tabName;
               return (
                 <button
@@ -1540,38 +1622,418 @@ export function Workspace() {
             </div>
           )}
 
-          {/* CLIENTS TAB */}
+          {/* CLIENTS TAB - Full Operational CRM */}
           {growthTab === "Clients" && (
             <div className="space-y-3 animate-fadeIn">
               <div className="flex items-center justify-between">
-                <h3 className="font-serif text-base font-bold text-text-primary">Active Clients</h3>
-                <span className="text-xs font-mono text-text-secondary">
-                  {app.state.leads.filter(l => l.status === "Won").length}
-                </span>
+                <div>
+                  <h3 className="font-serif text-base font-bold text-text-primary">Client Accounts</h3>
+                  <p className="text-[11px] text-text-secondary">Direct accounts & converted pipeline clients</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-text-secondary">
+                    {app.state.clients.length + app.state.leads.filter(l => l.status === "Won").length}
+                  </span>
+                  {write && (
+                    <button
+                      onClick={() => setEditing({ table: "clients" })}
+                      className="px-3 py-1.5 rounded-xl bg-page text-text-primary font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md"
+                    >
+                      <Plus size={14} />
+                      <span>New Client</span>
+                    </button>
+                  )}
+                </div>
               </div>
-              {app.state.leads.filter(l => l.status === "Won").length === 0 ? (
+              {app.state.clients.length === 0 && app.state.leads.filter(l => l.status === "Won").length === 0 ? (
                 <div className="p-6 text-center bg-surface-elevated border border-border-subtle rounded-2xl space-y-2">
-                  <p className="text-xs text-text-secondary">No converted clients recorded yet.</p>
-                  <p className="text-[11px] text-text-muted">Won leads from your pipeline will automatically appear here.</p>
+                  <p className="text-xs text-text-secondary">No client accounts recorded yet.</p>
+                  <p className="text-[11px] text-text-muted">Create a new client account or convert a lead from your pipeline.</p>
+                  {write && (
+                    <button
+                      className="text-xs text-text-primary font-bold underline cursor-pointer mt-1 inline-block"
+                      onClick={() => setEditing({ table: "clients" })}
+                    >
+                      + Add First Client
+                    </button>
+                  )}
                 </div>
               ) : (
-                app.state.leads.filter(l => l.status === "Won").map(client => (
-                  <div key={client.id} className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-surface-overlay border border-border-subtle flex items-center justify-center shrink-0">
-                        <Building size={16} className="text-text-secondary" />
+                <div className="space-y-2.5">
+                  {/* Dedicated Client Records */}
+                  {app.state.clients.map(client => (
+                    <div key={client.id} className="p-4 rounded-2xl bg-surface-elevated border border-border-subtle space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-surface-overlay border border-border-subtle flex items-center justify-center shrink-0 font-bold text-xs text-text-primary">
+                            {client.initials || client.name.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <h4 className="font-sans font-bold text-sm text-text-primary">{client.name}</h4>
+                            <p className="text-xs text-text-secondary">{client.tagline || client.service}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                            client.stage === 'Active' ? 'bg-emerald-500/10 text-emerald-500' :
+                            client.stage === 'Proposal' ? 'bg-amber-500/10 text-amber-500' :
+                            'bg-surface-overlay text-text-secondary'
+                          }`}>
+                            {client.stage}
+                          </span>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                            client.account_health === 'Healthy' || client.account_health === 'Strong' ? 'text-emerald-500' : 'text-amber-500'
+                          }`}>
+                            ● {client.account_health}
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-sans font-bold text-sm text-text-primary">{client.name}</h4>
-                        <p className="text-xs text-text-secondary mt-0.5">{client.source || "Direct Client"} · {client.category || "General"}</p>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-border-subtle">
+                        <div>
+                          <span className="text-[10px] text-text-muted">Contact</span>
+                          <p className="text-text-primary font-medium">{client.contact_person} ({client.contact_role || 'POC'})</p>
+                          <p className="text-[11px] text-text-secondary">{client.phone} · {client.email}</p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[10px] text-text-muted">Contract & Milestone</span>
+                          <p className="font-mono text-text-primary font-bold">{client.contract_value ? `₹${client.contract_value}` : 'Retainer'}</p>
+                          <p className="text-[11px] text-text-secondary">{client.next_milestone ? `${client.next_milestone} (${client.milestone_date || 'TBD'})` : 'No upcoming milestone'}</p>
+                        </div>
+                      </div>
+
+                      {client.notes && (
+                        <p className="text-xs text-text-muted bg-surface-overlay p-2 rounded-xl italic">
+                          "{client.notes}"
+                        </p>
+                      )}
+
+                      {write && (
+                        <div className="flex justify-end gap-2 pt-1">
+                          <button
+                            onClick={() => setEditing({ table: "client_followups", initialValues: { company: client.name, person: client.contact_person } })}
+                            className="px-2.5 py-1 rounded-lg bg-surface-overlay text-[11px] text-text-secondary hover:text-text-primary flex items-center gap-1 cursor-pointer"
+                          >
+                            <Calendar size={12} />
+                            <span>Schedule Follow-up</span>
+                          </button>
+                          <button
+                            onClick={() => setEditing({ table: "client_calls", initialValues: { business: client.name, contact: client.contact_person, phone: client.phone } })}
+                            className="px-2.5 py-1 rounded-lg bg-surface-overlay text-[11px] text-text-secondary hover:text-text-primary flex items-center gap-1 cursor-pointer"
+                          >
+                            <Phone size={12} />
+                            <span>Log Call</span>
+                          </button>
+                          <button
+                            onClick={() => setEditing({ table: "clients", item: client as unknown as RecordData })}
+                            className="p-1 text-text-secondary hover:text-text-primary cursor-pointer"
+                          >
+                            <Pencil size={13} />
+                          </button>
+                          <button
+                            onClick={() => setDeleting({ table: "clients", item: client as unknown as RecordData })}
+                            className="p-1 text-red-400 hover:text-red-300 cursor-pointer"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Won Leads Converted */}
+                  {app.state.leads.filter(l => l.status === "Won").map(client => (
+                    <div key={client.id} className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle flex items-center justify-between opacity-90">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-surface-overlay border border-border-subtle flex items-center justify-center shrink-0">
+                          <Building size={16} className="text-text-secondary" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-sans font-bold text-sm text-text-primary">{client.name}</h4>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-overlay text-text-muted">Converted Lead</span>
+                          </div>
+                          <p className="text-xs text-text-secondary mt-0.5">{client.source || "Direct Client"} · {client.category || "General"}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="badge-today">Won</span>
+                        {client.dealValue ? <p className="font-mono text-xs font-bold text-text-primary mt-1">₹{Number(client.dealValue).toLocaleString('en-IN')}</p> : null}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span className="badge-today">Active</span>
-                      {client.dealValue ? <p className="font-mono text-xs font-bold text-text-primary mt-1">₹{Number(client.dealValue).toLocaleString('en-IN')}</p> : null}
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* FOLLOW-UPS TAB */}
+          {growthTab === "Follow-ups" && (
+            <div className="space-y-3 animate-fadeIn">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-serif text-base font-bold text-text-primary">Client Follow-ups</h3>
+                  <p className="text-[11px] text-text-secondary">Scheduled agenda & outreach tasks</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-text-secondary">{app.state.client_followups.length}</span>
+                  {write && (
+                    <button
+                      onClick={() => setEditing({ table: "client_followups" })}
+                      className="px-3 py-1.5 rounded-xl bg-page text-text-primary font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md"
+                    >
+                      <Plus size={14} />
+                      <span>Schedule</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+              {app.state.client_followups.length === 0 ? (
+                <div className="p-6 text-center bg-surface-elevated border border-border-subtle rounded-2xl space-y-2">
+                  <p className="text-xs text-text-secondary">No follow-ups currently scheduled.</p>
+                  <p className="text-[11px] text-text-muted">Keep clients engaged by scheduling regular syncs and check-ins.</p>
+                  {write && (
+                    <button
+                      className="text-xs text-text-primary font-bold underline cursor-pointer mt-1 inline-block"
+                      onClick={() => setEditing({ table: "client_followups" })}
+                    >
+                      + Schedule Follow-up
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {app.state.client_followups.map(item => (
+                    <div key={item.id} className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle flex items-start justify-between gap-3">
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                            item.status === 'Due Today' ? 'bg-amber-500/10 text-amber-500' :
+                            item.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-500' :
+                            item.status === 'Overdue' ? 'bg-red-500/10 text-red-500' :
+                            'bg-surface-overlay text-text-secondary'
+                          }`}>
+                            {item.status}
+                          </span>
+                          <span className="text-xs font-bold text-text-primary">{item.company}</span>
+                          <span className="text-xs text-text-muted">· {item.person}</span>
+                        </div>
+                        <p className="text-xs text-text-secondary">{item.purpose}</p>
+                        <p className="text-[11px] text-text-muted flex items-center gap-1">
+                          <Calendar size={11} />
+                          <span>{item.due_date || 'Today'} at {item.time_str}</span>
+                        </p>
+                      </div>
+                      {write && (
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {item.status !== 'Completed' && (
+                            <button
+                              onClick={() => void app.mutate(`client_followups/${item.id}`, "PATCH", { status: 'Completed' })}
+                              className="p-1.5 rounded-lg bg-surface-overlay text-text-secondary hover:text-emerald-500 cursor-pointer"
+                              title="Mark Completed"
+                            >
+                              <Check size={13} />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => setEditing({ table: "client_followups", item: item as unknown as RecordData })}
+                            className="p-1.5 rounded-lg bg-surface-overlay text-text-secondary hover:text-text-primary cursor-pointer"
+                          >
+                            <Pencil size={13} />
+                          </button>
+                          <button
+                            onClick={() => setDeleting({ table: "client_followups", item: item as unknown as RecordData })}
+                            className="p-1.5 rounded-lg bg-surface-overlay text-red-400 hover:text-red-300 cursor-pointer"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* CALLS TAB */}
+          {growthTab === "Calls" && (
+            <div className="space-y-3 animate-fadeIn">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-serif text-base font-bold text-text-primary">Call Logs</h3>
+                  <p className="text-[11px] text-text-secondary">Inbound & outbound communication audit</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-text-secondary">{app.state.client_calls.length}</span>
+                  {write && (
+                    <button
+                      onClick={() => setEditing({ table: "client_calls" })}
+                      className="px-3 py-1.5 rounded-xl bg-page text-text-primary font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md"
+                    >
+                      <Plus size={14} />
+                      <span>Log Call</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+              {app.state.client_calls.length === 0 ? (
+                <div className="p-6 text-center bg-surface-elevated border border-border-subtle rounded-2xl space-y-2">
+                  <p className="text-xs text-text-secondary">No call records logged yet.</p>
+                  <p className="text-[11px] text-text-muted">Track all client phone conversations and outcomes directly from mobile.</p>
+                  {write && (
+                    <button
+                      className="text-xs text-text-primary font-bold underline cursor-pointer mt-1 inline-block"
+                      onClick={() => setEditing({ table: "client_calls" })}
+                    >
+                      + Log First Call
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {app.state.client_calls.map(item => (
+                    <div key={item.id} className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle flex items-start justify-between gap-3">
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                            item.type === 'Inbound' ? 'bg-sky-500/10 text-sky-400' : 'bg-purple-500/10 text-purple-400'
+                          }`}>
+                            {item.type}
+                          </span>
+                          <span className="text-xs font-bold text-text-primary">{item.business}</span>
+                          <span className="text-xs text-text-muted">· {item.contact} ({item.phone})</span>
+                        </div>
+                        <p className="text-xs text-text-secondary font-medium">Outcome: {item.outcome}</p>
+                        {item.notes && <p className="text-xs text-text-muted italic">"{item.notes}"</p>}
+                        <p className="text-[10px] font-mono text-text-muted">{item.call_time || 'Recent'}</p>
+                      </div>
+                      {write && (
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => setEditing({ table: "client_calls", item: item as unknown as RecordData })}
+                            className="p-1.5 rounded-lg bg-surface-overlay text-text-secondary hover:text-text-primary cursor-pointer"
+                          >
+                            <Pencil size={13} />
+                          </button>
+                          <button
+                            onClick={() => setDeleting({ table: "client_calls", item: item as unknown as RecordData })}
+                            className="p-1.5 rounded-lg bg-surface-overlay text-red-400 hover:text-red-300 cursor-pointer"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* INQUIRIES TAB */}
+          {growthTab === "Inquiries" && (
+            <div className="space-y-3 animate-fadeIn">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-serif text-base font-bold text-text-primary">Website Inquiries</h3>
+                  <p className="text-[11px] text-text-secondary">Inbound project requests & qualification</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-text-secondary">{app.state.inquiries.length}</span>
+                  {write && (
+                    <button
+                      onClick={() => setEditing({ table: "inquiries" })}
+                      className="px-3 py-1.5 rounded-xl bg-page text-text-primary font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md"
+                    >
+                      <Plus size={14} />
+                      <span>New Inquiry</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+              {app.state.inquiries.length === 0 ? (
+                <div className="p-6 text-center bg-surface-elevated border border-border-subtle rounded-2xl space-y-2">
+                  <p className="text-xs text-text-secondary">No inbound inquiries logged.</p>
+                  <p className="text-[11px] text-text-muted">Inbound leads submitting the website contact form appear here in real time.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {app.state.inquiries.map(item => (
+                    <div key={item.id} className="p-3.5 rounded-2xl bg-surface-elevated border border-border-subtle space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-sans font-bold text-sm text-text-primary">{item.brand}</h4>
+                            <span className="text-xs text-text-muted">({item.name})</span>
+                          </div>
+                          <p className="text-xs text-text-secondary mt-0.5">{item.email} · {item.phone || 'No phone'}</p>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                            item.status === 'NEW' ? 'bg-amber-500/10 text-amber-500' :
+                            item.status === 'WON' ? 'bg-emerald-500/10 text-emerald-500' :
+                            'bg-surface-overlay text-text-secondary'
+                          }`}>
+                            {item.status}
+                          </span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-overlay text-text-muted">
+                            {item.priority}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="bg-surface-overlay p-2.5 rounded-xl text-xs text-text-secondary">
+                        <span className="text-[10px] font-bold text-text-primary block mb-0.5">Brief / Message:</span>
+                        {item.message}
+                      </div>
+
+                      {item.budget_band && (
+                        <p className="text-xs text-text-muted">
+                          <span className="font-semibold text-text-primary">Budget band:</span> {item.budget_band}
+                        </p>
+                      )}
+
+                      {write && (
+                        <div className="flex justify-end gap-2 pt-1 border-t border-border-subtle">
+                          {item.status !== 'WON' && (
+                            <button
+                              onClick={() => {
+                                void app.mutate("leads", "POST", {
+                                  name: `${item.brand} (${item.name})`,
+                                  category: "Website Inquiry",
+                                  status: "New",
+                                  email: item.email,
+                                  phone: item.phone || "",
+                                  source: "Website Inquiry",
+                                  dealValue: 0,
+                                  nextAction: `Qualify inquiry: ${item.message.slice(0, 50)}...`,
+                                });
+                                void app.mutate(`inquiries/${item.id}`, "PATCH", { status: 'IN_REVIEW' });
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                            >
+                              <Check size={12} />
+                              <span>Convert to Lead</span>
+                            </button>
+                          )}
+                          <button
+                            onClick={() => setEditing({ table: "inquiries", item: item as unknown as RecordData })}
+                            className="p-1 text-text-secondary hover:text-text-primary cursor-pointer"
+                          >
+                            <Pencil size={13} />
+                          </button>
+                          <button
+                            onClick={() => setDeleting({ table: "inquiries", item: item as unknown as RecordData })}
+                            className="p-1 text-red-400 hover:text-red-300 cursor-pointer"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           )}
@@ -1692,7 +2154,7 @@ export function Workspace() {
                     {String(item.title || item.name)}
                   </h3>
                   {table === "tasks" &&
-                    (isOwner || app.can('tasks.manage') || ["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "") || item.assignedUserId === app.user?.id) && (
+                    (isOwner || app.can('tasks.manage') || item.assignedUserId === app.user?.id) && (
                       <button
                         aria-label={
                           item.completed ? "Mark pending" : "Mark complete"
@@ -1737,7 +2199,7 @@ export function Workspace() {
                   <>
                     <div className="flex items-center gap-2 mt-3 text-xs">
                       <span>Priority: {readable(String(item.priority))}</span>
-                      {(isOwner || app.can('tasks.manage') || ["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "") || item.assignedUserId === app.user?.id) && (
+                      {(isOwner || app.can('tasks.manage') || item.assignedUserId === app.user?.id) && (
                         <select
                           className="han-input"
                           aria-label={`Status for ${item.title}`}
@@ -2019,7 +2481,7 @@ export function Workspace() {
                         </div>
 
                         {/* Add Task Button matching Screen 5 */}
-                        {(isOwner || app.can("tasks.manage") || ["user-1", "user-2", "user-3", "user-4"].includes(app.user?.id || "")) && (
+                        {(isOwner || app.can("tasks.manage")) && (
                           <button
                             aria-label="Add task"
                             onClick={() =>

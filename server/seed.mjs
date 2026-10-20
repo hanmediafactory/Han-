@@ -1,6 +1,7 @@
 import { db, transaction } from "./db.mjs";
 const now = new Date().toISOString();
 if (
+  (db.dialect !== 'postgres' || process.env.NODE_ENV === 'test') &&
   !db
     .prepare("SELECT 1 FROM schema_migrations WHERE id=?")
     .get("initial-seed-v1")

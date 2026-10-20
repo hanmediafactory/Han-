@@ -143,6 +143,76 @@ export interface Lead {
   nextAction?: string;
 }
 
+export interface ClientModel {
+  id: string;
+  name: string;
+  tagline?: string;
+  initials?: string;
+  contact_person: string;
+  contact_role?: string;
+  phone: string;
+  email: string;
+  stage: 'Discovery' | 'Proposal' | 'Active' | 'On Hold' | 'Completed';
+  service: string;
+  account_health: 'Healthy' | 'Strong' | 'Good' | 'At Risk';
+  health_note?: string;
+  contract_value?: string;
+  executive_producer?: string;
+  scopes?: string[];
+  next_milestone?: string;
+  milestone_date?: string;
+  notes?: string;
+  last_interaction?: string;
+}
+
+export interface FollowupModel {
+  id: string;
+  client_id?: string;
+  company: string;
+  person: string;
+  purpose: string;
+  due_date?: string;
+  time_str: string;
+  status: 'Due Today' | 'Scheduled' | 'Overdue' | 'Completed';
+}
+
+export interface CallModel {
+  id: string;
+  client_id?: string;
+  business: string;
+  contact: string;
+  phone: string;
+  type: 'Inbound' | 'Outbound';
+  outcome: string;
+  notes?: string;
+  call_time?: string;
+}
+
+export interface EmailModel {
+  id: string;
+  client_id?: string;
+  party: string;
+  subject: string;
+  category: string;
+  body?: string;
+  status?: 'QUEUED' | 'ACCEPTED' | 'DELIVERED' | 'FAILED';
+  email_time?: string;
+}
+
+export interface InquiryModel {
+  id: string;
+  name: string;
+  brand: string;
+  email: string;
+  phone?: string;
+  message: string;
+  budget_band?: string;
+  status: 'NEW' | 'IN_REVIEW' | 'SCOPING' | 'PROPOSAL_SENT' | 'WON' | 'ARCHIVED';
+  priority: 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
+  internal_notes?: string;
+  assigned_to_user_id?: string;
+}
+
 export interface NotificationItem {
   created_by?: string;
   targetScreen?: ScreenType;

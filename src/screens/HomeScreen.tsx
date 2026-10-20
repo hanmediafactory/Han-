@@ -29,8 +29,7 @@ export const HomeScreen: React.FC = () => {
     can,
   } = useApp();
 
-  const isFounder = ["user-1", "user-2", "user-3", "user-4"].includes(user?.id || "");
-  const canManageTasks = can('tasks.manage') || isFounder;
+  const canManageTasks = can('tasks.manage');
 
   const todayTasks = tasks.filter(
     (t) => t.date === today() && t.status !== "CANCELLED",

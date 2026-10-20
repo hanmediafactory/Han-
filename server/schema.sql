@@ -100,3 +100,44 @@ CREATE TABLE IF NOT EXISTS settlements (
   updated_by TEXT NOT NULL REFERENCES users(id)
 );
 INSERT OR IGNORE INTO schema_migrations VALUES ('009-founder-financial-ledger-settlements', datetime('now'));
+CREATE TABLE IF NOT EXISTS clients (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL CHECK(json_valid(data)),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id),
+  updated_by TEXT NOT NULL REFERENCES users(id)
+);
+CREATE TABLE IF NOT EXISTS client_followups (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL CHECK(json_valid(data)),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id),
+  updated_by TEXT NOT NULL REFERENCES users(id)
+);
+CREATE TABLE IF NOT EXISTS client_calls (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL CHECK(json_valid(data)),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id),
+  updated_by TEXT NOT NULL REFERENCES users(id)
+);
+CREATE TABLE IF NOT EXISTS client_emails (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL CHECK(json_valid(data)),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id),
+  updated_by TEXT NOT NULL REFERENCES users(id)
+);
+CREATE TABLE IF NOT EXISTS inquiries (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL CHECK(json_valid(data)),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id),
+  updated_by TEXT NOT NULL REFERENCES users(id)
+);
+INSERT OR IGNORE INTO schema_migrations VALUES ('010-crm-operations-parity', datetime('now'));

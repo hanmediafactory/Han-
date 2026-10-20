@@ -1,0 +1,10 @@
+# Use with: docker compose -f compose.yaml -f compose.shared.yaml up -d
+# Database-native backups must be configured and restore-tested separately.
+services:
+  han:
+    environment:
+      HAN_DATABASE_URL: ${HAN_DATABASE_URL:?Set the shared PostgreSQL URL}
+      HAN_DATABASE_CA_CERT: ${HAN_DATABASE_CA_CERT:?Set the trusted database CA PEM}
+      HAN_ADMIN_BRIDGE_SECRET: ${HAN_ADMIN_BRIDGE_SECRET:?Set the backend bridge secret}
+  backups:
+    profiles: [sqlite-only]

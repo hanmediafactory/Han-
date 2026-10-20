@@ -1,5 +1,8 @@
-import { db, hashPassword } from "./db.mjs";
 import { requireProductionPassword } from "./security.mjs";
+if (process.env.HAN_DATABASE_URL || process.env.HAN_TEST_POSTGRES === '1') {
+  throw new Error('Legacy identity provisioning is disabled in shared mode. Import the authorized snapshot and start with npm start; manage credentials and permissions explicitly.');
+}
+const { db, hashPassword } = await import('./db.mjs');
 const names = ["HARSHA", "NIHAAL", "LALITHA", "ABHILASH"];
 // Startup provisioning is idempotent, including deployments with an older start command.
 // Credential replacement must be an explicit administrative operation.

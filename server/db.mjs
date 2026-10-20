@@ -2,6 +2,8 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { requireProductionPassword } from './security.mjs';
+import { PostgresDatabase } from './postgres-db.mjs';
+import { assertSharedRuntimePrivileges } from './shared-runtime-policy.mjs';
 import {
   randomBytes,
   scryptSync,
@@ -31,12 +33,22 @@ function getDbPath() {
     throw error;
   }
 }
-export const dbPath = getDbPath();
-export const db = new DatabaseSync(dbPath);
+const shared = Boolean(process.env.HAN_DATABASE_URL || process.env.HAN_TEST_POSTGRES === '1');
+export const dbPath = shared ? 'shared-postgres' : getDbPath();
+export const db = shared
+  ? new PostgresDatabase({ url: process.env.HAN_DATABASE_URL, ca: process.env.HAN_DATABASE_CA_CERT, testDatabase: process.env.HAN_TEST_POSTGRES === '1' })
+  : new DatabaseSync(dbPath);
+if (!shared) {
 db.exec("PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;");
 db.exec("BEGIN IMMEDIATE");
 try { db.exec(readFileSync(new URL("./schema.sql", import.meta.url), "utf8").replace(/^PRAGMA[^;]+;\s*/gm, "")); db.exec("COMMIT"); }
 catch (error) { db.exec("ROLLBACK"); throw error; }
+} else if (process.env.NODE_ENV !== 'test') {
+  assertSharedRuntimePrivileges(db);
+  if (!db.prepare('SELECT id FROM users LIMIT 1').get()) {
+    throw new Error('Shared workspace is empty. Import the authorized identity/data snapshot before starting.');
+  }
+}
 export const hashToken = (token) =>
   createHash("sha256").update(token).digest("hex");
 export function hashPassword(password) {
@@ -64,11 +76,13 @@ export function transaction(fn) {
     throw error;
   }
 }
+if (!shared || process.env.NODE_ENV === 'test') {
 db.prepare("INSERT OR IGNORE INTO roles VALUES (?,?)").run(
   "OWNER",
   "Owner / Admin",
 );
 db.prepare("INSERT OR IGNORE INTO roles VALUES (?,?)").run("MEMBER", "Member");
+}
 export const permissionIds = [
   "finance.view",
   "finance.manage",
@@ -78,7 +92,7 @@ export const permissionIds = [
   "funnels.manage",
   "calendar.manage",
 ];
-for (const id of permissionIds)
+if (!shared || process.env.NODE_ENV === 'test') for (const id of permissionIds)
   db.prepare("INSERT OR IGNORE INTO permissions VALUES (?,?)").run(id, id);
 const now = new Date().toISOString();
 if (!db.prepare("SELECT id FROM users LIMIT 1").get())
@@ -93,12 +107,12 @@ if (!db.prepare("SELECT id FROM users LIMIT 1").get())
         "INSERT INTO users(id,name,role,created_at,updated_at) VALUES (?,?,?,?,?)",
       ).run(id, name, role, now, now);
   });
-db.prepare(
+if (!shared || process.env.NODE_ENV === 'test') db.prepare(
   "INSERT OR IGNORE INTO users(id,name,role,active,created_at,updated_at) VALUES ('user-4','Abhilash','MEMBER',1,?,?)"
 ).run(now, now);
 
 const isTestHarness = process.env.NODE_ENV === "test" || String(dbPath).includes("-api-") || String(dbPath).includes("han-api-") || String(dbPath).includes("han-enterprise-") || String(dbPath).includes("han-mobile-");
-if (!isTestHarness) {
+if (!isTestHarness && !shared) {
   db.prepare(
     "UPDATE users SET permissions=? WHERE id IN ('user-1','user-2','user-3','user-4')"
   ).run(JSON.stringify(permissionIds));
@@ -107,7 +121,7 @@ if (!isTestHarness) {
 const names = ["HARSHA", "NIHAAL", "LALITHA", "ABHILASH"];
 const envPasswords = names.map((name) => process.env[`HAN_${name}_PASSWORD`]);
 if (
-  envPasswords.every((p) => p && p.length >= 12 && p.length <= 200) &&
+  !shared && envPasswords.every((p) => p && p.length >= 12 && p.length <= 200) &&
   new Set(envPasswords).size === 4
 ) {
   try {

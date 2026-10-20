@@ -1,6 +1,7 @@
 import { DatabaseSync, backup } from "node:sqlite";
 import { mkdirSync, readdirSync, unlinkSync, lstatSync } from "node:fs";
 import { resolve, join, dirname } from "node:path";
+if (process.env.HAN_DATABASE_URL || process.env.HAN_TEST_POSTGRES === '1') throw new Error('Shared PostgreSQL mode requires authorized database-native backups; SQLite scheduling is disabled.');
 const source = resolve(process.env.HAN_DB_PATH || "data/han.sqlite");
 const directory = resolve(process.env.HAN_BACKUP_DIR || "backups");
 if (directory === dirname(source)) throw new Error("Backups must use a separate directory.");

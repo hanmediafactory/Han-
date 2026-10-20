@@ -41,7 +41,21 @@ const env = process.env;
 check("NODE_ENV is 'production'", env.NODE_ENV === "production");
 check("HAN_DOMAIN is set", !!env.HAN_DOMAIN);
 check("HAN_ALLOWED_ORIGINS is set", !!env.HAN_ALLOWED_ORIGINS);
-check("HAN_DB_PATH is set", !!env.HAN_DB_PATH);
+const sharedMode = !!env.HAN_DATABASE_URL;
+if (!sharedMode) check("HAN_DB_PATH is set", !!env.HAN_DB_PATH);
+if (sharedMode) {
+  let databaseUrl;
+  try { databaseUrl = new URL(env.HAN_DATABASE_URL); } catch { /* Report without printing credentials. */ }
+  check("Shared database URL is valid PostgreSQL", !!databaseUrl && ['postgres:', 'postgresql:'].includes(databaseUrl.protocol));
+  if (databaseUrl) {
+    check("Shared database uses a direct/session port", databaseUrl.port !== '6543');
+    check("Database URL options are restricted to application_name", [...databaseUrl.searchParams.keys()].every(key => key === 'application_name'));
+    check("Remote database has a trusted CA configured", ['localhost', '127.0.0.1', '[::1]'].includes(databaseUrl.hostname) || !!env.HAN_DATABASE_CA_CERT?.trim());
+  }
+  check("Private admin bridge secret has at least 32 characters", (env.HAN_ADMIN_BRIDGE_SECRET || '').length >= 32);
+  check("Embedded database test mode is disabled", env.HAN_TEST_POSTGRES !== '1');
+  console.log("  Shared configuration only: no database connection or live acceptance is performed.");
+}
 check("TRUST_PROXY is '1' (behind reverse proxy)", env.TRUST_PROXY === "1", "warn");
 
 // Push notification config
@@ -60,6 +74,7 @@ if (env.HAN_FCM_ENABLED === "1") {
 
 // ─── 3. Database ───
 console.log("\n\x1b[36m[Database]\x1b[0m");
+if (!sharedMode) {
 const dbPath = resolve(env.HAN_DB_PATH || "data/han.sqlite");
 const dbExists = existsSync(dbPath);
 check(`Database file exists at ${dbPath}`, dbExists);
@@ -106,6 +121,10 @@ if (dbExists) {
   }
 }
 
+} else {
+  console.log("  Shared mode: SQLite files and accounts are not inspected. Verify migrated accounts and grants in the authorized database rehearsal.");
+}
+
 // ─── 4. Build artifacts ───
 console.log("\n\x1b[36m[Build]\x1b[0m");
 const distExists = existsSync(resolve("dist/index.html"));
@@ -127,9 +146,13 @@ check("Caddyfile (HTTPS proxy) present", existsSync(resolve("deploy/Caddyfile"))
 
 // ─── 6. Backup configuration ───
 console.log("\n\x1b[36m[Backups]\x1b[0m");
+if (sharedMode) {
+  console.log("  Shared mode requires database-native backups and a restore rehearsal; SQLite backup-loop is unsupported.");
+} else {
 const backupDir = resolve(env.HAN_BACKUP_DIR || "backups");
 check("Backup directory configured", !!env.HAN_BACKUP_DIR || existsSync(backupDir), "warn");
 check("backup-loop.mjs exists", existsSync(resolve("server/backup-loop.mjs")));
+}
 
 // ─── 7. Android / Mobile ───
 console.log("\n\x1b[36m[Mobile]\x1b[0m");

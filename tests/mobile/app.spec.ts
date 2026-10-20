@@ -29,9 +29,9 @@ for (const [width, height] of [
       "font-family",
       /Inter|system-ui/,
     );
-    await expect(page.locator(".han-app > div > div").first()).toHaveCSS(
+    await expect(page.locator(".home-content")).toHaveCSS(
       "padding-left",
-      "20px",
+      "16px",
     );
     await page.screenshot({ path: `test-results/han-home-${width}.png` });
     await page.getByRole("button", { name: "Work", exact: true }).click();
@@ -42,7 +42,7 @@ for (const [width, height] of [
     await page.getByLabel("Deadline (optional)", { exact: true }).fill("2026-10-12");
     await page.getByRole("button", { name: "Save", exact: true }).click();
     await expect(
-      page.getByText(`Mobile project ${width}`, { exact: true }),
+      page.getByRole('button', { name: new RegExp(`^Project: Mobile project ${width},`) }),
     ).toBeVisible();
     await page.getByRole("button", { name: "View tasks" }).click();
     await page.getByRole("button", { name: /^Add (project|task|funnel|lead|event)$/ }).click();
@@ -61,7 +61,7 @@ for (const [width, height] of [
     await page.getByLabel("Amount (₹)").fill("1234.50");
     await page.getByRole("button", { name: "Save", exact: true }).click();
     await expect(
-      page.getByText(`Payment ${width}`, { exact: true }),
+      page.getByRole('heading', { name: `Payment ${width}`, exact: true }),
     ).toBeVisible();
     for (const name of ["Home", "Work", "Growth", "You"]) {
       await page.getByRole("button", { name, exact: true }).click();

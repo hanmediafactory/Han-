@@ -3,7 +3,7 @@ import { processPushOutbox } from "./push.mjs";
 import { processWebhookOutbox } from "./webhooks.mjs";
 import { db } from "./db.mjs";
 import "./seed.mjs";
-if (!process.env.HAN_DEMO) {
+if (!process.env.HAN_DEMO && db.dialect !== 'postgres') {
   const founderPerms = JSON.stringify([
     "finance.view",
     "finance.manage",

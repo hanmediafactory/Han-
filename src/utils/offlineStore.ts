@@ -19,7 +19,7 @@ export function clearAccountCache(userId: string) { localStorage.removeItem(key(
 export function getPendingMutations(userId: string): PendingMutation[] {
   try { const value = JSON.parse(localStorage.getItem(key('queue', userId)) || '[]'); return Array.isArray(value) ? value.filter(item => item.userId === userId) : []; } catch { return []; }
 }
-export function enqueueMutation(userId: string, path: string, method: string, data?: unknown, version?: string, id = crypto.randomUUID()): PendingMutation {
+export function enqueueMutation(userId: string, path: string, method: string, data?: unknown, version?: string, id: string = crypto.randomUUID()): PendingMutation {
   const queue = getPendingMutations(userId);
   if (queue.length >= 100) throw new Error('Offline queue is full. Reconnect and sync before adding more changes.');
   const mutation = { id, userId, path, method, data, version, timestamp: new Date().toISOString() };

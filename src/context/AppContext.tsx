@@ -17,6 +17,11 @@ import type {
   Funnel,
   Lead,
   NotificationItem,
+  ClientModel,
+  FollowupModel,
+  CallModel,
+  EmailModel,
+  InquiryModel,
 } from "../types";
 
 import {
@@ -88,6 +93,11 @@ export type State = {
   team_members: TeamMember[];
   funnels: Funnel[];
   leads: Lead[];
+  clients: ClientModel[];
+  client_followups: FollowupModel[];
+  client_calls: CallModel[];
+  client_emails: EmailModel[];
+  inquiries: InquiryModel[];
   notifications: NotificationItem[];
   users: Account[];
   calendar_events: RecordData[];
@@ -109,6 +119,11 @@ const empty: State = {
   team_members: [],
   funnels: [],
   leads: [],
+  clients: [],
+  client_followups: [],
+  client_calls: [],
+  client_emails: [],
+  inquiries: [],
   notifications: [],
   users: [],
   calendar_events: [],
@@ -160,6 +175,7 @@ function useController() {
     timeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const account = useRef<Account | null>(null);
   const mutationLock = useRef(false);
+  const pendingRequestKeys = useRef(new Map<string, string>());
   const syncLock = useRef(false);
   const refreshSequence = useRef(0);
   const [lastSyncedAt, setLastSyncedAt] = useState("");
@@ -408,6 +424,7 @@ function useController() {
       if (user) clearAccountCache(user.id);
       localStorage.removeItem("han_offline_session_v2");
       account.current = null;
+      pendingRequestKeys.current.clear();
       analytics.track("logout", { userId: user?.id });
       setUser(null);
       setState(empty);
@@ -424,15 +441,18 @@ function useController() {
     if (!userId || mutationLock.current) return false;
     mutationLock.current = true;
     setBusy(true);
-    const mutationId = crypto.randomUUID();
     const [table, id] = path.split("/");
     const records = table === "income" || table === "expenses" ? state.transactions : state[table as keyof State];
     const record = Array.isArray(records) ? records.find(item => typeof item === "object" && "id" in item && item.id === id) : null;
     const version = record && typeof record === "object" && "updated_at" in record ? String(record.updated_at) : undefined;
+    const signature = JSON.stringify([userId, path, method, data, version]);
+    const mutationId = pendingRequestKeys.current.get(signature) || crypto.randomUUID();
+    pendingRequestKeys.current.set(signature, mutationId);
     const queueable = ["projects", "tasks", "income", "expenses", "leads", "funnels", "calendar_events"].includes(table) && method !== "DELETE";
     const queue = () => {
       if (!queueable) throw new Error("This action requires a connection to the server.");
       enqueueMutation(userId, path, method, data, version, mutationId);
+      pendingRequestKeys.current.delete(signature);
       updateQueue();
       showToast("Change queued on this device. It will appear after the server confirms it.");
       return true;
@@ -441,13 +461,16 @@ function useController() {
     try {
       if (isOffline || !navigator.onLine) return queue();
       await request(path, method, data, mutationId, version);
+      pendingRequestKeys.current.delete(signature);
       await refresh();
       showToast("Saved");
       return true;
     } catch (error) {
-      if (!(error as Error & { status?: number }).status && queueable && (error instanceof TypeError || (error as Error).name === "TimeoutError")) {
+      const status = (error as Error & { status?: number }).status;
+      if (queueable && (status === 503 || (!status && (error instanceof TypeError || (error as Error).name === "TimeoutError")))) {
         try { return queue(); } catch (storageError) { showToast((storageError as Error).message); return false; }
       }
+      if (status && status >= 400 && status < 500 && status !== 429) pendingRequestKeys.current.delete(signature);
       showToast((error as Error).message);
       return false;
     } finally {
@@ -519,7 +542,6 @@ function useController() {
 
   const can = (permission: string) =>
     user?.role === "OWNER" ||
-    (permission === "tasks.manage" && ["user-1", "user-2", "user-3", "user-4"].includes(user?.id || "")) ||
     !!user?.permissions.includes(permission);
 
   return {

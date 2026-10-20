@@ -68,6 +68,31 @@ test('Offline reload, queue sync and repeat reconnect preserve exactly one task'
   await page.getByRole('textbox',{name:'Search Tasks'}).fill('Offline unique task');
   await expect(page.getByText('Offline unique task',{exact:true})).toHaveCount(1);
 });
+test('Lost save acknowledgement queues the original receipt and reconnect creates no duplicate', async ({page,context}) => {
+  await login(page);
+  let mutationKey = '';
+  let intercepted = false;
+  await page.route('**/api/tasks', async route => {
+    if (route.request().method() !== 'POST' || intercepted) return route.continue();
+    intercepted = true;
+    mutationKey = route.request().headers()['idempotency-key'];
+    const saved = await route.fetch();
+    expect(saved.status()).toBe(201);
+    await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'Injected lost acknowledgement', retryable: true }) });
+  });
+  await page.getByRole('button',{name:'Work',exact:true}).click();
+  await page.getByRole('button',{name:'View tasks'}).click();
+  await page.getByRole('button',{name:'Add task',exact:true}).click();
+  await page.getByLabel('Task title').fill('Lost acknowledgement unique task');
+  await page.getByRole('button',{name:'Save',exact:true}).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('han_v2_queue_user-1') || '[]')[0]?.id)).toBe(mutationKey);
+  await context.setOffline(true); await context.setOffline(false);
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('han_v2_queue_user-1') || '[]').length)).toBe(0);
+  const state = await page.request.get('/api/state');
+  expect((await state.json()).tasks.filter((task: {title: string}) => task.title === 'Lost acknowledgement unique task')).toHaveLength(1);
+});
+
 test('Logout clears account cache and a member never sees owner-only cached projects', async ({page,context}) => {
   await login(page);
   await page.getByRole('button',{name:'You',exact:true}).click();
@@ -83,6 +108,8 @@ test('Logout clears account cache and a member never sees owner-only cached proj
   await expect(page.getByText('Lalitha Birthday Website',{exact:true})).toHaveCount(0);
 });
 test('Radio keyboard controls, modal focus, overdue filter and desktop fit', async ({page}) => {
+  // Seeded project deadlines bracket this date; keep the overdue assertion stable.
+  await page.clock.setFixedTime(new Date('2026-10-10T06:30:00Z'));
   await page.setViewportSize({width:1280,height:900});
   await page.goto('/');
   const owner = page.getByRole('radio',{name:'Harsha Owner / Admin'});

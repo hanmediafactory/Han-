@@ -23,8 +23,10 @@ import { financeSummary, protectFunds, computeEqualAllocations } from "./finance
 import { EventEmitter } from "node:events";
 import { enqueueWebhooks, webhookDestinationAllowed } from "./webhooks.mjs";
 import { registerGoogleSso } from "./google-sso.mjs";
+import { adminBridge } from './admin-bridge.mjs';
 const changes = new EventEmitter();
 changes.setMaxListeners(0);
+if (db.dialect === 'postgres') db.on('change', () => changes.emit('change'));
 const streams = new Map();
 const eventResponses = new Set();
 export const closeWorkspaceStreams = () => { for (const response of eventResponses) response.end(); };
@@ -67,6 +69,24 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json({ limit: "128kb" }));
+// Commit shared entity changes and their receipt before acknowledging success.
+app.use('/api', (req, res, next) => {
+  const snapshotRead = req.method === 'GET' && ['/state', '/export'].includes(req.path);
+  if (db.dialect !== 'postgres' || (['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !snapshotRead)) return next();
+  let active = false;
+  const json = res.json.bind(res);
+  try { db.exec('BEGIN IMMEDIATE'); active = true; } catch (error) { return next(error); }
+  res.once('close', () => { if (active) { active = false; try { db.exec('ROLLBACK'); } catch {} } });
+  res.json = body => {
+    if (active) {
+      active = false;
+      try { db.exec(res.statusCode < 400 ? 'COMMIT' : 'ROLLBACK'); }
+      catch (error) { res.removeHeader('Set-Cookie'); return next(Object.assign(error, { status: 503 })); }
+    }
+    return json(body);
+  };
+  next();
+});
 app.use(
   "/api",
   rateLimit({
@@ -131,7 +151,9 @@ function permitted(user, table, item, write = false) {
   if (["savings_entries", "salary_payments"].includes(table)) {
     return write ? (owner(user) || can(user, "finance.manage")) : (can(user, "finance.view") || !write);
   }
-  if (table === "leads") return can(user, "leads.manage");
+  if (["leads", "clients", "client_followups", "client_calls", "client_emails", "inquiries"].includes(table)) {
+    return can(user, "leads.manage");
+  }
   if (table === "funnels") return can(user, "funnels.manage");
   if (table === "calendar_events")
     return write
@@ -154,7 +176,8 @@ function audit(user, table, id, action, details = null) {
       user.id,
       details ? (typeof details === "string" ? details : JSON.stringify(details)) : null,
     );
-  } catch {
+  } catch (error) {
+    if (db.dialect === 'postgres') throw error;
     db.prepare("INSERT INTO activity_logs (id, entity, entity_id, action, created_at, created_by) VALUES (?,?,?,?,?,?)").run(
       randomUUID(),
       table,
@@ -498,7 +521,12 @@ app.post("/api/login", loginLimiter, (req, res) => {
     throw fail(401, "Incorrect identity or password.");
   res.json(createSession(user, res));
 });
+app.use('/api', adminBridge(db));
 app.use("/api", (req, res, next) => {
+  if (req.workspaceBridge) {
+    res.on('finish', () => { if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && res.statusCode < 300) changes.emit('change'); });
+    return next();
+  }
   const token = (req.headers.cookie || "")
     .split(";")
     .map((v) => v.trim())
@@ -602,6 +630,8 @@ app.get("/api/search", (req, res) => {
   searchCollection("projects", ["name", "subtitle", "description", "notes"], "projects", p => p.name, p => p.subtitle || p.category);
   searchCollection("tasks", ["title", "description", "notes", "timeSlot"], "tasks", t => t.title, t => `Status: ${t.status} • Due: ${t.date}`);
   searchCollection("leads", ["name", "category", "email", "phone", "source", "nextAction"], "leads", l => l.name, l => `${l.status} • ${l.category}`);
+  searchCollection("clients", ["name", "tagline", "contact_person", "email", "phone", "service", "notes"], "leads", c => c.name, c => `${c.stage} • ${c.service} (${c.contact_person})`);
+  searchCollection("inquiries", ["name", "brand", "email", "phone", "message", "budget_band"], "leads", i => `${i.brand} (${i.name})`, i => `Inquiry: ${i.status} • ${i.email}`);
   searchCollection("expenses", ["title", "category", "notes"], "money", e => e.title, e => `Expense: ₹${e.amount} • ${e.date}`);
   searchCollection("income", ["title", "category", "notes"], "money", i => i.title, i => `Income: ₹${i.amount} • ${i.date}`);
   searchCollection("calendar_events", ["title", "notes"], "calendar", c => c.title, c => c.date);
@@ -1095,6 +1125,7 @@ app.get("/api/export", (req, res) => {
 });
 app.get("/api/backup", rateLimit({ windowMs: 60_000, limit: 2, standardHeaders: "draft-8", legacyHeaders: false }), async (req, res) => {
   if (!owner(req.user)) throw fail(403, "Owner access required.");
+  if (db.dialect === 'postgres') throw fail(409, 'Use the shared database backup process; workspace export remains available.');
   const directory = mkdtempSync(join(tmpdir(), "han-backup-"));
   const path = join(directory, "han.sqlite");
   try {
