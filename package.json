@@ -19,7 +19,7 @@
     "mobile:sync": "node scripts/mobile-sync.mjs",
     "preflight": "node scripts/preflight.mjs",
     "secrets:scan": "node scripts/secret-scan.mjs",
-    "deploy:check": "npm run lint && npm run secrets:scan && npm test && npm run build && node scripts/preflight.mjs"
+    "deploy:check": "npm run lint && npm run secrets:scan && npm test && npm run build && node scripts/deploy-preflight.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
