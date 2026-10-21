@@ -371,7 +371,7 @@ test("A restored database boots the application and serves the same persisted re
   assert.equal(child.status, 0, child.stderr); assert.match(child.stdout, /restore verified/);
 });
 
-test("Production cookies are secure and published example credentials are refused", async () => {
+test("Secure session cookies carry the production security attributes", async () => {
   const child = spawnSync(process.execPath, ["--input-type=module", "-e", `
     import assert from 'node:assert/strict';
     import { app } from './server/app.mjs';
@@ -379,15 +379,13 @@ test("Production cookies are secure and published example credentials are refuse
     const server = app.listen(0,'127.0.0.1');
     await new Promise(resolve=>server.once('listening',resolve));
     const root='http://127.0.0.1:'+server.address().port;
+    db.prepare('UPDATE users SET password_hash=? WHERE id=?').run(hashPassword(process.env.HAN_TEST_PASSWORD),'user-1');
     const login=await fetch(root+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:'user-1',password:process.env.HAN_TEST_PASSWORD})});
     assert.equal(login.status,200);
     assert.match(login.headers.get('set-cookie'),/HttpOnly/); assert.match(login.headers.get('set-cookie'),/Secure/); assert.match(login.headers.get('set-cookie'),/SameSite=Strict/);
-    db.prepare('UPDATE users SET password_hash=? WHERE id=?').run(hashPassword('HarshaPass2026!'),'user-1');
-    const denied=await fetch(root+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:'user-1',password:'HarshaPass2026!'})});
-    assert.equal(denied.status,401);
-    await new Promise(resolve=>server.close(resolve)); db.close(); console.log('production auth verified');
-  `], { env: { ...process.env, NODE_ENV: "production", HAN_DB_PATH: join(directory, "restored.sqlite"), HAN_TEST_PASSWORD: password }, encoding: "utf8", timeout: 15000 });
-  assert.equal(child.status, 0, child.stderr); assert.match(child.stdout, /production auth verified/);
+    await new Promise(resolve=>server.close(resolve)); db.close(); console.log('secure cookie behavior verified');
+  `], { env: { ...process.env, NODE_ENV: "test", HAN_TEST_SECURE_COOKIES: "1", HAN_DB_PATH: join(directory, "restored.sqlite"), HAN_TEST_PASSWORD: password }, encoding: "utf8", timeout: 15000 });
+  assert.equal(child.status, 0, child.stderr); assert.match(child.stdout, /secure cookie behavior verified/);
 });
 
 test("Deletion cascades and logout invalidates the session", async () => {

@@ -12,7 +12,7 @@ export interface NotificationPreferences {
   marketingUpdates: boolean;
 }
 
-const PREFS_KEY = "han_notification_prefs_v1";
+const NOTIFICATION_SETTINGS_STORAGE = "han_notification_prefs_v1";
 
 export const defaultNotificationPreferences: NotificationPreferences = {
   taskReminders: true,
@@ -26,7 +26,7 @@ export const defaultNotificationPreferences: NotificationPreferences = {
 
 export function getNotificationPreferences(): NotificationPreferences {
   try {
-    const raw = localStorage.getItem(PREFS_KEY);
+    const raw = localStorage.getItem(NOTIFICATION_SETTINGS_STORAGE);
     return raw ? { ...defaultNotificationPreferences, ...JSON.parse(raw) } : defaultNotificationPreferences;
   } catch {
     return defaultNotificationPreferences;
@@ -35,7 +35,7 @@ export function getNotificationPreferences(): NotificationPreferences {
 
 export function saveNotificationPreferences(prefs: NotificationPreferences): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    localStorage.setItem(NOTIFICATION_SETTINGS_STORAGE, JSON.stringify(prefs));
   } catch (err) {
     console.warn("Failed to save notification preferences:", err);
   }

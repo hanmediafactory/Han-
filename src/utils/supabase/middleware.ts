@@ -2,16 +2,17 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 const env = (typeof globalThis !== "undefined" ? (globalThis as any).process?.env : undefined) || {};
 
-export const supabaseUrl =
-  env.NEXT_PUBLIC_SUPABASE_URL ||
-  "https://vouxtthsvlufjvperhxz.supabase.co";
+export const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL || "";
+export const supabasePublishableKey = env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "";
 
-export const supabasePublishableKey =
-  env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  "sb_publishable_YlaWw18kkKnTA4g7bmKFcQ_l31mTtDa";
+function requireConfiguration() {
+  if (!supabaseUrl || !supabasePublishableKey) throw new Error("Supabase client is not configured.");
+  return { url: supabaseUrl, key: supabasePublishableKey };
+}
 
 export function updateSession(request: any, response: any) {
-  return createServerClient(supabaseUrl, supabasePublishableKey, {
+  const { url, key } = requireConfiguration();
+  return createServerClient(url, key, {
     cookies: {
       get(name: string) {
         return request?.cookies?.get?.(name)?.value;

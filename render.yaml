@@ -4,8 +4,8 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --include=dev && npm run build
-    startCommand: node server/provision.mjs --only-missing && npm start
-    healthCheckPath: /api/health
+    startCommand: npm start
+    healthCheckPath: /api/ready
     autoDeploy: true
     envVars:
       - key: NODE_ENV
@@ -16,25 +16,13 @@ services:
         value: 0.0.0.0
       - key: TRUST_PROXY
         value: "1"
-      - key: HAN_DB_PATH
-        value: data/han.sqlite
-      - key: VITE_SUPABASE_URL
-        value: https://vouxtthsvlufjvperhxz.supabase.co
-      - key: VITE_SUPABASE_PUBLISHABLE_KEY
-        value: sb_publishable_YlaWw18kkKnTA4g7bmKFcQ_l31mTtDa
-      - key: NEXT_PUBLIC_SUPABASE_URL
-        value: https://vouxtthsvlufjvperhxz.supabase.co
-      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-        value: sb_publishable_YlaWw18kkKnTA4g7bmKFcQ_l31mTtDa
+      - key: HAN_DATABASE_URL
+        sync: false
+      - key: HAN_DATABASE_CA_CERT
+        sync: false
+      - key: HAN_ADMIN_BRIDGE_SECRET
+        sync: false
       - key: HAN_DOMAIN
         sync: false
       - key: HAN_ALLOWED_ORIGINS
-        sync: false
-      - key: HAN_HARSHA_PASSWORD
-        sync: false
-      - key: HAN_NIHAAL_PASSWORD
-        sync: false
-      - key: HAN_LALITHA_PASSWORD
-        sync: false
-      - key: HAN_ABHILASH_PASSWORD
         sync: false
