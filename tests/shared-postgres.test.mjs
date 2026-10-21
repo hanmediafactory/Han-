@@ -98,6 +98,19 @@ test('database roles expose no anonymous/authenticated access and protect owner 
   db.exec('RESET ROLE');
 });
 
+test('CRM and inquiry tables have RLS and are limited to the trusted server role', () => {
+  const tables = ['clients', 'client_followups', 'client_calls', 'client_emails', 'inquiries'];
+  for (const table of tables) {
+    const row = db.prepare(`SELECT relrowsecurity FROM pg_class WHERE oid = 'han_workspace.${table}'::regclass`).get();
+    assert.equal(row.relrowsecurity, true, `${table} must have RLS enabled`);
+    assert.equal(db.prepare('SELECT has_table_privilege(?, ?, ?) AS allowed').get('han_workspace_server', `han_workspace.${table}`, 'SELECT').allowed, true);
+    for (const role of ['anon', 'authenticated']) {
+      assert.equal(db.prepare('SELECT has_table_privilege(?, ?, ?) AS allowed').get(role, `han_workspace.${table}`, 'SELECT').allowed, false,
+        `${role} must not read ${table}`);
+    }
+  }
+});
+
 test('failed and unknown commit acknowledgements retry once using the same durable receipt', async () => {
   for (const committed of [false, true]) {
     const key = randomUUID(), payload = { name: committed ? 'Lost acknowledgement' : 'Rolled back request', memberIds: ['user-1'] };

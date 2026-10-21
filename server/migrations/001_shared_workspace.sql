@@ -182,7 +182,8 @@ BEGIN
   REVOKE ALL ON SCHEMA han_workspace FROM PUBLIC;
   GRANT USAGE ON SCHEMA han_workspace TO han_workspace_server;
   FOREACH t IN ARRAY ARRAY['schema_migrations','roles','permissions','users','sessions','projects',
-    'project_members','tasks','expenses','income','team_members','leads','funnels','funnel_steps',
+    'project_members','tasks','expenses','income','team_members','leads','clients','client_followups',
+    'client_calls','client_emails','inquiries','funnels','funnel_steps',
     'notifications','calendar_events','activity_logs','categories','settings','push_subscriptions',
     'mutation_receipts','notification_preferences','push_outbox','reminder_receipts','native_push_tokens',
     'savings_entries','salary_payments','webhooks','webhook_outbox','settlements','admin_links','admin_audit'] LOOP
