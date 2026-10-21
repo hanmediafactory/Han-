@@ -42,7 +42,8 @@ check("NODE_ENV is 'production'", env.NODE_ENV === "production");
 check("HAN_DOMAIN is set", !!env.HAN_DOMAIN);
 check("HAN_ALLOWED_ORIGINS is set", !!env.HAN_ALLOWED_ORIGINS);
 const sharedMode = !!env.HAN_DATABASE_URL;
-if (!sharedMode) check("HAN_DB_PATH is set", !!env.HAN_DB_PATH);
+check("Production requires shared PostgreSQL (no SQLite fallback)", env.NODE_ENV !== "production" || sharedMode);
+if (!sharedMode && env.NODE_ENV !== "production") check("HAN_DB_PATH is set for local SQLite", !!env.HAN_DB_PATH, "warn");
 if (sharedMode) {
   let databaseUrl;
   try { databaseUrl = new URL(env.HAN_DATABASE_URL); } catch { /* Report without printing credentials. */ }
@@ -50,7 +51,7 @@ if (sharedMode) {
   if (databaseUrl) {
     check("Shared database uses a direct/session port", databaseUrl.port !== '6543');
     check("Database URL options are restricted to application_name", [...databaseUrl.searchParams.keys()].every(key => key === 'application_name'));
-    check("Remote database has a trusted CA configured", ['localhost', '127.0.0.1', '[::1]'].includes(databaseUrl.hostname) || !!env.HAN_DATABASE_CA_CERT?.trim());
+    check("Remote database has a trusted CA configured", ['localhost', '127.0.0.1', '[::1]'].includes(databaseUrl.hostname) ? env.NODE_ENV !== "production" : !!env.HAN_DATABASE_CA_CERT?.trim());
   }
   check("Private admin bridge secret has at least 32 characters", (env.HAN_ADMIN_BRIDGE_SECRET || '').length >= 32);
   check("Embedded database test mode is disabled", env.HAN_TEST_POSTGRES !== '1');
@@ -74,7 +75,7 @@ if (env.HAN_FCM_ENABLED === "1") {
 
 // ─── 3. Database ───
 console.log("\n\x1b[36m[Database]\x1b[0m");
-if (!sharedMode) {
+if (!sharedMode && env.NODE_ENV !== "production") {
 const dbPath = resolve(env.HAN_DB_PATH || "data/han.sqlite");
 const dbExists = existsSync(dbPath);
 check(`Database file exists at ${dbPath}`, dbExists);
@@ -121,8 +122,8 @@ if (dbExists) {
   }
 }
 
-} else {
-  console.log("  Shared mode: SQLite files and accounts are not inspected. Verify migrated accounts and grants in the authorized database rehearsal.");
+} else if (sharedMode) {
+  console.log("  Shared mode: SQLite files and accounts are not inspected. Verify migration, least-privilege grants, owner bootstrap, and TLS using the authorized database checks.");
 }
 
 // ─── 4. Build artifacts ───

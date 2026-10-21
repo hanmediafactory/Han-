@@ -33,11 +33,33 @@ function getDbPath() {
     throw error;
   }
 }
-const shared = Boolean(process.env.HAN_DATABASE_URL || process.env.HAN_TEST_POSTGRES === '1');
+const production = process.env.NODE_ENV === 'production';
+const testDatabase = process.env.HAN_TEST_POSTGRES === '1';
+const databaseUrl = process.env.HAN_DATABASE_URL;
+if (production) {
+  if (testDatabase) throw new Error('Production startup configuration is invalid: HAN_TEST_POSTGRES is forbidden.');
+  if (!databaseUrl) throw new Error('Production startup requires HAN_DATABASE_URL and HAN_DATABASE_CA_CERT. Local SQLite fallback is disabled.');
+  let parsed;
+  try { parsed = new URL(databaseUrl); } catch { throw new Error('Production startup configuration is invalid: HAN_DATABASE_URL must be a PostgreSQL URL; its value is redacted.'); }
+  if (!['postgres:', 'postgresql:'].includes(parsed.protocol) || ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname)) {
+    throw new Error('Production startup configuration is invalid: HAN_DATABASE_URL must identify a remote PostgreSQL service; its value is redacted.');
+  }
+  if (parsed.port === '6543') throw new Error('Production startup requires a direct or session PostgreSQL connection, not transaction pooling on port 6543.');
+  if ([...parsed.searchParams.keys()].some(key => key !== 'application_name')) throw new Error('Production database URL options are restricted to application_name; connection details are redacted.');
+  if (!process.env.HAN_DATABASE_CA_CERT?.trim()) throw new Error('Production startup requires HAN_DATABASE_CA_CERT for verified PostgreSQL TLS.');
+}
+const shared = Boolean(databaseUrl || testDatabase);
 export const dbPath = shared ? 'shared-postgres' : getDbPath();
-export const db = shared
-  ? new PostgresDatabase({ url: process.env.HAN_DATABASE_URL, ca: process.env.HAN_DATABASE_CA_CERT, testDatabase: process.env.HAN_TEST_POSTGRES === '1' })
-  : new DatabaseSync(dbPath);
+let adapter;
+try {
+  adapter = shared
+    ? new PostgresDatabase({ url: databaseUrl, ca: process.env.HAN_DATABASE_CA_CERT, testDatabase })
+    : new DatabaseSync(dbPath);
+} catch {
+  if (production && shared) throw new Error('Production PostgreSQL initialization failed. Check the endpoint, verified TLS certificate, installed schema migration, and restricted runtime role; connection details are redacted.');
+  throw new Error('PostgreSQL initialization failed; connection details are redacted.');
+}
+export const db = adapter;
 if (!shared) {
 db.exec("PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;");
 db.exec("BEGIN IMMEDIATE");
@@ -45,8 +67,8 @@ try { db.exec(readFileSync(new URL("./schema.sql", import.meta.url), "utf8").rep
 catch (error) { db.exec("ROLLBACK"); throw error; }
 } else if (process.env.NODE_ENV !== 'test') {
   assertSharedRuntimePrivileges(db);
-  if (!db.prepare('SELECT id FROM users LIMIT 1').get()) {
-    throw new Error('Shared workspace is empty. Import the authorized identity/data snapshot before starting.');
+  if (!db.prepare('SELECT id FROM users LIMIT 1').get() && process.env.HAN_OWNER_BOOTSTRAP !== '1') {
+    throw new Error('Shared workspace has no owner. Run the one-time protected owner bootstrap before starting the service.');
   }
 }
 export const hashToken = (token) =>
@@ -95,7 +117,7 @@ export const permissionIds = [
 if (!shared || process.env.NODE_ENV === 'test') for (const id of permissionIds)
   db.prepare("INSERT OR IGNORE INTO permissions VALUES (?,?)").run(id, id);
 const now = new Date().toISOString();
-if (!db.prepare("SELECT id FROM users LIMIT 1").get())
+if ((!shared || process.env.NODE_ENV === "test") && !db.prepare("SELECT id FROM users LIMIT 1").get())
   transaction(() => {
     for (const [id, name, role] of [
       ["user-1", "Harsha", "OWNER"],

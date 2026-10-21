@@ -20,7 +20,12 @@ export class PostgresDatabase extends EventEmitter {
     this.worker = worker;
     worker.on('message', message => { if (this.worker !== worker) return; if (message.changed) this.emit('change'); if (message.unavailable) this.unavailable = true; });
     worker.on('error', () => { if (this.worker === worker) this.unavailable = true; });
-    try { this.call('ready'); } catch (error) { this.unavailable = true; void worker.terminate(); throw error; }
+    try { this.call('ready'); } catch (error) {
+      this.unavailable = true;
+      void worker.terminate();
+      if (process.env.NODE_ENV === 'production') throw new Error('PostgreSQL initialization failed (connection, TLS, permissions, or migration validation). Sensitive details are redacted.');
+      throw error;
+    }
     this.worker.unref();
   }
   call(operation, sql, params) {

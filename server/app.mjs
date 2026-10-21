@@ -33,6 +33,7 @@ export const closeWorkspaceStreams = () => { for (const response of eventRespons
 
 export const app = express();
 const production = process.env.NODE_ENV === "production";
+const secureCookies = production || (process.env.NODE_ENV === "test" && process.env.HAN_TEST_SECURE_COOKIES === "1");
 const sessionCookie = process.env.HAN_DEMO === "1" ? "han_demo_session" : "han_session";
 if (process.env.TRUST_PROXY === "1") app.set("trust proxy", 1);
 app.disable("x-powered-by");
@@ -500,7 +501,7 @@ function createSession(user, res) {
   const expiresAt = Date.now() + 7 * 86400_000;
   db.prepare("DELETE FROM sessions WHERE expires_at<?").run(Date.now());
   db.prepare("INSERT INTO sessions VALUES (?,?,?,?)").run(hashToken(token), user.id, csrf, expiresAt);
-  res.cookie(sessionCookie, token, { httpOnly: true, secure: production, sameSite: process.env.HAN_COOKIE_SAMESITE || "strict", maxAge: 7 * 86400_000, path: "/" });
+  res.cookie(sessionCookie, token, { httpOnly: true, secure: secureCookies, sameSite: process.env.HAN_COOKIE_SAMESITE || "strict", maxAge: 7 * 86400_000, path: "/" });
   changes.emit("change");
   return { user: publicUser(user), csrf, expiresAt };
 }
@@ -937,7 +938,7 @@ app.post("/api/logout", (req, res) => {
   res.clearCookie(sessionCookie, {
     path: "/",
     httpOnly: true,
-    secure: production,
+    secure: secureCookies,
     sameSite: "strict",
   });
   res.json({ ok: true });
