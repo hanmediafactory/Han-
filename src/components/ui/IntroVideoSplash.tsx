@@ -9,6 +9,7 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
   const [fading, setFading] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [fallbackDelay, setFallbackDelay] = useState(15_000);
   const [prefersReducedMotion] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
@@ -40,14 +41,15 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
     }
   }, [onComplete]);
 
-  // Safety fallback timer: ensure user is never trapped even if video stalls or fails
+  // Safety fallback: use the actual clip length when it is available, while
+  // still guaranteeing that a stalled media file never traps a phone user.
   useEffect(() => {
     const safetyTimer = setTimeout(() => {
       handleFinish();
-    }, 6000);
+    }, fallbackDelay);
 
     return () => clearTimeout(safetyTimer);
-  }, [handleFinish]);
+  }, [fallbackDelay, handleFinish]);
 
   // Keyboard shortcut listener: Escape, Enter, or Spacebar skips immediately
   useEffect(() => {
@@ -146,7 +148,16 @@ export const IntroVideoSplash: React.FC<IntroVideoSplashProps> = ({ onComplete }
                 playsInline
                 muted
                 preload="auto"
-                onEnded={() => setVideoEnded(true)}
+                onLoadedMetadata={(event) => {
+                  const duration = event.currentTarget.duration;
+                  if (Number.isFinite(duration) && duration > 0) {
+                    setFallbackDelay(Math.min(Math.max(Math.ceil(duration * 1000) + 1_200, 6_000), 30_000));
+                  }
+                }}
+                onEnded={() => {
+                  setVideoEnded(true);
+                  window.setTimeout(handleFinish, 450);
+                }}
                 onError={() => {
                   setVideoFailed(true);
                   setVideoEnded(true);

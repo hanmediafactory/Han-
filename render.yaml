@@ -4,7 +4,9 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --include=dev && npm run build
-    startCommand: node server/provision.mjs --only-missing && npm start
+    # Shared Supabase/Postgres mode manages its own authorized identities.
+    # It must not run the SQLite-only bootstrap step on every deploy.
+    startCommand: npm start
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
@@ -16,8 +18,12 @@ services:
         value: 0.0.0.0
       - key: TRUST_PROXY
         value: "1"
-      - key: HAN_DB_PATH
-        value: data/han.sqlite
+      - key: HAN_DATABASE_URL
+        sync: false
+      - key: HAN_DATABASE_CA_CERT
+        sync: false
+      - key: HAN_ADMIN_BRIDGE_SECRET
+        sync: false
       - key: VITE_SUPABASE_URL
         value: https://vouxtthsvlufjvperhxz.supabase.co
       - key: VITE_SUPABASE_PUBLISHABLE_KEY

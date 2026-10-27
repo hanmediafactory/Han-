@@ -1,7 +1,10 @@
 import pg from 'pg';
 const { Client } = pg;
 
-const connectionString = process.env.STAGING_DATABASE_URL || 'postgresql://postgres:' + encodeURIComponent('E1p8my66ThMtWgIS') + '@db.vouxtthsvlufjvperhxz.supabase.co:5432/postgres';
+const connectionString = process.env.STAGING_DATABASE_URL;
+if (!connectionString) {
+  throw new Error("Set STAGING_DATABASE_URL in your protected environment before running this diagnostic.");
+}
 
 async function main() {
   const client = new Client({
