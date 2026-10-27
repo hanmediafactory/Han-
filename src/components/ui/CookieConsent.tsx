@@ -41,7 +41,7 @@ export const CookieConsent: React.FC = () => {
     <aside
       aria-label="Cookie and privacy consent"
       role="region"
-      className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50 p-4 rounded-2xl bg-surface-elevated/95 backdrop-blur-md border border-border-strong shadow-2xl text-xs space-y-3 animate-fadeIn"
+      className="privacy-consent fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-[9500] p-4 rounded-2xl bg-surface-elevated/95 backdrop-blur-md border border-border-strong shadow-2xl text-xs space-y-3 animate-fadeIn"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">

@@ -140,7 +140,7 @@ export const HomeScreen: React.FC = () => {
                 onClick={() => navigateTo("tasks", "All", true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-overlay border border-border-subtle hover:border-border-strong text-text-primary hover:text-text-primary text-xs font-semibold shrink-0 cursor-pointer transition-colors"
               >
-                <Plus size={13} /> + Task
+                <Plus size={13} /> Task
               </button>
             )}
             {can("projects.manage") && (
@@ -148,7 +148,7 @@ export const HomeScreen: React.FC = () => {
                 onClick={() => navigateTo("projects", "Active", true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-overlay border border-border-subtle hover:border-border-strong text-text-primary hover:text-text-primary text-xs font-semibold shrink-0 cursor-pointer transition-colors"
               >
-                <Plus size={13} /> + Project
+                <Plus size={13} /> Project
               </button>
             )}
             {can("finance.manage") && (

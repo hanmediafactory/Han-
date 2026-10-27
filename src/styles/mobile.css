@@ -10,10 +10,13 @@
   .han-app .notification-alert { bottom:calc(144px + env(safe-area-inset-bottom,0px)); max-height:35dvh; overflow-y:auto; }
   .han-app .quick-action-menu { bottom:calc(84px + env(safe-area-inset-bottom,0px)); max-height:calc(100dvh - 108px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); overflow-y:auto; overscroll-behavior:contain; padding:16px; }
   .han-app .mobile-sheet { max-height:calc(100dvh - 16px - env(safe-area-inset-top,0px))!important; padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px)); overscroll-behavior:contain; }
+  .han-app .privacy-consent { bottom:calc(144px + env(safe-area-inset-bottom,0px)); max-height:calc(100dvh - 160px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); overflow-y:auto; overscroll-behavior:contain; }
   .han-app .home-introduction>div:first-child { margin-bottom:18px; }
   .han-app .home-title { font-size:38px; overflow-wrap:anywhere; }
   .han-app .home-brand { font-size:10px; letter-spacing:.09em; }
   .han-app .home-shortcuts button { min-height:48px; font-size:13px; }
+  .han-app .targets-filter { min-height:44px!important; font-size:10px; }
+  .han-app button[aria-label^="Set progress to"] { min-width:44px; min-height:44px; }
   .han-app .workspace-summary { padding-block:18px; }
   .han-app .workspace-summary>div { padding-inline:10px; gap:8px; }
   .han-app .workspace-summary>div:first-child { padding-left:0; }

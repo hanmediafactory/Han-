@@ -48,7 +48,11 @@ const owner = await login("user-1"),
   other = await login("user-3");
 let projectId, taskId;
 test("Unauthenticated access and CSRF writes are rejected", async () => {
-  assert.equal((await call(null, "state")).status, 401);
+  const unauthenticated = await fetch(`${origin}/api/state`);
+  assert.equal(unauthenticated.status, 401);
+  assert.match(unauthenticated.headers.get("content-security-policy") || "", /frame-ancestors 'none'/);
+  assert.equal(unauthenticated.headers.get("x-content-type-options"), "nosniff");
+  assert.equal(unauthenticated.headers.get("cache-control"), "no-store");
   assert.equal(
     (await call(owner, "leads", "POST", { name: "Test" }, false)).status,
     403,
@@ -259,6 +263,20 @@ test("Idempotent writes replay one result and reject reused keys with different 
   assert.equal((await call(owner, "state")).data.transactions.filter(item => item.title === "Exactly once").length, 1);
   assert.equal((await send({ ...data, amount: 99 })).status, 409);
 });
+test("Exact duplicate expenses require a deliberate confirmation and voided records do not block re-entry", async () => {
+  const payload = { title: "Duplicate guard", amount: 321.45, category: "Operations", date: "2026-10-07", paidBy: "user-1", vendor: "Same merchant" };
+  const first = await call(owner, "expenses", "POST", payload);
+  assert.equal(first.status, 201);
+  const blocked = await call(owner, "expenses", "POST", payload);
+  assert.equal(blocked.status, 409);
+  assert.match(blocked.data.error, /Possible duplicate/);
+  const voided = await call(owner, `expenses/${first.data.id}/void`, "POST", { reason: "Original was refunded" });
+  assert.equal(voided.status, 200);
+  const afterVoid = await call(owner, "expenses", "POST", payload);
+  assert.equal(afterVoid.status, 201);
+  const confirmed = await call(owner, "expenses", "POST", { ...payload, confirmDuplicate: true });
+  assert.equal(confirmed.status, 201);
+});
 
 test("Stale edits are rejected without overwriting another device", async () => {
   const state = (await call(owner, "state")).data;
@@ -381,7 +399,7 @@ test("Production cookies are secure and published example credentials are refuse
     const root='http://127.0.0.1:'+server.address().port;
     const login=await fetch(root+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:'user-1',password:process.env.HAN_TEST_PASSWORD})});
     assert.equal(login.status,200);
-    assert.match(login.headers.get('set-cookie'),/HttpOnly/); assert.match(login.headers.get('set-cookie'),/Secure/); assert.match(login.headers.get('set-cookie'),/SameSite=Strict/);
+    assert.match(login.headers.get('set-cookie'),/HttpOnly/); assert.match(login.headers.get('set-cookie'),/Secure/); assert.match(login.headers.get('set-cookie'),/SameSite=Strict/); assert.match(login.headers.get('set-cookie'),/Priority=High/);
     db.prepare('UPDATE users SET password_hash=? WHERE id=?').run(hashPassword('HarshaPass2026!'),'user-1');
     const denied=await fetch(root+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:'user-1',password:'HarshaPass2026!'})});
     assert.equal(denied.status,401);

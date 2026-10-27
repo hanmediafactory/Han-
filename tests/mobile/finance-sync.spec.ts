@@ -2,10 +2,11 @@ import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 const day = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 async function login(page: Page, member = false) {
+  await page.addInitScript(() => localStorage.setItem('han_cookie_consent', 'essential_only'));
   await page.goto("/");
   await page.getByRole("radio", { name: member ? "Nihaal Team Member" : "Harsha Owner / Admin" }).click();
   await page.getByLabel(/Account Password/).fill("test-only-password-123456");
-  await page.getByRole("button", { name: /Enter HAN Workspace/ }).click();
+  await page.getByRole("button", { name: /Enter HAN/ }).click();
   await expect(page.getByRole("heading", { name: member ? "Welcome back, Nihaal." : "Welcome back, Harsha." })).toBeVisible();
 }
 async function state(page: Page) { return (await page.request.get("/api/state")).json(); }
@@ -57,6 +58,58 @@ test("Protected savings, manual salary and overspend rejection stay consistent a
   await page.getByLabel("Amount (₹)").fill("700.25");
   await page.getByRole("button", { name: "Save", exact: true }).click();
   expect((await state(page)).finance.funds).toBe(after.funds + 100);
+});
+
+test("A repeated expense needs a deliberate confirmation on a phone", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await login(page);
+  await page.getByRole("button", { name: "Money", exact: true }).click();
+  await page.getByRole("button", { name: "Add income", exact: true }).click();
+  await page.getByLabel("Title", { exact: true }).fill("Duplicate guard test funds");
+  await page.getByLabel("Amount (₹)").fill("1000");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  const title = `Duplicate guard ${Date.now()}`;
+  const recordExpense = async () => {
+    await page.getByRole("button", { name: "Add expense", exact: true }).click();
+    await page.getByLabel("Title", { exact: true }).fill(title);
+    await page.getByLabel("Amount (₹)").fill("149.5");
+  };
+  await recordExpense();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+
+  await recordExpense();
+  await expect(page.getByText("Possible duplicate.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByText(/already recorded on this date/)).toBeVisible();
+  const confirmation = page.getByRole("checkbox", { name: /Possible duplicate.*separate charge/ });
+  await confirmation.check();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  const saved = (await state(page)).expenses.filter((expense: { title: string; status: string }) => expense.title === title && expense.status === "active");
+  expect(saved).toHaveLength(2);
+});
+
+test("Finance pickers support custom categories and settlement payment methods", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await login(page);
+  await page.getByRole("button", { name: "Money", exact: true }).click();
+  await page.getByRole("button", { name: "Add income", exact: true }).click();
+  await page.getByLabel("Title", { exact: true }).fill("Custom finance test funds");
+  await page.getByLabel("Amount (₹)").fill("500");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.getByRole("button", { name: "Add expense", exact: true }).click();
+  await page.getByLabel("Title", { exact: true }).fill("Custom picker proof");
+  await page.getByLabel("Amount (₹)").fill("50");
+  await page.getByLabel("Category", { exact: true }).selectOption("__custom__");
+  await expect(page.getByLabel("Custom category")).toBeVisible();
+  await page.getByLabel("Custom category").fill("Field travel");
+  await page.getByLabel("Payment method", { exact: true }).selectOption("__custom__");
+  await page.getByLabel("Custom payment method").fill("Company wallet");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  const expense = (await state(page)).expenses.find((item: { title: string }) => item.title === "Custom picker proof");
+  expect(expense.category).toBe("Field travel");
+  expect(expense.paymentMethod).toBe("Company wallet");
 });
 
 test("Two sessions sync assignments, completion, project progress and alerts without reloading", async ({ page, browser }) => {

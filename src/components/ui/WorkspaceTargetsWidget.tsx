@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import {
-  Target,
-  CheckCircle2,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowRight, Check, Target } from "lucide-react";
 import { useApp } from "../../context/AppContext";
+import type { ScreenType } from "../../types";
 
 const rupees = (amount: number) =>
   `₹${Number(amount || 0).toLocaleString("en-IN", {
@@ -20,14 +17,16 @@ export interface TargetItem {
   targetValue: number;
   unit: string;
   isCurrency?: boolean;
-  targetScreen?: string;
+  targetScreen?: ScreenType;
 }
 
 interface WorkspaceTargetsWidgetProps {
   filterCategory?: "all" | "tasks" | "finance" | "growth";
-  onNavigate?: (screen: any) => void;
+  onNavigate?: (screen: ScreenType) => void;
   compact?: boolean;
 }
+
+const categories = ["all", "tasks", "finance", "growth"] as const;
 
 export const WorkspaceTargetsWidget: React.FC<WorkspaceTargetsWidgetProps> = ({
   filterCategory = "all",
@@ -35,18 +34,21 @@ export const WorkspaceTargetsWidget: React.FC<WorkspaceTargetsWidgetProps> = ({
   compact = false,
 }) => {
   const app = useApp();
-  const [activeCategory, setActiveCategory] = useState<"all" | "tasks" | "finance" | "growth">(
+  const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>(
     filterCategory,
   );
 
-  // Compute live current values dynamically from app state
   const tasksCompletedToday = app.tasksCompletedTodayCount;
   const urgentTasksCleared = app.tasks.filter(
-    (t) => (t.priority === "HIGH" || t.priority === "URGENT") && t.completed,
+    (task) =>
+      (task.priority === "HIGH" || task.priority === "URGENT") &&
+      task.completed,
   ).length;
   const protectedSavings = app.totalSavings;
   const grossIncome = app.totalIncome;
-  const wonLeadsCount = app.state.leads.filter((l) => l.status === "Won").length;
+  const wonLeadsCount = app.state.leads.filter(
+    (lead) => lead.status === "Won",
+  ).length;
   const totalLeadsCount = app.state.leads.length;
 
   const liveTargets: TargetItem[] = [
@@ -68,7 +70,9 @@ export const WorkspaceTargetsWidget: React.FC<WorkspaceTargetsWidgetProps> = ({
       currentValue: urgentTasksCleared,
       targetValue: Math.max(
         1,
-        app.tasks.filter((t) => t.priority === "HIGH" || t.priority === "URGENT").length,
+        app.tasks.filter(
+          (task) => task.priority === "HIGH" || task.priority === "URGENT",
+        ).length,
       ),
       unit: "tasks",
       targetScreen: "tasks",
@@ -117,151 +121,127 @@ export const WorkspaceTargetsWidget: React.FC<WorkspaceTargetsWidgetProps> = ({
     },
   ];
 
-  const visibleTargets = liveTargets.filter((t) =>
-    activeCategory === "all" ? true : t.category === activeCategory,
+  const visibleTargets = liveTargets.filter(
+    (target) =>
+      activeCategory === "all" || target.category === activeCategory,
   );
-
-  const completedCount = liveTargets.filter((t) => t.currentValue >= t.targetValue).length;
+  const completedCount = liveTargets.filter(
+    (target) => target.currentValue >= target.targetValue,
+  ).length;
 
   return (
-    <div className="space-y-3.5 select-none" data-testid="workspace-targets-widget">
-      {/* Header & Filter Pills */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-surface-overlay border border-border-subtle flex items-center justify-center text-emerald-400">
-            <Target size={16} />
+    <section
+      className="targets-widget"
+      data-testid="workspace-targets-widget"
+      aria-labelledby="targets-widget-title"
+    >
+      <header className="targets-widget-header">
+        <div className="targets-widget-heading">
+          <div className="targets-widget-mark" aria-hidden="true">
+            <Target size={17} strokeWidth={1.6} />
           </div>
-          <div>
-            <h3 className="font-serif text-base font-bold text-text-primary tracking-tight">
-              Targets & Milestones to Achieve
-            </h3>
-            <p className="text-[10px] font-mono text-text-muted">
-              {completedCount} of {liveTargets.length} Targets Achieved
+          <div className="targets-widget-copy">
+            <span className="targets-eyebrow">Workspace overview</span>
+            <h3 id="targets-widget-title">Targets & milestones</h3>
+            <p>
+              {completedCount} of {liveTargets.length} targets achieved
             </p>
           </div>
         </div>
 
         {filterCategory === "all" && (
-          <div className="flex gap-1 bg-surface-overlay p-1 rounded-xl border border-border-subtle">
-            {(["all", "tasks", "finance", "growth"] as const).map((cat) => (
+          <div className="targets-filters" role="group" aria-label="Filter targets">
+            {categories.map((category) => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition-all cursor-pointer ${
-                  activeCategory === cat
-                    ? "bg-page text-text-primary shadow-sm"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
+                key={category}
+                type="button"
+                className={`targets-filter${activeCategory === category ? " is-active" : ""}`}
+                aria-pressed={activeCategory === category}
+                onClick={() => setActiveCategory(category)}
               >
-                {cat}
+                {category}
               </button>
             ))}
           </div>
         )}
-      </div>
+      </header>
 
-      {/* Target Cards Grid */}
-      <div className={`grid gap-2.5 ${compact ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
+      <div className={`targets-grid${compact ? " is-compact" : ""}`}>
         {visibleTargets.map((target) => {
           const isMet = target.currentValue >= target.targetValue;
-          const pct = Math.min(
+          const percentage = Math.min(
             100,
             target.targetValue > 0
               ? Math.round((target.currentValue / target.targetValue) * 100)
               : 0,
           );
-
-          const badgeColor =
-            target.category === "finance"
-              ? "text-emerald-400 bg-emerald-950/40 border-emerald-800/60"
-              : target.category === "tasks"
-                ? "text-cyan-400 bg-cyan-950/40 border-cyan-800/60"
-                : "text-purple-400 bg-purple-950/40 border-purple-800/60";
+          const currentValue = target.isCurrency
+            ? rupees(target.currentValue)
+            : `${target.currentValue} ${target.unit}`;
+          const targetValue = target.isCurrency
+            ? rupees(target.targetValue)
+            : `${target.targetValue} ${target.unit}`;
 
           return (
-            <div
+            <button
               key={target.id}
+              type="button"
+              className={`target-card${isMet ? " is-complete" : ""}`}
+              disabled={!onNavigate || !target.targetScreen}
               onClick={() => {
                 if (onNavigate && target.targetScreen) {
                   onNavigate(target.targetScreen);
                 }
               }}
-              className={`p-3.5 rounded-2xl bg-surface-elevated border transition-all ${
-                onNavigate ? "cursor-pointer" : ""
-              } ${
-                isMet
-                  ? "border-emerald-800/80 bg-gradient-to-br from-surface-elevated to-emerald-950/20"
-                  : "border-border-subtle hover:border-border-strong"
-              }`}
+              aria-label={`${target.title}: ${currentValue}, target ${targetValue}${isMet ? ", achieved" : `, ${percentage}% complete`}`}
             >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span
-                      className={`text-[9px] font-mono uppercase font-bold px-1.5 py-0.5 rounded border ${badgeColor}`}
-                    >
-                      {target.category}
-                    </span>
-                    <h4 className="font-bold text-xs text-text-primary">{target.title}</h4>
-                  </div>
-                  <p className="text-[10px] text-text-muted mt-1">{target.description}</p>
-                </div>
+              <div className="target-card-topline">
+                <span className="target-category">{target.category}</span>
+                <span className={`target-progress-label${isMet ? " is-complete" : ""}`}>
+                  {isMet ? (
+                    <>
+                      <Check size={12} strokeWidth={2} /> Achieved
+                    </>
+                  ) : (
+                    `${percentage}%`
+                  )}
+                </span>
+              </div>
 
-                {isMet ? (
-                  <span className="flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-700/60 px-2 py-0.5 rounded-full shrink-0">
-                    <CheckCircle2 size={12} /> Achieved
-                  </span>
-                ) : (
-                  <span className="text-[10px] font-mono text-text-muted bg-surface px-2 py-0.5 rounded-full border border-border-subtle shrink-0">
-                    {pct}%
-                  </span>
+              <div className="target-card-title-row">
+                <h4>{target.title}</h4>
+                <span className="target-card-arrow" aria-hidden="true">
+                  <ArrowRight size={15} strokeWidth={1.5} />
+                </span>
+              </div>
+              <p className="target-description">{target.description}</p>
+
+              <div className="target-values">
+                <strong>{currentValue}</strong>
+                <span>Target {targetValue}</span>
+              </div>
+
+              <div
+                className="target-progress-track"
+                role="progressbar"
+                aria-label={`${target.title} progress`}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={percentage}
+              >
+                <span style={{ width: `${Math.max(percentage > 0 ? 3 : 0, percentage)}%` }} />
+              </div>
+
+              <div className="target-card-footer">
+                <span>{isMet ? "Milestone complete" : "Progress to target"}</span>
+                {onNavigate && target.targetScreen && (
+                  <span className="target-open-label">Open {target.targetScreen}</span>
                 )}
               </div>
-
-              {/* Progress Bar & Numerical Metrics */}
-              <div className="mt-3 space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-text-primary font-bold">
-                    {target.isCurrency
-                      ? rupees(target.currentValue)
-                      : `${target.currentValue} ${target.unit}`}
-                  </span>
-                  <span className="text-text-muted text-[10px]">
-                    Target:{" "}
-                    {target.isCurrency
-                      ? rupees(target.targetValue)
-                      : `${target.targetValue} ${target.unit}`}
-                  </span>
-                </div>
-
-                <div className="w-full h-2 bg-surface rounded-full overflow-hidden border border-border-subtle">
-                  <div
-                    className={`h-full rounded-full transition-all duration-300 ${
-                      isMet
-                        ? "bg-emerald-400"
-                        : target.category === "finance"
-                          ? "bg-gradient-to-r from-emerald-500 to-teal-400"
-                          : target.category === "tasks"
-                            ? "bg-gradient-to-r from-cyan-500 to-blue-400"
-                            : "bg-gradient-to-r from-purple-500 to-pink-400"
-                    }`}
-                    style={{ width: `${Math.max(3, pct)}%` }}
-                  />
-                </div>
-              </div>
-
-              {onNavigate && (
-                <div className="mt-2 pt-1.5 border-t border-border-subtle/40 flex justify-end">
-                  <span className="text-[10px] font-mono text-text-muted hover:text-text-primary flex items-center gap-1">
-                    <span>Open {target.targetScreen}</span>
-                    <ArrowRight size={10} />
-                  </span>
-                </div>
-              )}
-            </div>
+            </button>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 };

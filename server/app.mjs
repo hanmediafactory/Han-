@@ -1,6 +1,6 @@
 import express from "express";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { randomBytes, randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 import { join } from "node:path";
@@ -45,6 +45,10 @@ app.use(
         "font-src": ["'self'"],
         "style-src": ["'self'", "'unsafe-inline'"],
         "connect-src": ["'self'", ...Array.from(allowedOrigins)],
+        "base-uri": ["'self'"],
+        "form-action": ["'self'"],
+        "frame-ancestors": ["'none'"],
+        "object-src": ["'none'"],
       },
     },
   }),
@@ -218,6 +222,14 @@ function validateRelationships(table, data) {
       }
     }
   }
+}
+function matchingExpense(existing, candidate) {
+  return existing.status !== "void" &&
+    existing.date === candidate.date &&
+    existing.paidBy === candidate.paidBy &&
+    Math.round(Number(existing.amount) * 100) === Math.round(Number(candidate.amount) * 100) &&
+    String(existing.title || "").trim().toLocaleLowerCase() === String(candidate.title || "").trim().toLocaleLowerCase() &&
+    String(existing.vendor || "").trim().toLocaleLowerCase() === String(candidate.vendor || "").trim().toLocaleLowerCase();
 }
 function validateSettlementAmount(data, existing = null) {
   const pairs = financeSummary().pairwise;
@@ -488,6 +500,17 @@ const loginLimiter = rateLimit({
   standardHeaders: "draft-8",
   legacyHeaders: false,
 });
+// Keep the broad IP cap, then add a tighter identity+IP cap. This blocks
+// password spraying without allowing a malicious attempt against one account
+// to lock everyone sharing an office or mobile carrier IP.
+const credentialLimiter = rateLimit({
+  windowMs: 15 * 60_000,
+  limit: process.env.NODE_ENV === "test" ? 1000 : 5,
+  skipSuccessfulRequests: true,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip)}:${String(req.body?.userId || "").trim().toLowerCase().slice(0, 100)}`,
+});
 app.get("/api/ready", (_req, res) => {
   try {
     const ready = !!db.prepare("SELECT id FROM users WHERE role='OWNER' AND active=1 AND password_hash IS NOT NULL").get();
@@ -496,11 +519,15 @@ app.get("/api/ready", (_req, res) => {
 });
 function createSession(user, res) {
   const token = randomBytes(32).toString("hex");
+  const tokenHash = hashToken(token);
   const csrf = randomBytes(32).toString("hex");
   const expiresAt = Date.now() + 7 * 86400_000;
   db.prepare("DELETE FROM sessions WHERE expires_at<?").run(Date.now());
-  db.prepare("INSERT INTO sessions VALUES (?,?,?,?)").run(hashToken(token), user.id, csrf, expiresAt);
-  res.cookie(sessionCookie, token, { httpOnly: true, secure: production, sameSite: process.env.HAN_COOKIE_SAMESITE || "strict", maxAge: 7 * 86400_000, path: "/" });
+  db.prepare("INSERT INTO sessions VALUES (?,?,?,?)").run(tokenHash, user.id, csrf, expiresAt);
+  // Do not let a lost browser accumulate an unlimited number of valid tokens.
+  // The newest eight sessions remain usable (phone, desktop, recovery browser).
+  db.prepare("DELETE FROM sessions WHERE token_hash IN (SELECT token_hash FROM sessions WHERE user_id=? AND token_hash<>? ORDER BY expires_at ASC LIMIT -1 OFFSET 7)").run(user.id, tokenHash);
+  res.cookie(sessionCookie, token, { httpOnly: true, secure: production, sameSite: process.env.HAN_COOKIE_SAMESITE || "strict", priority: "high", maxAge: 7 * 86400_000, path: "/" });
   changes.emit("change");
   return { user: publicUser(user), csrf, expiresAt };
 }
@@ -508,7 +535,7 @@ registerGoogleSso(app, {
   findUser: id => db.prepare("SELECT * FROM users WHERE id=? AND active=1").get(id),
   createSession,
 });
-app.post("/api/login", loginLimiter, (req, res) => {
+app.post("/api/login", loginLimiter, credentialLimiter, (req, res) => {
   const { userId, password } = z
     .object({ userId: z.string().max(100), password: z.string().max(200) })
     .parse(req.body);
@@ -1270,6 +1297,13 @@ app.post("/api/:table", (req, res) => {
   if (!permitted(req.user, table, data, true))
     throw fail(403, "You do not have permission to create this record.");
   validateRelationships(table, data);
+  if (table === "expenses") {
+    const duplicate = rows("expenses").find(item => matchingExpense(item, data));
+    if (duplicate && !data.confirmDuplicate) {
+      throw fail(409, `Possible duplicate: “${duplicate.title}” for ₹${Number(duplicate.amount).toFixed(2)} is already recorded on ${duplicate.date}. Review it, then confirm if this is a separate charge.`);
+    }
+    delete data.confirmDuplicate;
+  }
   if (
     table === "tasks" &&
     data.projectId &&
@@ -1365,6 +1399,9 @@ app.patch("/api/:table/:id", (req, res) => {
   } else if (!permitted(req.user, table, existing, true))
     throw fail(403, "You do not have permission to edit this record.");
   const data = schemas[table].parse({ ...existing, ...req.body });
+  // This is a create-time acknowledgement only. Never let it become part of a
+  // ledger record when an older client includes it during an edit.
+  if (table === "expenses") delete data.confirmDuplicate;
   validateRelationships(table, data);
   if (table === "projects") data.manualProgress = Object.hasOwn(req.body, "progress") ? data.progress : existing.manualProgress ?? existing.progress;
   if (

@@ -122,6 +122,7 @@ const fields: Record<string, Field[]> = {
     { key: "recipientId", label: "Recipient (who received)", type: "user", required: true },
     { key: "amount", label: "Settlement amount (₹)", type: "number", required: true },
     { key: "date", label: "Date", type: "date", required: true },
+    { key: "paymentMethod", label: "Payment method", options: ["UPI", "Bank Transfer", "Credit Card", "Debit Card", "Cash"] },
     { key: "paymentReference", label: "Payment Reference / UTR" },
     { key: "notes", label: "Notes", type: "textarea" },
   ],
@@ -398,6 +399,14 @@ function Editor({
     Math.round(totalCustom * 100) - Math.round(expAmount * 100);
 
   const [error, setError] = useState("");
+  const duplicateExpense = table === "expenses" && !item && app.expenses.find(expense =>
+    expense.type === "expense" && expense.status !== "void" &&
+    expense.date === value.date &&
+    Number(expense.amount) === Number(value.amount) &&
+    String(expense.paidBy || "") === String(value.paidBy || app.user?.id || "") &&
+    String(expense.title || "").trim().toLocaleLowerCase() === String(value.title || "").trim().toLocaleLowerCase() &&
+    String(expense.vendor || "").trim().toLocaleLowerCase() === String(value.vendor || "").trim().toLocaleLowerCase(),
+  );
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
@@ -440,6 +449,18 @@ function Editor({
         setError("Date is required.");
         return;
       }
+      if (duplicateExpense && !value.confirmDuplicate) {
+        setError(`A matching ${duplicateExpense.title} expense for ₹${Number(duplicateExpense.amount).toFixed(2)} is already recorded on this date. Confirm below only if this is a separate charge.`);
+        return;
+      }
+      if (value.category === "__custom__" && !String(value.customCategory || "").trim()) {
+        setError("Add a category name or choose one from the list.");
+        return;
+      }
+      if (value.paymentMethod === "__custom__" && !String(value.customPaymentMethod || "").trim()) {
+        setError("Add a payment method name or choose one from the list.");
+        return;
+      }
     }
     if (table === "income") {
       if (!String(value.title || "").trim()) {
@@ -468,6 +489,10 @@ function Editor({
         setError("Payer and recipient cannot be the same team member.");
         return;
       }
+      if (value.paymentMethod === "__custom__" && !String(value.customPaymentMethod || "").trim()) {
+        setError("Add a payment method name or choose one from the list.");
+        return;
+      }
     }
     if (table === "leads") {
       if (!String(value.name || "").trim()) {
@@ -478,6 +503,12 @@ function Editor({
 
     const data: Record<string, unknown> = {};
     for (const field of fields[table] || []) data[field.key] = value[field.key];
+    if (["expenses", "income", "leads"].includes(table) && data.category === "__custom__") {
+      data.category = String(value.customCategory || "").trim();
+    }
+    if (["expenses", "settlements"].includes(table) && data.paymentMethod === "__custom__") {
+      data.paymentMethod = String(value.customPaymentMethod || "").trim();
+    }
     if (table === "tasks") {
       if (!data.projectId) delete data.projectId;
       if (data.progress !== undefined) data.progress = Math.min(100, Math.max(0, Math.round(Number(data.progress) || 0)));
@@ -491,6 +522,7 @@ function Editor({
     }
     if (table === "expenses") {
       data.paidBy = value.paidBy || app.user?.id;
+      data.confirmDuplicate = Boolean(value.confirmDuplicate);
       data.splitType = splitType;
       if (splitType === "individual") {
         data.allocations = [
@@ -546,6 +578,17 @@ function Editor({
       <form onSubmit={submit} className="space-y-4">
         {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
         {["expenses", "savings_entries", "salary_payments"].includes(table) && <p className="text-sm text-text-secondary">Available funds: ₹{app.totalFunds.toLocaleString("en-IN")}. Protected savings cannot be spent.</p>}
+        {table === "expenses" && duplicateExpense && (
+          <label className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-text-primary">
+            <input
+              type="checkbox"
+              checked={Boolean(value.confirmDuplicate)}
+              onChange={event => set("confirmDuplicate", event.target.checked)}
+              className="mt-1"
+            />
+            <span><b>Possible duplicate.</b> A matching entry already exists. I confirm this is a separate charge.</span>
+          </label>
+        )}
         {table === "salary_payments" && <p className="text-sm text-text-secondary">Record a salary you have paid. It deducts funds and appears once in expenses. HAN does not send money to a bank account.</p>}
         {table === "savings_entries" && <label className="flex items-start gap-3 text-sm"><input type="checkbox" required className="mt-1" />I understand this moves funds into protected savings and cannot be withdrawn or deleted in HAN.</label>}
         {table === "projects" && <p className="text-sm text-text-secondary">Progress is calculated from completed, non-cancelled tasks. Without tasks, it uses your estimate. Leave the deadline blank if it is not yet agreed.</p>}
@@ -613,15 +656,27 @@ function Editor({
                   onChange={(e) => set(field.key, e.target.value)}
                 />
               ) : field.key === "category" && ["income", "expenses", "leads"].includes(table) ? (
-                <select id={`field-${field.key}`} className="han-input" value={String(value.category || "General")} onChange={e => set("category", e.target.value)}>
-                  {Array.from(new Set(["General", String(value.category || "General"), ...app.state.categories.filter(c => c.kind === (table === "expenses" ? "expense" : table === "leads" ? "lead" : "income")).map(c => String(c.name))])).map(category => <option key={category}>{category}</option>)}
-                </select>
+                <>
+                  <select id={`field-${field.key}`} className="han-input han-select" value={String(value.category || "General")} onChange={e => set("category", e.target.value)}>
+                    {Array.from(new Set(["General", String(value.category || "General"), ...app.state.categories.filter(c => c.kind === (table === "expenses" ? "expense" : table === "leads" ? "lead" : "income")).map(c => String(c.name))])).map(category => <option key={category}>{category}</option>)}
+                    <option value="__custom__">+ Add a custom category…</option>
+                  </select>
+                  {value.category === "__custom__" && <input aria-label="Custom category" className="han-input mt-2" placeholder="e.g. Travel, Office supplies" maxLength={100} value={String(value.customCategory || "")} onChange={event => set("customCategory", event.target.value)} />}
+                </>
+              ) : field.key === "paymentMethod" && ["expenses", "settlements"].includes(table) ? (
+                <>
+                  <select id={`field-${field.key}`} className="han-input han-select" value={String(value.paymentMethod || "UPI")} onChange={event => set("paymentMethod", event.target.value)}>
+                    {(field.options || []).map(option => <option key={option} value={option}>{option}</option>)}
+                    <option value="__custom__">+ Add a custom payment method…</option>
+                  </select>
+                  {value.paymentMethod === "__custom__" && <input aria-label="Custom payment method" className="han-input mt-2" placeholder="e.g. Wallet, cheque" maxLength={100} value={String(value.customPaymentMethod || "")} onChange={event => set("customPaymentMethod", event.target.value)} />}
+                </>
               ) : field.options ||
                 field.type === "user" ||
                 field.type === "project" ? (
                 <select
                   id={`field-${field.key}`}
-                  className="han-input"
+                  className="han-input han-select"
                   value={String(value[field.key] || "")}
                   onChange={(e) => set(field.key, e.target.value)}
                 >

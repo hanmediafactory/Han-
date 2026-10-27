@@ -4,10 +4,11 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 const evidence = 'work/qa-20261010/evidence';
 mkdirSync(evidence, { recursive: true });
 async function login(page: Page) {
+  await page.addInitScript(() => localStorage.setItem('han_cookie_consent', 'essential_only'));
   await page.goto('/');
   await page.getByRole('radio', { name: 'Harsha Owner / Admin' }).click();
   await page.getByLabel(/Account Password/).fill('test-only-password-123456');
-  await page.getByRole('button', { name: /Enter HAN Workspace/ }).click();
+  await page.getByRole('button', { name: /Enter HAN/ }).click();
   await expect(page.getByRole('heading', { name: 'Welcome back, Harsha.' })).toBeVisible();
 }
 async function inventory(page: Page, screen: string) {
@@ -23,8 +24,8 @@ async function inventory(page: Page, screen: string) {
 test('QA-ROUTE-001 all home creation shortcuts open their own form and cancellation preserves navigation', async ({ page }) => {
   await login(page);
   const actions = [
-    { button: '+ Task', heading: 'New Task', label: 'Task title' },
-    { button: '+ Project', heading: 'New Project', label: 'Project name' },
+    { button: 'Task', heading: 'New Task', label: 'Task title' },
+    { button: 'Project', heading: 'New Project', label: 'Project name' },
     { button: 'Log Money', heading: 'New Expense', label: 'Amount (₹)' },
     { button: 'Add Lead', heading: 'New Lead', label: 'Lead name' },
   ];
@@ -63,12 +64,13 @@ test('QA-KEYBOARD-001 Ctrl+K opens an accessible searchable dialog and Escape re
 });
 
 test('QA-PERM-001 restricted members cannot open creation forms from home or quick actions', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('han_cookie_consent', 'essential_only'));
   await page.goto('/');
   await page.getByRole('radio', { name: 'Nihaal Team Member' }).click();
   await page.getByLabel(/Account Password/).fill('test-only-password-123456');
-  await page.getByRole('button', { name: /Enter HAN Workspace/ }).click();
+  await page.getByRole('button', { name: /Enter HAN/ }).click();
   await expect(page.getByRole('heading', { name: 'Welcome back, Nihaal.' })).toBeVisible();
-  for (const name of ['+ Task', '+ Project', 'Log Money']) {
+  for (const name of ['Task', 'Project', 'Log Money']) {
     await expect(page.getByRole('button', { name, exact: true })).toHaveCount(0);
   }
   await page.getByRole('button', { name: 'Quick Actions', exact: true }).click();
@@ -106,10 +108,11 @@ test('QA-INVENTORY-001 all main screens, searches and empty states render withou
 });
 
 test('QA-AUTH-001 invalid credentials show an error and never grant a session', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('han_cookie_consent', 'essential_only'));
   await page.goto('/');
-  await expect(page.getByRole('button', { name: /Enter HAN Workspace/ })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Enter HAN/ })).toBeDisabled();
   await page.getByLabel(/Account Password/).fill('incorrect-QA-password');
-  await page.getByRole('button', { name: /Enter HAN Workspace/ }).click();
+  await page.getByRole('button', { name: /Enter HAN/ }).click();
   await expect(page.getByRole('alert')).toBeVisible();
   expect((await page.request.get('/api/state')).status()).toBe(401);
   await expect(page.getByRole('heading', { name: 'Who are you?' })).toBeVisible();

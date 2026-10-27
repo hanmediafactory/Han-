@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
 async function login(page: import('@playwright/test').Page, member = false) {
+  await page.addInitScript(() => localStorage.setItem('han_cookie_consent', 'essential_only'));
   await page.goto('/');
   await page.getByRole('radio', { name: member ? 'Nihaal Team Member' : 'Harsha Owner / Admin' }).click();
   await page.getByLabel(/Account Password/).fill('test-only-password-123456');
-  await page.getByRole('button', { name: /Enter HAN Workspace/ }).click();
+  await page.getByRole('button', { name: /Enter HAN/ }).click();
   await expect(page.getByRole('heading', { name: member ? 'Welcome back, Nihaal.' : 'Welcome back, Harsha.' })).toBeVisible();
 }
 test('Lead details persist, outcome selection and search work after reload', async ({page}) => {
@@ -111,6 +112,7 @@ test('Radio keyboard controls, modal focus, overdue filter and desktop fit', asy
   // Seeded project deadlines bracket this date; keep the overdue assertion stable.
   await page.clock.setFixedTime(new Date('2026-10-10T06:30:00Z'));
   await page.setViewportSize({width:1280,height:900});
+  await page.addInitScript(() => localStorage.setItem('han_cookie_consent', 'essential_only'));
   await page.goto('/');
   const owner = page.getByRole('radio',{name:'Harsha Owner / Admin'});
   await owner.focus(); await owner.press('ArrowDown');

@@ -3,10 +3,11 @@ import { test, expect, type Page } from '@playwright/test';
 const password = 'test-only-password-123456';
 const day = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 async function login(page: Page, name = 'Harsha') {
+  await page.addInitScript(() => localStorage.setItem('han_cookie_consent', 'essential_only'));
   await page.goto('/');
   await page.getByRole('radio', { name: `${name} ${name === 'Harsha' ? 'Owner / Admin' : 'Team Member'}` }).click();
   await page.getByLabel(/Account Password/).fill(password);
-  await page.getByRole('button', { name: /Enter HAN Workspace/ }).click();
+  await page.getByRole('button', { name: /Enter HAN/ }).click();
   await expect(page.getByRole('heading', { name: `Welcome back, ${name}.` })).toBeVisible();
 }
 async function state(page: Page) { const response = await page.request.get('/api/state'); expect(response.ok()).toBeTruthy(); return response.json(); }
@@ -31,7 +32,7 @@ test('QA-FOUNDERS-001 all four permitted founders create full projects/tasks and
       const founder = await context.newPage();
       try {
         await login(founder, name);
-        await founder.getByRole('button', { name: '+ Project', exact: true }).click();
+        await founder.getByRole('button', { name: 'Project', exact: true }).click();
         const projectName = `QA ${name} shared project`;
         await founder.getByLabel('Project name', { exact: true }).fill(projectName);
         for (const member of ['Harsha', 'Nihaal', 'Lalitha', 'Abhilash']) await founder.getByLabel(member, { exact: true }).check();

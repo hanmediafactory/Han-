@@ -38,9 +38,9 @@ test('QA-STARTUP-002 Render missing-only provisioning preserves credentials and 
 
 test('QA-STARTUP-003 production disk permission failure fails closed instead of creating an ephemeral database (injected EACCES)', () => {
   const isolated = join(directory, 'fault'); mkdirSync(isolated);
-  const deniedPath = join(isolated, 'qa-denied', 'han.sqlite');
-  const script = `import fs from 'node:fs'; import {syncBuiltinESMExports} from 'node:module';const original=fs.mkdirSync;fs.mkdirSync=(path,...args)=>{if(String(path).includes('qa-denied'))throw Object.assign(new Error('Injected EACCES for isolated QA'),{code:'EACCES'});return original(path,...args)};syncBuiltinESMExports(); const {db}=await import(${JSON.stringify(dbURL)});db.close();`;
-  const env = { ...process.env, NODE_ENV: 'production', HAN_DB_PATH: deniedPath };
+  const deniedPath = join(isolated, 'persistent-storage-denied', 'han.sqlite');
+  const script = `import fs from 'node:fs'; import {syncBuiltinESMExports} from 'node:module';const original=fs.mkdirSync;fs.mkdirSync=(path,...args)=>{if(String(path).includes('persistent-storage-denied'))throw Object.assign(new Error('Injected EACCES for isolated QA'),{code:'EACCES'});return original(path,...args)};syncBuiltinESMExports(); const {db}=await import(${JSON.stringify(dbURL)});db.close();`;
+  const env = { ...process.env, NODE_ENV: 'production', RENDER: 'true', HAN_DB_PATH: deniedPath };
   for (const name of names) delete env[`HAN_${name}_PASSWORD`];
   const result = spawnSync(process.execPath, ['--input-type=module', '-e', script], { cwd: isolated, env, encoding: 'utf8' });
   assert.notEqual(result.status, 0, 'Production must refuse startup when configured persistent directory is inaccessible');

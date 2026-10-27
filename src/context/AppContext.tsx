@@ -598,6 +598,10 @@ function useController() {
     team: state.team_members,
     funnels: state.funnels,
     leads: state.leads,
+    clients: state.clients,
+    client_followups: state.client_followups,
+    inquiries: state.inquiries,
+    activity_logs: state.activity_logs,
     notifications: state.notifications,
     toggleTask: (id: string) => {
       const task = tasks.find((t) => t.id === id);

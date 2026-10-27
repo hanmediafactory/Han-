@@ -28,7 +28,12 @@ export const QuickActionHub: React.FC = () => {
       }
     };
     window.addEventListener('keydown', handle);
-    return () => window.removeEventListener('keydown', handle);
+    const openHandler = () => { setOpenMenu(false); setOpenCommand(true); };
+    window.addEventListener('han:open-command', openHandler);
+    return () => {
+      window.removeEventListener('keydown', handle);
+      window.removeEventListener('han:open-command', openHandler);
+    };
   }, [app.user]);
 
   if (!app.user) return null;

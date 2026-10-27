@@ -71,6 +71,9 @@ export const schemas = {
     vendor: z.string().max(250).default(""),
     paymentMethod: z.string().max(100).default("UPI"),
     receipt: z.string().max(10000).default(""),
+    // A duplicate requires an explicit second confirmation. This is not stored
+    // with the ledger record; it only protects the create request.
+    confirmDuplicate: z.boolean().default(false),
     status: z.enum(["active", "void"]).default("active"),
     voidReason: z.string().max(500).default(""),
     voidedAt: z.string().max(100).optional(),
@@ -81,6 +84,7 @@ export const schemas = {
     recipientId: user,
     amount: money,
     date,
+    paymentMethod: z.string().max(100).default("UPI"),
     paymentReference: z.string().max(250).default(""),
     notes: note,
     status: z.enum(["completed"]).default("completed"),
