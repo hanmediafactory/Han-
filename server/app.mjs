@@ -526,7 +526,12 @@ function createSession(user, res) {
   db.prepare("INSERT INTO sessions VALUES (?,?,?,?)").run(tokenHash, user.id, csrf, expiresAt);
   // Do not let a lost browser accumulate an unlimited number of valid tokens.
   // The newest eight sessions remain usable (phone, desktop, recovery browser).
-  db.prepare("DELETE FROM sessions WHERE token_hash IN (SELECT token_hash FROM sessions WHERE user_id=? AND token_hash<>? ORDER BY expires_at ASC LIMIT -1 OFFSET 7)").run(user.id, tokenHash);
+  // SQLite needs LIMIT -1 to mean “all remaining rows”; PostgreSQL uses LIMIT ALL.
+  // Keep the same device/session cap in both storage backends.
+  const sessionOverflowQuery = db.dialect === "postgres"
+    ? "DELETE FROM sessions WHERE token_hash IN (SELECT token_hash FROM sessions WHERE user_id=? AND token_hash<>? ORDER BY expires_at ASC LIMIT ALL OFFSET 7)"
+    : "DELETE FROM sessions WHERE token_hash IN (SELECT token_hash FROM sessions WHERE user_id=? AND token_hash<>? ORDER BY expires_at ASC LIMIT -1 OFFSET 7)";
+  db.prepare(sessionOverflowQuery).run(user.id, tokenHash);
   res.cookie(sessionCookie, token, { httpOnly: true, secure: production, sameSite: process.env.HAN_COOKIE_SAMESITE || "strict", priority: "high", maxAge: 7 * 86400_000, path: "/" });
   changes.emit("change");
   return { user: publicUser(user), csrf, expiresAt };
