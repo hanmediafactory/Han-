@@ -1,7 +1,11 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 import type {} from "@capacitor/push-notifications";
-const origin = process.env.HAN_MOBILE_URL;
 const debug = process.env.HAN_ANDROID_DEBUG === "1";
+// Native production builds load the hosted app so API calls and cookies stay
+// on the same HTTPS origin. This prevents a bundled file:// app from treating
+// `/api/*` as a local file request and receiving index.html instead of JSON.
+const productionOrigin = "https://han-workspace.onrender.com";
+const origin = process.env.HAN_MOBILE_URL || (debug ? undefined : productionOrigin);
 if (origin) {
   const url = new URL(origin);
   if (url.username || url.password || url.search || url.hash || url.pathname !== "/") throw new Error("HAN_MOBILE_URL must be an origin without credentials, paths or parameters.");

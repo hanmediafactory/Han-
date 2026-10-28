@@ -216,7 +216,20 @@ function useController() {
           setState(empty);
         }
 
-        const data = await response.json();
+        const raw = await response.text();
+        // Keep the established request result shape while validating that the
+        // transport actually returned JSON before any screen consumes it.
+        let data: any = {};
+        try {
+          data = raw ? JSON.parse(raw) : {};
+        } catch {
+          const receivedHtml = /^\s*</.test(raw);
+          throw new Error(
+            receivedHtml
+              ? "The app reached a web page instead of the HAN service. Please reopen the app and try again."
+              : "The service returned an incomplete response. Please try again.",
+          );
+        }
         if (!response.ok) throw Object.assign(new Error(data.error || "Request failed."), { status: response.status });
         return data;
       } catch (err) {
